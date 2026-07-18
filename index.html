@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#090b10" />
+  <meta
+    name="description"
+    content="Noble Staff Helper brings session announcements, scrim presets, Discord timestamps, staff references, and NoblePrac tools into one workspace."
+  />
+  <title>Noble Staff Helper</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
+  <script src="script.js" defer></script>
+</head>
+
+<body>
+  <div class="site-glow site-glow-one" aria-hidden="true"></div>
+  <div class="site-glow site-glow-two" aria-hidden="true"></div>
+
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#builder" data-view-link="builder" aria-label="Noble Staff Helper home">
+        <img class="brand-mark brand-logo-image" src="img/noble-helper-logo.png" alt="" />
+        <span class="brand-copy">
+          <span class="brand-kicker">Staff workspace</span>
+          <span class="brand-name">Noble Staff Helper</span>
+        </span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Main navigation">
+        <button class="nav-item is-active" type="button" data-view="builder" aria-current="page">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a4 4 0 0 0-5-5L7.3 3.7l3 3 2.4-2.4a4 4 0 0 0 2 2ZM8.6 8.6 2 15.2V22h6.8l6.6-6.6-6.8-6.8Z"/><path d="m13 8 3-3 3 3-3 3M15.5 13.5l2-2 4.5 4.5-6 6-4.5-4.5 2-2"/></svg>
+          <span>
+            <b>Session builder</b>
+            <small>Times &amp; announcements</small>
+          </span>
+        </button>
+        <button class="nav-item" type="button" data-view="scrims">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H3v2a4 4 0 0 0 4 4M17 6h4v2a4 4 0 0 1-4 4"/></svg>
+          <span>
+            <b>Practice scrims</b>
+            <small>First match &amp; conclude</small>
+          </span>
+        </button>
+        <button class="nav-item" type="button" data-view="extension">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 3H4a1 1 0 0 0-1 1v4.5a2.5 2.5 0 1 1 0 5V20a1 1 0 0 0 1 1h6.5a2.5 2.5 0 1 1 5 0H20a1 1 0 0 0 1-1v-4.5a2.5 2.5 0 1 1 0-5V4a1 1 0 0 0-1-1h-6.5a2.5 2.5 0 1 1-5 0Z"/></svg>
+          <span>
+            <b>Web extension</b>
+            <small>NoblePrac toolkit</small>
+          </span>
+        </button>
+        <button class="nav-item" type="button" data-view="guide">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5M8 7h8M8 11h6"/></svg>
+          <span>
+            <b>Staff guide</b>
+            <small>Video &amp; handbook</small>
+          </span>
+        </button>
+        <button class="nav-item" type="button" data-view="projects">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
+          <span>
+            <b>My projects</b>
+            <small>Extension &amp; drop tools</small>
+          </span>
+        </button>
+      </nav>
+
+      <div class="sidebar-config">
+        <span class="sidebar-config-label">Configuration</span>
+        <button class="nav-item settings-entry" type="button" data-view="settings" aria-label="Experience settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+          <span>
+            <b>Experience settings</b>
+            <small>Customize your workspace</small>
+          </span>
+        </button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="timezone-line">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          <span>Local time</span>
+          <b id="timezoneLabel">System</b>
+        </div>
+        <a
+          class="creator-credit"
+          id="creatorLink"
+          href="https://discord.com/users/831136990102945833"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img class="creator-avatar" src="img/sneeky-avatar.png" alt="" />
+          <span class="creator-copy">
+            <small>Made by</small>
+            <b><span>Sneeky</span><span class="external-arrow" aria-hidden="true">&#8599;</span></b>
+          </span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div>
+          <p class="topbar-label">Current workspace</p>
+          <h2 id="activeViewTitle">Session builder</h2>
+        </div>
+        <div class="topbar-actions">
+          <button class="schedule-launch" id="openScheduleModal" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v3M18 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="M8 12h3v3H8z"/></svg>
+            <span><small>Announcement tool</small><b>Session schedule</b></span>
+          </button>
+        </div>
+      </header>
+
+      <section class="view is-active" id="view-builder" data-view-panel="builder">
+        <div class="view-hero builder-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Session tools</p>
+            <h1>Session builder</h1>
+            <p class="hero-text">
+              Set the registration time, choose a server, and prepare the Discord announcement.
+            </p>
+          </div>
+          <div class="hero-time" aria-label="Selected registration time">
+            <span>Registration opens</span>
+            <strong id="heroTime">--:--</strong>
+            <small id="heroDate">Select a date and time</small>
+          </div>
+        </div>
+
+        <div class="builder-layout">
+          <div class="builder-controls">
+            <section class="surface control-section">
+              <div class="section-heading">
+                <div class="section-number">01</div>
+                <div>
+                  <p class="section-kicker">Set the clock</p>
+                  <h3>Registration time</h3>
+                </div>
+              </div>
+
+              <div class="datetime-row">
+                <label class="field-label" for="datetime">Date &amp; local time</label>
+                <div class="input-action-row">
+                  <input id="datetime" class="input" type="datetime-local" step="60" />
+                  <button class="button button-secondary" id="resetNow" type="button">Use now</button>
+                </div>
+              </div>
+
+              <div class="quick-time-block">
+                <div class="field-meta">
+                  <span>Quick pick</span>
+                  <small>Today in your timezone</small>
+                </div>
+                <div class="quick-times" id="utcButtons"></div>
+              </div>
+
+              <div class="minute-adjust-block">
+                <div class="field-meta">
+                  <span>Adjust selected time</span>
+                  <small>Quickly add or remove minutes</small>
+                </div>
+                <div class="minute-adjust-buttons" id="minuteAdjustButtons"></div>
+              </div>
+            </section>
+
+            <section class="surface control-section">
+              <div class="section-heading">
+                <div class="section-number">02</div>
+                <div>
+                  <p class="section-kicker">Choose the server</p>
+                  <h3>Session type</h3>
+                </div>
+              </div>
+              <div class="session-grid" id="sessionCards"></div>
+            </section>
+
+            <section class="surface control-section">
+              <div class="section-heading">
+                <div class="section-number">03</div>
+                <div>
+                  <p class="section-kicker">Personalize</p>
+                  <h3>Host &amp; lobby</h3>
+                </div>
+              </div>
+
+              <div class="host-grid">
+                <label class="field-block" for="discordId">
+                  <span class="field-label">Your Discord user ID</span>
+                  <input
+                    id="discordId"
+                    class="input"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="616671756471762944"
+                  />
+                  <small>Stored only in this browser and inserted as the session host.</small>
+                </label>
+
+                <div class="toggle-stack">
+                  <label class="toggle-row" for="announceMode">
+                    <span>
+                      <b>Build announcement</b>
+                      <small>Generate a live Discord message</small>
+                    </span>
+                    <input id="announceMode" type="checkbox" checked />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                  <label class="toggle-row" for="secondLobby">
+                    <span>
+                      <b>Second lobby template</b>
+                      <small id="secondLobbyHint">Registration shifts by 5 minutes</small>
+                    </span>
+                    <input id="secondLobby" type="checkbox" />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                </div>
+              </div>
+            </section>
+
+            <details class="surface timestamp-lab" id="timestampDetails">
+              <summary>
+                <span>
+                  <span class="section-kicker">Utility</span>
+                  <b>Discord timestamp lab</b>
+                </span>
+                <span class="summary-action">Show formats <span aria-hidden="true">+</span></span>
+              </summary>
+              <div class="timestamp-table-wrap">
+                <table class="timestamp-table">
+                  <thead>
+                    <tr>
+                      <th>Format</th>
+                      <th>Discord syntax</th>
+                      <th>Local preview</th>
+                    </tr>
+                  </thead>
+                  <tbody id="formatRows"></tbody>
+                </table>
+              </div>
+            </details>
+          </div>
+
+          <aside class="live-output surface" id="announceSection">
+            <div class="output-head">
+              <div>
+                <p class="section-kicker">Live output</p>
+                <h3 id="announceSessionTitle">Noble Solos</h3>
+              </div>
+              <span class="ready-badge"><span></span> Ready</span>
+            </div>
+
+            <div class="selected-session">
+              <img id="announceSessionIcon" src="img/noble-solos.png" alt="Noble Solos" />
+              <div>
+                <span>Selected server</span>
+                <strong id="selectedSessionName">Noble Solos</strong>
+              </div>
+            </div>
+
+            <div class="mode-block" id="queueTypeBlock">
+              <span class="field-label">Game mode</span>
+              <div class="segmented" id="queueButtons"></div>
+            </div>
+
+            <div class="session-timeline" aria-label="Session timeline">
+              <div class="timeline-stop">
+                <span class="timeline-marker">1</span>
+                <div>
+                  <small>Registration</small>
+                  <b id="timelineRegistration">--:--</b>
+                </div>
+              </div>
+              <div class="timeline-connector">
+                <span id="timelineDelay">+20 min</span>
+              </div>
+              <div class="timeline-stop">
+                <span class="timeline-marker is-gold">2</span>
+                <div>
+                  <small>First game</small>
+                  <b id="timelineGame">--:--</b>
+                </div>
+              </div>
+            </div>
+
+            <div class="target-strip">
+              <span>React targets</span>
+              <b id="reactTargetSummary">110+ required</b>
+            </div>
+
+            <label class="field-label" for="announcementText">Generated Discord message</label>
+            <textarea id="announcementText" class="message-output" readonly spellcheck="false"></textarea>
+            <button class="button button-primary button-full" id="copyAnnouncement" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              Copy announcement
+            </button>
+            <button class="text-link output-settings-link" type="button" data-view-jump="settings">
+              Customize message &amp; requirements <span aria-hidden="true">&#8594;</span>
+            </button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view" id="view-scrims" data-view-panel="scrims" hidden>
+        <div class="view-hero compact-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Practice tools</p>
+            <h1>Practice scrims</h1>
+            <p class="hero-text">
+              Prepare the first-match and conclude messages from one scrim time.
+            </p>
+          </div>
+        </div>
+
+        <section class="surface scrim-control-bar">
+          <div class="scrim-field">
+            <span class="field-label">Queue type</span>
+            <div class="segmented" id="scrimQueueButtons"></div>
+          </div>
+          <label class="scrim-field" for="scrimTimeInput">
+            <span class="field-label">Scrim time</span>
+            <input id="scrimTimeInput" class="input" type="datetime-local" />
+          </label>
+          <button class="button button-secondary scrim-auto" id="scrimAutoNext" type="button">
+            Next scheduled time
+          </button>
+          <p id="scrimTimePreview" class="scrim-preview"></p>
+        </section>
+
+        <div class="scrim-message-grid">
+          <article class="surface message-card">
+            <div class="message-card-head">
+              <span class="message-index">01</span>
+              <div>
+                <p class="section-kicker">Opening message</p>
+                <h3>First match</h3>
+              </div>
+            </div>
+            <textarea id="scrimFirstText" class="message-output scrim-output" readonly></textarea>
+            <button class="button button-primary button-full" id="copyScrimFirst" type="button">Copy first match</button>
+          </article>
+
+          <article class="surface message-card">
+            <div class="message-card-head">
+              <span class="message-index">02</span>
+              <div>
+                <p class="section-kicker">Closing message</p>
+                <h3>Conclude scrims</h3>
+              </div>
+            </div>
+            <textarea id="scrimConcludeText" class="message-output scrim-output" readonly></textarea>
+            <button class="button button-primary button-full" id="copyScrimConclude" type="button">Copy conclude message</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-settings" data-view-panel="settings" hidden>
+        <div class="view-hero compact-hero settings-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Local preferences</p>
+            <h1>Experience settings</h1>
+            <p class="hero-text">
+              Edit timing, reaction requirements, and announcement text for every server and mode.
+            </p>
+          </div>
+        </div>
+
+        <div class="settings-layout">
+          <section class="surface global-settings">
+            <div class="section-heading">
+              <div class="section-number">A</div>
+              <div>
+                <p class="section-kicker">Global timing</p>
+                <h3>Second lobby offset</h3>
+              </div>
+            </div>
+            <label class="setting-inline" for="secondLobbyOffset">
+              <span>
+                <b>Registration shift</b>
+                <small>How much later the second lobby opens</small>
+              </span>
+              <span class="clean-stepper">
+                <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="-1" aria-label="Reduce registration shift">&minus;</button>
+                <input id="secondLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
+                <span class="stepper-unit">min</span>
+                <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="1" aria-label="Increase registration shift">+</button>
+              </span>
+            </label>
+
+            <div class="quick-adjust-settings">
+              <div>
+                <b>Quick time adjustments</b>
+                <small>Choose up to four minute buttons. Use a negative value to subtract; 0 hides it.</small>
+              </div>
+              <div class="quick-adjust-editor" id="quickAdjustmentSettings"></div>
+            </div>
+          </section>
+
+          <section class="surface staff-links-settings" id="staffLinksSettings">
+            <div class="staff-links-settings-head">
+              <div>
+                <p class="section-kicker">Staff shortcuts</p>
+                <h3>Quick links</h3>
+                <p>Choose which destinations appear inside the floating staff-links box.</p>
+              </div>
+              <button class="button button-secondary" id="addStaffLink" type="button">+ Add link</button>
+            </div>
+            <div class="staff-links-editor" id="staffLinksEditor"></div>
+            <div class="staff-links-editor-footer">
+              <span id="staffLinksCount">3 of 8 links</span>
+              <small>Use the arrows to control their order in the floating box.</small>
+            </div>
+          </section>
+
+          <section class="surface template-settings">
+            <div class="template-settings-head">
+              <div>
+                <p class="section-kicker">Announcement content</p>
+                <h3>Message templates</h3>
+                <p>Edit the normal and second-lobby preset for each server and game mode.</p>
+              </div>
+              <span class="template-save-state" id="templateSaveState">Using saved template</span>
+            </div>
+
+            <div class="template-workspace">
+              <div class="template-picker">
+                <span class="field-label">Server</span>
+                <div class="template-server-list" id="templateServerButtons"></div>
+              </div>
+
+              <div class="template-editor-panel">
+                <div class="template-toolbar">
+                  <div>
+                    <span class="field-label">Game mode</span>
+                    <div class="segmented" id="templateModeButtons"></div>
+                  </div>
+                  <div>
+                    <span class="field-label">Lobby message</span>
+                    <div class="segmented" id="templateLobbyButtons"></div>
+                  </div>
+                </div>
+
+                <label class="field-label" for="templateText">Discord message template</label>
+                <textarea id="templateText" class="template-textarea" spellcheck="false"></textarea>
+
+                <div class="template-token-area">
+                  <span>Insert a dynamic value</span>
+                  <div id="templateTokenButtons" class="template-token-list"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="surface scrim-preset-settings">
+            <div class="template-settings-head">
+              <div>
+                <p class="section-kicker">Practice scrims</p>
+                <h3>Categories &amp; message presets</h3>
+                <p>Edit Solos, Duos, Squads, or add your own category next to them.</p>
+              </div>
+              <button class="button button-secondary" id="addScrimCategory" type="button">+ Add category</button>
+            </div>
+
+            <div class="scrim-preset-workspace">
+              <div class="scrim-preset-picker">
+                <span class="field-label">Categories</span>
+                <div class="scrim-preset-list" id="scrimPresetButtons"></div>
+              </div>
+
+              <div class="scrim-preset-editor">
+                <div class="scrim-preset-fields">
+                  <label class="field-block" for="scrimPresetLabel">
+                    <span class="field-label">Display name</span>
+                    <input id="scrimPresetLabel" class="input" type="text" maxlength="32" />
+                  </label>
+                  <label class="field-block" for="scrimPresetMessageName">
+                    <span class="field-label">Name inside messages</span>
+                    <input id="scrimPresetMessageName" class="input" type="text" maxlength="32" placeholder="solo" />
+                  </label>
+                  <label class="field-block" for="scrimWeekdayTime">
+                    <span class="field-label">Weekday time</span>
+                    <input id="scrimWeekdayTime" class="input" type="time" step="60" />
+                  </label>
+                  <label class="field-block" for="scrimWeekendTime">
+                    <span class="field-label">Weekend time</span>
+                    <input id="scrimWeekendTime" class="input" type="time" step="60" />
+                  </label>
+                </div>
+
+                <label class="field-block" for="scrimFirstTemplate">
+                  <span class="field-label">First match preset</span>
+                  <textarea id="scrimFirstTemplate" class="template-textarea scrim-template-textarea" spellcheck="false"></textarea>
+                </label>
+                <label class="field-block" for="scrimConcludeTemplate">
+                  <span class="field-label">Conclude preset</span>
+                  <textarea id="scrimConcludeTemplate" class="template-textarea scrim-template-textarea" spellcheck="false"></textarea>
+                </label>
+
+                <div class="scrim-preset-footer">
+                  <div class="template-token-area">
+                    <span>Insert a dynamic value</span>
+                    <div id="scrimTemplateTokens" class="template-token-list"></div>
+                  </div>
+                  <button class="text-link danger-link" id="deleteScrimCategory" type="button">Delete category</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="surface mode-settings">
+            <div class="settings-table-head">
+              <div>
+                <p class="section-kicker">Per server &amp; mode</p>
+                <h3>Session requirements</h3>
+              </div>
+              <div class="settings-legend" aria-label="Settings columns">
+                <span><i class="legend-dot delay"></i> Game delay</span>
+                <span><i class="legend-dot react"></i> React goal</span>
+              </div>
+            </div>
+            <div id="settingsEditor" class="settings-editor"></div>
+          </section>
+
+          <div class="settings-actions">
+            <p>
+              <b>Browser-local preferences</b>
+              <span>These settings stay on this device and can be reset anytime.</span>
+            </p>
+            <div>
+              <button class="button button-secondary" id="resetSettings" type="button">Restore defaults</button>
+              <button class="button button-primary" id="saveSettings" type="button">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-extension" data-view-panel="extension" hidden>
+        <div class="view-hero compact-hero extension-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">NoblePrac browser tools</p>
+            <h1>Noble web extension</h1>
+            <p class="hero-text">
+              Player details, host checks, map capture, and leaderboard actions directly inside nobleprac.com.
+            </p>
+            <div class="extension-hero-actions">
+              <a
+                class="button button-primary"
+                id="downloadExtension"
+                href="downloads/Noble-Staff-Helper-Extension-v2.2.0.zip"
+                download="Noble-Staff-Helper-Extension-v2.2.0.zip"
+              >
+                Download extension ZIP
+              </a>
+              <span class="extension-version">Chrome extension <i></i> v2.2.0</span>
+            </div>
+          </div>
+          <div class="extension-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M8.5 3H4a1 1 0 0 0-1 1v4.5a2.5 2.5 0 1 1 0 5V20a1 1 0 0 0 1 1h6.5a2.5 2.5 0 1 1 5 0H20a1 1 0 0 0 1-1v-4.5a2.5 2.5 0 1 1 0-5V4a1 1 0 0 0-1-1h-6.5a2.5 2.5 0 1 1-5 0Z"/></svg>
+          </div>
+        </div>
+
+        <section class="extension-summary" aria-label="Extension capabilities">
+          <div><span>01</span><b>Player cards</b><small>Epic name, Discord ID, avatar, and Tracker link.</small></div>
+          <div><span>02</span><b>Host Ready</b><small>Checks whether a member has an active creator code.</small></div>
+          <div><span>03</span><b>Map capture</b><small>Copies the untouched initial full map as a PNG.</small></div>
+          <div><span>04</span><b>Leaderboard tools</b><small>Bottom-N mentions, IDs, and role commands.</small></div>
+        </section>
+
+        <div class="extension-gallery">
+          <figure class="surface extension-shot popup-shot">
+            <figcaption>
+              <span><b>Extension controls</b><small>Every tool is optional and saved locally.</small></span>
+              <em>Popup</em>
+            </figcaption>
+            <div class="shot-stage popup-stage">
+              <div class="mock-popup">
+                <header>
+                  <div><b>Noble Toolkit</b><small>Made by Sneeky</small></div>
+                  <span>v2.2.0</span>
+                </header>
+                <section>
+                  <h4>Features</h4>
+                  <div class="mock-toggle-row"><span><b>Player cards</b><small>Profile actions on session rows</small></span><i class="is-on"></i></div>
+                  <div class="mock-toggle-row"><span><b>Host Ready</b><small>Check active creator codes</small></span><i class="is-on"></i></div>
+                  <div class="mock-toggle-row"><span><b>Copy map</b><small>Full-map clipboard capture</small></span><i class="is-on"></i></div>
+                  <div class="mock-toggle-row"><span><b>Bulk tools</b><small>Bottom-N action near search</small></span><i class="is-on"></i></div>
+                </section>
+                <section class="mock-rules">
+                  <div class="mock-section-title"><h4>Leaderboard rules</h4><span>Reset</span></div>
+                  <div class="mock-rule-head"><span>Mode</span><span>Bottom</span><span>Min games</span></div>
+                  <div class="mock-rule-row"><b>Solo</b><span>5</span><span>3</span></div>
+                  <div class="mock-rule-row"><b>Duo</b><span>5</span><span>3</span></div>
+                  <div class="mock-rule-row"><b>Ladder</b><span>5</span><span>5</span></div>
+                </section>
+              </div>
+            </div>
+          </figure>
+
+          <figure class="surface extension-shot player-shot">
+            <figcaption>
+              <span><b>Session player cards</b><small>Open a member without leaving the session map.</small></span>
+              <em>Sessions</em>
+            </figcaption>
+            <div class="shot-stage noble-screen">
+              <div class="mock-browser-bar"><i></i><i></i><i></i><span>nobleprac.com/sessions/eu-practice</span></div>
+              <div class="mock-session-head"><b>Players</b><span>32 teams marked</span></div>
+              <div class="mock-player-row">
+                <img src="img/noble-div3.png" alt="" />
+                <div><b>Sneeky</b><small>Joined 2 minutes ago</small></div>
+                <span class="mock-ready">Host ready</span>
+                <button type="button" aria-label="Open player card">&#8250;</button>
+              </div>
+              <div class="mock-player-card">
+                <header>
+                  <img src="img/noble-div3.png" alt="" />
+                  <div><b>Sneeky</b><small>Host ready <i></i> SNEEKY</small></div>
+                  <span>Tracker &#8599;</span>
+                </header>
+                <div><small>EPIC NAME</small><b>Sneeky</b><span>Copy</span></div>
+                <div><small>DISCORD ID</small><b>831136990102945833</b><span>Copy</span></div>
+              </div>
+            </div>
+          </figure>
+
+          <figure class="surface extension-shot leaderboard-shot">
+            <figcaption>
+              <span><b>Leaderboard actions</b><small>Uses a separate Bottom-N and minimum-games rule per mode.</small></span>
+              <em>Leaderboards</em>
+            </figcaption>
+            <div class="shot-stage leaderboard-stage">
+              <div class="mock-browser-bar"><i></i><i></i><i></i><span>nobleprac.com/leaderboards/duos</span></div>
+              <div class="mock-leaderboard-toolbar">
+                <div><b>Duos leaderboard</b><small>Live session standings</small></div>
+                <span>Search player</span>
+                <button>Copy bottom 5</button>
+                <button>Copy roles</button>
+              </div>
+              <div class="mock-table-head"><span>#</span><span>Players</span><span>Matches</span><span>Points</span><span>Actions</span></div>
+              <div class="mock-table-row"><span>21</span><b>team nova</b><span>6</span><span>128</span><div><i>Copy ID</i><i>*role bott</i></div></div>
+              <div class="mock-table-row is-bottom"><span>22</span><b>zero duo</b><span>5</span><span>119</span><div><i>Copy ID</i><i>*role bott</i></div></div>
+              <div class="mock-table-row is-bottom"><span>23</span><b>south side</b><span>4</span><span>103</span><div><i>Copy ID</i><i>*role bott</i></div></div>
+              <div class="mock-copy-toast"><b>Copied &#10003;</b><span>5 Discord mentions copied with the leaderboard link.</span></div>
+            </div>
+          </figure>
+
+          <figure class="surface extension-shot map-shot">
+            <figcaption>
+              <span><b>Full-map clipboard capture</b><small>Keeps the live map untouched—even after staff zooms in.</small></span>
+              <em>Map PNG</em>
+            </figcaption>
+            <div class="shot-stage map-stage">
+              <div class="mock-browser-bar"><i></i><i></i><i></i><span>nobleprac.com/sessions/eu-practice</span></div>
+              <div class="mock-map-toolbar">
+                <button><svg viewBox="0 0 24 24"><path d="m9 18-6 3V6l6-3 6 3 6-3v15l-6 3-6-3Z"/><path d="M9 3v15m6-12v15"/></svg> Copy Map</button>
+                <span>Contested drops</span><span>32 teams marked</span>
+              </div>
+              <div class="mock-map" aria-label="Noble session full-map capture">
+                <img class="mock-map-image" src="img/full-map-preview.png" alt="Full Noble map with marked player drop areas" />
+                <div class="map-ready"><b>Full map copied &#10003;</b><small>Initial view saved to the clipboard</small></div>
+              </div>
+            </div>
+          </figure>
+        </div>
+
+        <section class="surface extension-notes">
+          <div>
+            <p class="section-kicker">How it works</p>
+            <h3>Built around the NoblePrac workflow</h3>
+          </div>
+          <p>
+            The extension reads session team data, stores a local Epic-name to Discord-ID cache, and adds actions only on NoblePrac session and leaderboard pages. Creator checks use Fortnite-API; preferences and cached IDs remain in Chrome storage.
+          </p>
+        </section>
+      </section>
+
+      <section class="view" id="view-projects" data-view-panel="projects" hidden>
+        <div class="view-hero compact-hero projects-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Made by Sneeky</p>
+            <h1>My projects</h1>
+            <p class="hero-text">Two focused tools for Noble staff workflows, from site moderation to better Fortnite drops.</p>
+          </div>
+          <img class="projects-hero-logo" src="img/noble-helper-logo.png" alt="" />
+        </div>
+
+        <div class="projects-grid">
+          <article class="surface project-card project-extension-card">
+            <div class="project-visual extension-project-visual">
+              <img src="img/noble-helper-logo.png" alt="Noble Staff Helper crown" />
+              <span>Chrome extension</span>
+            </div>
+            <div class="project-body">
+              <p class="section-kicker">NoblePrac workflow</p>
+              <h3>Noble Staff Helper Extension</h3>
+              <p>Adds player cards, creator-code checks, clean map capture, and leaderboard copy actions directly to NoblePrac.</p>
+              <button class="button button-primary project-action" id="openExtensionProject" type="button">View extension</button>
+            </div>
+          </article>
+
+          <article class="surface project-card project-drop-card">
+            <div class="project-visual">
+              <img src="img/dropcalc-preview.png" alt="Drop Path Lab Fortnite map" />
+              <span>Web app</span>
+            </div>
+            <div class="project-body">
+              <p class="section-kicker">Fortnite drop planning</p>
+              <h3>Drop Path Lab</h3>
+              <p>A terrain-aware drop planner for exploring saved landing locations and preparing more consistent routes.</p>
+              <button class="button button-primary project-action" id="openDropProject" type="button">Project details</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-guide" data-view-panel="guide" hidden>
+        <div class="view-hero compact-hero guide-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Reference</p>
+            <h1>Staff guide</h1>
+            <p class="hero-text">
+              Watch the walkthrough or open the written Noble staff handbook.
+            </p>
+          </div>
+        </div>
+
+        <div class="guide-grid">
+          <section class="surface guide-card video-card">
+            <div class="guide-card-head">
+              <span class="guide-type">Watch</span>
+              <div>
+                <p class="section-kicker">Video walkthrough</p>
+                <h3>Noble Closed Staff Guide</h3>
+              </div>
+              <a class="text-link" href="https://youtu.be/KQE0rea1kPQ" target="_blank" rel="noopener noreferrer">
+                Open on YouTube <span aria-hidden="true">&#8599;</span>
+              </a>
+            </div>
+            <div class="embed-frame video-frame">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/KQE0rea1kPQ"
+                title="Noble staff guide video"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+              ></iframe>
+            </div>
+          </section>
+
+          <section class="surface guide-card document-card">
+            <div class="guide-card-head">
+              <span class="guide-type">Read</span>
+              <div>
+                <p class="section-kicker">Written handbook</p>
+                <h3>Noble staff documentation</h3>
+              </div>
+              <a
+                class="text-link"
+                href="https://docs.google.com/document/d/1VxkhrMBNi3w8V4CgDBmqSqG_Up1kp2kT99IC02iSHuU/edit?usp=sharing"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Open full document <span aria-hidden="true">&#8599;</span>
+              </a>
+            </div>
+            <div class="embed-frame document-frame">
+              <iframe
+                src="https://docs.google.com/document/d/1VxkhrMBNi3w8V4CgDBmqSqG_Up1kp2kT99IC02iSHuU/preview"
+                title="Noble staff guide document"
+                loading="lazy"
+              ></iframe>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="app-modal project-modal" id="projectModal" hidden>
+    <button class="modal-backdrop" type="button" data-close-modal="projectModal" aria-label="Close project details"></button>
+    <section class="modal-panel project-modal-panel" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
+      <button class="modal-close" type="button" data-close-modal="projectModal" aria-label="Close">&times;</button>
+      <div class="project-modal-image">
+        <img src="img/dropcalc-preview.png" alt="Drop Path Lab map interface" />
+      </div>
+      <div class="project-modal-content">
+        <p class="eyebrow">Fortnite drop planning</p>
+        <h2 id="projectModalTitle">Drop Path Lab</h2>
+        <p>A terrain-aware Fortnite drop planner with an interactive map, saved locations, location requests, and ground-rush timing support.</p>
+        <div class="project-feature-list">
+          <span><b>Interactive map</b><small>Browse clustered landing spots around the island.</small></span>
+          <span><b>Saved drops</b><small>Keep personal drop plans together in My Drops.</small></span>
+          <span><b>Terrain aware</b><small>Designed around terrain and ground-rush timing.</small></span>
+        </div>
+        <a class="button button-primary" href="http://116.203.137.249/#map" target="_blank" rel="noopener noreferrer">Open Drop Path Lab <span aria-hidden="true">&#8599;</span></a>
+      </div>
+    </section>
+  </div>
+
+  <div class="app-modal schedule-modal" id="scheduleModal" hidden>
+    <button class="modal-backdrop" type="button" data-close-modal="scheduleModal" aria-label="Close schedule builder"></button>
+    <section class="modal-panel schedule-modal-panel" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle">
+      <header class="modal-header">
+        <div>
+          <p class="eyebrow">Discord announcement</p>
+          <h2 id="scheduleModalTitle">Session schedule</h2>
+          <p>Build every server's daily schedule without adding another crowded page.</p>
+        </div>
+        <button class="modal-close" type="button" data-close-modal="scheduleModal" aria-label="Close">&times;</button>
+      </header>
+
+      <div class="schedule-modal-tabs" role="tablist" aria-label="Schedule workspace">
+        <button class="is-active" type="button" data-schedule-tab="builder" role="tab" aria-selected="true">Build schedule</button>
+        <button type="button" data-schedule-tab="settings" role="tab" aria-selected="false">Preset settings</button>
+      </div>
+
+      <div class="schedule-tab-panel is-active" id="scheduleBuilderPanel" data-schedule-panel="builder">
+        <div class="schedule-builder-grid">
+          <div class="schedule-controls">
+            <div class="schedule-server-block">
+              <span class="field-label">Server</span>
+              <div class="schedule-server-buttons" id="scheduleServerButtons"></div>
+            </div>
+
+            <label class="field-block" for="scheduleDate">
+              <span class="field-label">Schedule date</span>
+              <input class="input" id="scheduleDate" type="date" />
+              <small>The heading date updates automatically; each Discord time stays local for every viewer.</small>
+            </label>
+
+            <div class="schedule-session-heading">
+              <div><span class="field-label">Sessions</span><small>Set every start time individually.</small></div>
+              <button class="button button-secondary button-small" id="addScheduleSession" type="button">+ Add session</button>
+            </div>
+            <div class="schedule-session-list" id="scheduleSessionRows"></div>
+          </div>
+
+          <div class="schedule-preview">
+            <div class="schedule-preview-head">
+              <div><span class="field-label">Discord preview</span><small>Dynamic date and timestamp syntax included.</small></div>
+              <span class="ready-badge"><span></span> Ready</span>
+            </div>
+            <textarea class="message-output schedule-output" id="scheduleAnnouncementText" readonly></textarea>
+            <button class="button button-primary button-full" id="copyScheduleAnnouncement" type="button">Copy schedule announcement</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="schedule-tab-panel" id="scheduleSettingsPanel" data-schedule-panel="settings" hidden>
+        <div class="schedule-settings-grid">
+          <aside class="schedule-settings-sidebar">
+            <span class="field-label">Edit server preset</span>
+            <div class="schedule-server-buttons is-vertical" id="scheduleSettingsServerButtons"></div>
+          </aside>
+          <div class="schedule-settings-form">
+            <div class="schedule-settings-fields">
+              <label class="field-block" for="scheduleTitleInput"><span class="field-label">Schedule title</span><input class="input" id="scheduleTitleInput" type="text" maxlength="80" /></label>
+              <label class="field-block" for="scheduleHeaderEmojiInput"><span class="field-label">Header emoji</span><input class="input" id="scheduleHeaderEmojiInput" type="text" maxlength="120" /></label>
+              <label class="field-block" for="scheduleArrowEmojiInput"><span class="field-label">Session arrow emoji</span><input class="input" id="scheduleArrowEmojiInput" type="text" maxlength="120" /></label>
+              <label class="field-block schedule-details-field" for="scheduleDetailsInput"><span class="field-label">More details link or channel</span><input class="input" id="scheduleDetailsInput" type="text" maxlength="300" /></label>
+            </div>
+            <label class="field-block" for="scheduleFooterInput"><span class="field-label">Footer note</span><textarea class="template-textarea schedule-small-textarea" id="scheduleFooterInput" spellcheck="false"></textarea></label>
+            <label class="field-block" for="scheduleTemplateInput"><span class="field-label">Full preset template</span><textarea class="template-textarea schedule-template-textarea" id="scheduleTemplateInput" spellcheck="false"></textarea><small>Available: {{header_emoji}}, {{title}}, {{date}}, {{sessions}}, {{details}}, {{footer}}</small></label>
+            <div class="schedule-settings-actions">
+              <button class="button button-secondary" id="resetSchedulePreset" type="button">Restore this preset</button>
+              <button class="button button-primary" id="saveScheduleSettings" type="button">Save schedule settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <aside class="staff-links-dock" id="staffLinksDock" aria-label="Staff quick links">
+    <section class="staff-links-panel" id="staffLinksPanel" aria-labelledby="staffLinksPanelTitle" hidden>
+      <header class="staff-links-panel-head">
+        <div>
+          <span class="staff-links-eyebrow">Noble workspace</span>
+          <h2 id="staffLinksPanelTitle">Staff links</h2>
+        </div>
+        <button class="staff-links-close" id="closeStaffLinks" type="button" aria-label="Close staff links">&times;</button>
+      </header>
+      <nav class="staff-links-list" id="staffLinksList" aria-label="Useful staff websites"></nav>
+      <button class="staff-links-manage" id="manageStaffLinks" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
+        Customize links
+      </button>
+    </section>
+    <button class="staff-links-toggle" id="toggleStaffLinks" type="button" aria-expanded="false" aria-controls="staffLinksPanel">
+      <span class="staff-links-toggle-icon">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></svg>
+      </span>
+      <span><small>Open quickly</small><b>Staff links</b></span>
+      <i id="staffLinksBadge">3</i>
+    </button>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
+</body>
+</html>
