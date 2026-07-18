@@ -124,6 +124,11 @@ const DEFAULT_STAFF_LINKS = [
     label: "Staff tickets",
     url: "https://nobleprac.com/tickets?tab=staff",
   },
+  {
+    id: "znturo",
+    label: "Znturo",
+    url: "https://znturo.com/",
+  },
 ];
 
 const SCHEDULE_DEFAULTS = {
@@ -345,6 +350,7 @@ const STORAGE = {
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
+  znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -2125,6 +2131,25 @@ function applyTwentyFourSevenDelayCorrection() {
   localStorage.setItem(STORAGE.twentyFourSevenDelayCorrection, "1");
 }
 
+function applyZnturoStaffLinkCorrection() {
+  if (localStorage.getItem(STORAGE.znturoStaffLinkCorrection) === "1") return;
+
+  const znturoDefault = DEFAULT_STAFF_LINKS.find((link) => link.id === "znturo");
+  const alreadyIncluded = state.staffLinks.some((link) => {
+    try {
+      return new URL(link.url).hostname.replace(/^www\./, "") === "znturo.com";
+    } catch {
+      return false;
+    }
+  });
+  if (!alreadyIncluded && state.staffLinks.length < 8 && znturoDefault) {
+    state.staffLinks.push({ ...znturoDefault });
+  }
+
+  localStorage.setItem(STORAGE.staffLinks, JSON.stringify(state.staffLinks));
+  localStorage.setItem(STORAGE.znturoStaffLinkCorrection, "1");
+}
+
 function loadPreferences() {
   try {
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
@@ -2150,6 +2175,7 @@ function loadPreferences() {
 
     const savedStaffLinks = localStorage.getItem(STORAGE.staffLinks);
     if (savedStaffLinks) state.staffLinks = sanitizeStaffLinks(JSON.parse(savedStaffLinks));
+    applyZnturoStaffLinkCorrection();
   } catch (error) {
     console.warn("Preferences could not be loaded", error);
   }
