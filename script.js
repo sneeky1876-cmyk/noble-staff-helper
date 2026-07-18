@@ -247,12 +247,12 @@ const DEFAULT_SETTINGS = {
   sessions: {
     solos: {
       modes: {
-        solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 110 },
+        solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
       },
     },
     solos_closed: {
       modes: {
-        solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 110 },
+        solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
       },
     },
     div0: {
@@ -311,7 +311,10 @@ function createDefaultTemplate(session, mode, secondLobby) {
   }
 
   if (secondLobby) {
-    lines.push("Required at least **{{first_reacts}}+ Reacts** (1 per {{unit}}).");
+    const reactionToken = session.value === "solos" || session.value === "solos_closed"
+      ? "second_reacts"
+      : "first_reacts";
+    lines.push(`Required at least **{{${reactionToken}}+ Reacts** (1 per {{unit}}).`);
   } else {
     lines.push(
       "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per {{unit}})."
@@ -338,6 +341,7 @@ const STORAGE = {
   settings: "nobleCustomSettingsV1",
   scheduleSettings: "nobleScheduleSettingsV1",
   staffLinks: "nobleStaffLinksV1",
+  solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -1300,7 +1304,7 @@ function renderTimeline() {
   byId("secondLobbyHint").textContent = `Registration shifts by ${state.settings.secondLobbyOffsetMinutes} minutes`;
 
   const summary = state.includeSecondLobby
-    ? `${config.firstReacts}+ required for this lobby`
+    ? `${state.sessionKind === "solos" || state.sessionKind === "solos_closed" ? config.secondReacts : config.firstReacts}+ required for this lobby`
     : `${config.firstReacts}+ for 1 lobby / ${config.secondReacts}+ for 2`;
   byId("reactTargetSummary").textContent = summary;
 }
@@ -1969,6 +1973,25 @@ function resetSettings() {
   showToast("Default settings restored");
 }
 
+function applySolosSecondLobbyCorrection() {
+  if (localStorage.getItem(STORAGE.solosSecondLobbyCorrection) === "1") return;
+
+  ["solos", "solos_closed"].forEach((sessionKind) => {
+    const config = state.settings.sessions?.[sessionKind]?.modes?.solos;
+    if (!config) return;
+    if (config.secondReacts === 110) config.secondReacts = 200;
+    if (typeof config.templates?.second === "string") {
+      config.templates.second = config.templates.second.replace(
+        "Required at least **{{first_reacts}}+ Reacts** (1 per {{unit}}).",
+        "Required at least **{{second_reacts}}+ Reacts** (1 per {{unit}})."
+      );
+    }
+  });
+
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.solosSecondLobbyCorrection, "1");
+}
+
 function loadPreferences() {
   try {
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
@@ -1980,6 +2003,7 @@ function loadPreferences() {
 
     const savedSettings = localStorage.getItem(STORAGE.settings);
     if (savedSettings) state.settings = mergeSavedSettings(JSON.parse(savedSettings));
+    applySolosSecondLobbyCorrection();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
