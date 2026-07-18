@@ -696,6 +696,7 @@ function setStaffLinksOpen(open) {
   panel.hidden = !state.staffLinksOpen;
   dock.classList.toggle("is-open", state.staffLinksOpen);
   toggle.setAttribute("aria-expanded", String(state.staffLinksOpen));
+  toggle.setAttribute("aria-label", `${state.staffLinksOpen ? "Close" : "Open"} staff quick links`);
 }
 
 function renderStaffLinksDock() {
@@ -924,7 +925,8 @@ function setView(view, updateHash = true) {
     // Browser storage is optional.
   }
 
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  const instantNavigation = window.matchMedia("(max-width: 980px), (prefers-reduced-motion: reduce)").matches;
+  window.scrollTo({ top: 0, behavior: instantNavigation ? "auto" : "smooth" });
 }
 
 function getSchedulePreset(key = state.scheduleServer) {

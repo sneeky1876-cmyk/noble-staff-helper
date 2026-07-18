@@ -15,9 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260718-10" />
+  <link rel="stylesheet" href="styles.css?v=20260718-11" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260718-10" defer></script>
+  <script src="script.js?v=20260718-11" defer></script>
 </head>
 
 <body>
@@ -67,11 +67,11 @@
 
       <div class="sidebar-config">
         <span class="sidebar-config-label">Configuration</span>
-        <button class="nav-item settings-entry" type="button" data-view="settings" aria-label="Experience settings">
+          <button class="nav-item settings-entry" type="button" data-view="settings" aria-label="Settings">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>
           <span>
-            <b>Experience settings</b>
-            <small>Customize your workspace</small>
+              <b>Settings</b>
+              <small>Customize workspace</small>
           </span>
         </button>
       </div>
@@ -105,7 +105,7 @@
           <h2 id="activeViewTitle">Session builder</h2>
         </div>
         <div class="topbar-actions">
-          <button class="schedule-launch" id="openScheduleModal" type="button">
+          <button class="schedule-launch" id="openScheduleModal" type="button" aria-label="Open session schedule">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v3M18 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="M8 12h3v3H8z"/></svg>
             <span><small>Announcement tool</small><b>Session schedule</b></span>
           </button>
@@ -878,7 +878,7 @@
         Customize links
       </button>
     </section>
-    <button class="staff-links-toggle" id="toggleStaffLinks" type="button" aria-expanded="false" aria-controls="staffLinksPanel">
+    <button class="staff-links-toggle" id="toggleStaffLinks" type="button" aria-label="Open staff quick links" aria-expanded="false" aria-controls="staffLinksPanel">
       <span class="staff-links-toggle-icon">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.5.5l2-2a5 5 0 0 0-7-7l-1.1 1.1"/><path d="M14 11a5 5 0 0 0-7.5-.5l-2 2a5 5 0 0 0 7 7l1.1-1.1"/></svg>
       </span>
