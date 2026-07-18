@@ -2249,10 +2249,10 @@ function initialize() {
     state.scrimQueueType = state.settings.scrimCategories[0].id;
   }
   state.settingsScrimCategoryId = state.scrimQueueType;
-  setTimezoneLabel();
-  configureCreatorLink();
-  bindEvents();
 
+  // Seed every time-dependent view before binding the rest of the interface.
+  // This keeps the registration time usable even if a later optional control
+  // is unavailable or the browser still has stale markup in its cache.
   const now = new Date();
   state.scheduleDate = localDateString(now);
   state.unix = Math.floor(now.getTime() / 1000);
@@ -2262,6 +2262,10 @@ function initialize() {
 
   state.scrimUnix = computeNextScrimUnix(state.scrimQueueType);
   byId("scrimTimeInput").value = dateTimeStringFromDate(new Date(state.scrimUnix * 1000));
+
+  setTimezoneLabel();
+  configureCreatorLink();
+  bindEvents();
 
   renderBuilder();
   renderScrims();
