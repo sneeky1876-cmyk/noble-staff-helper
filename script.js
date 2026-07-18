@@ -257,8 +257,8 @@ const DEFAULT_SETTINGS = {
     },
     div0: {
       modes: {
-        duos: { delayMinutes: 20, firstReacts: 55, secondReacts: 110 },
-        squads: { delayMinutes: 20, firstReacts: 25, secondReacts: 50 },
+        duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
+        squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
       },
     },
     div2: {
@@ -342,6 +342,7 @@ const STORAGE = {
   scheduleSettings: "nobleScheduleSettingsV1",
   staffLinks: "nobleStaffLinksV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
+  div0DelayCorrection: "nobleDiv0Delay15V1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -1991,6 +1992,18 @@ function applySolosSecondLobbyCorrection() {
   localStorage.setItem(STORAGE.solosSecondLobbyCorrection, "1");
 }
 
+function applyDiv0DelayCorrection() {
+  if (localStorage.getItem(STORAGE.div0DelayCorrection) === "1") return;
+
+  ["duos", "squads"].forEach((mode) => {
+    const config = state.settings.sessions?.div0?.modes?.[mode];
+    if (config?.delayMinutes === 20) config.delayMinutes = 15;
+  });
+
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.div0DelayCorrection, "1");
+}
+
 function loadPreferences() {
   try {
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
@@ -2003,6 +2016,7 @@ function loadPreferences() {
     const savedSettings = localStorage.getItem(STORAGE.settings);
     if (savedSettings) state.settings = mergeSavedSettings(JSON.parse(savedSettings));
     applySolosSecondLobbyCorrection();
+    applyDiv0DelayCorrection();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
