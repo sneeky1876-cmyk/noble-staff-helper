@@ -859,16 +859,15 @@ function markSettingsDirty() {
 
 function getViewFromHash() {
   const view = window.location.hash.replace(/^#/, "");
-  return ["builder", "scrims", "extension", "projects", "settings", "guide"].includes(view) ? view : "builder";
+  return ["builder", "scrims", "extension", "settings", "guide"].includes(view) ? view : "builder";
 }
 
 function setView(view, updateHash = true) {
-  const validView = ["builder", "scrims", "extension", "projects", "settings", "guide"].includes(view) ? view : "builder";
+  const validView = ["builder", "scrims", "extension", "settings", "guide"].includes(view) ? view : "builder";
   const titles = {
     builder: "Session builder",
     scrims: "Practice scrims",
     extension: "Noble web extension",
-    projects: "My projects",
     settings: "Experience settings",
     guide: "Noble staff guide",
   };
@@ -2114,8 +2113,6 @@ function bindEvents() {
   byId("copyScrimConclude").addEventListener("click", () => {
     copyText(byId("scrimConcludeText").value, "Conclude message copied");
   });
-  byId("openExtensionProject").addEventListener("click", () => setView("extension"));
-  byId("openDropProject").addEventListener("click", () => openAppModal("projectModal"));
   byId("openScheduleModal").addEventListener("click", () => {
     renderScheduleBuilder();
     setScheduleTab("builder");

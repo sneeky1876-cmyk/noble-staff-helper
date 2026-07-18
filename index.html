@@ -63,13 +63,6 @@
             <small>Video &amp; handbook</small>
           </span>
         </button>
-        <button class="nav-item" type="button" data-view="projects">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg>
-          <span>
-            <b>My projects</b>
-            <small>Extension &amp; drop tools</small>
-          </span>
-        </button>
       </nav>
 
       <div class="sidebar-config">
@@ -681,45 +674,6 @@
         </section>
       </section>
 
-      <section class="view" id="view-projects" data-view-panel="projects" hidden>
-        <div class="view-hero compact-hero projects-hero">
-          <div class="hero-copy">
-            <p class="eyebrow">Made by Sneeky</p>
-            <h1>My projects</h1>
-            <p class="hero-text">Two focused tools for Noble staff workflows, from site moderation to better Fortnite drops.</p>
-          </div>
-          <img class="projects-hero-logo" src="img/noble-helper-logo.png" alt="" />
-        </div>
-
-        <div class="projects-grid">
-          <article class="surface project-card project-extension-card">
-            <div class="project-visual extension-project-visual">
-              <img src="img/noble-helper-logo.png" alt="Noble Staff Helper crown" />
-              <span>Chrome extension</span>
-            </div>
-            <div class="project-body">
-              <p class="section-kicker">NoblePrac workflow</p>
-              <h3>Noble Staff Helper Extension</h3>
-              <p>Adds player cards, creator-code checks, clean map capture, and leaderboard copy actions directly to NoblePrac.</p>
-              <button class="button button-primary project-action" id="openExtensionProject" type="button">View extension</button>
-            </div>
-          </article>
-
-          <article class="surface project-card project-drop-card">
-            <div class="project-visual">
-              <img src="img/dropcalc-preview.png" alt="Drop Path Lab Fortnite map" />
-              <span>Web app</span>
-            </div>
-            <div class="project-body">
-              <p class="section-kicker">Fortnite drop planning</p>
-              <h3>Drop Path Lab</h3>
-              <p>A terrain-aware drop planner for exploring saved landing locations and preparing more consistent routes.</p>
-              <button class="button button-primary project-action" id="openDropProject" type="button">Project details</button>
-            </div>
-          </article>
-        </div>
-      </section>
-
       <section class="view" id="view-guide" data-view-panel="guide" hidden>
         <div class="view-hero compact-hero guide-hero">
           <div class="hero-copy">
@@ -781,27 +735,6 @@
         </div>
       </section>
     </main>
-  </div>
-
-  <div class="app-modal project-modal" id="projectModal" hidden>
-    <button class="modal-backdrop" type="button" data-close-modal="projectModal" aria-label="Close project details"></button>
-    <section class="modal-panel project-modal-panel" role="dialog" aria-modal="true" aria-labelledby="projectModalTitle">
-      <button class="modal-close" type="button" data-close-modal="projectModal" aria-label="Close">&times;</button>
-      <div class="project-modal-image">
-        <img src="img/dropcalc-preview.png" alt="Drop Path Lab map interface" />
-      </div>
-      <div class="project-modal-content">
-        <p class="eyebrow">Fortnite drop planning</p>
-        <h2 id="projectModalTitle">Drop Path Lab</h2>
-        <p>A terrain-aware Fortnite drop planner with an interactive map, saved locations, location requests, and ground-rush timing support.</p>
-        <div class="project-feature-list">
-          <span><b>Interactive map</b><small>Browse clustered landing spots around the island.</small></span>
-          <span><b>Saved drops</b><small>Keep personal drop plans together in My Drops.</small></span>
-          <span><b>Terrain aware</b><small>Designed around terrain and ground-rush timing.</small></span>
-        </div>
-        <a class="button button-primary" href="http://116.203.137.249/#map" target="_blank" rel="noopener noreferrer">Open Drop Path Lab <span aria-hidden="true">&#8599;</span></a>
-      </div>
-    </section>
   </div>
 
   <div class="app-modal schedule-modal" id="scheduleModal" hidden>
