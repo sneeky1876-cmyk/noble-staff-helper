@@ -335,6 +335,7 @@ SESSION_KINDS.forEach((session) => {
 
 const STORAGE = {
   discordId: "nobleDiscordId",
+  recentHostIds: "nobleRecentHostIdsV1",
   announceMode: "nobleAnnounceMode",
   timestampHelper: "nobleTimestampHelper",
   lastView: "nobleLastPage",
@@ -353,6 +354,9 @@ const state = {
   sessionKind: "solos",
   queueType: "duos",
   discordId: "",
+  additionalHostIds: [],
+  recentHostIds: [],
+  additionalHostComposerOpen: false,
   announceMode: true,
   includeSecondLobby: false,
   sessionNumber: "1",
@@ -449,6 +453,16 @@ function clampInteger(value, fallback, minimum, maximum) {
 
 function sanitizeTime(value, fallback) {
   return typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value) ? value : fallback;
+}
+
+function normalizeDiscordId(value) {
+  const id = String(value || "").trim();
+  return /^\d{15,22}$/.test(id) ? id : "";
+}
+
+function sanitizeRecentHostIds(value) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(value.map(normalizeDiscordId).filter(Boolean))].slice(0, 5);
 }
 
 function sanitizeScrimCategory(category, fallback, usedIds) {
@@ -1246,6 +1260,11 @@ function renderSessionCards() {
     button.append(image, copy);
 
     button.addEventListener("click", () => {
+      if (state.sessionKind !== session.value) {
+        state.additionalHostIds = [];
+        state.additionalHostComposerOpen = false;
+        byId("additionalHostId").value = "";
+      }
       state.sessionKind = session.value;
       renderBuilder();
     });
@@ -1259,6 +1278,78 @@ function renderSessionNumberField() {
   const input = byId("sessionNumberInput");
   field.hidden = state.sessionKind !== "247";
   input.value = state.sessionNumber;
+}
+
+function saveRecentHostIds() {
+  try {
+    localStorage.setItem(STORAGE.recentHostIds, JSON.stringify(state.recentHostIds));
+  } catch {
+    // Browser storage is optional.
+  }
+}
+
+function addAdditionalHost(value) {
+  const id = normalizeDiscordId(value);
+  if (!id) {
+    showToast("Enter a valid numeric Discord user ID");
+    return;
+  }
+  if (id === state.discordId.trim() || state.additionalHostIds.includes(id)) {
+    showToast("This host is already included");
+    return;
+  }
+  if (state.additionalHostIds.length >= 4) {
+    showToast("You can add up to four additional hosts");
+    return;
+  }
+
+  state.additionalHostIds.push(id);
+  state.recentHostIds = [id, ...state.recentHostIds.filter((recentId) => recentId !== id)].slice(0, 5);
+  byId("additionalHostId").value = "";
+  saveRecentHostIds();
+  renderAdditionalHosts();
+  renderAnnouncement();
+}
+
+function removeAdditionalHost(id) {
+  state.additionalHostIds = state.additionalHostIds.filter((hostId) => hostId !== id);
+  renderAdditionalHosts();
+  renderAnnouncement();
+}
+
+function renderAdditionalHosts() {
+  const chips = byId("additionalHostChips");
+  const composer = byId("additionalHostComposer");
+  const toggle = byId("toggleAdditionalHost");
+  const recent = byId("recentHosts");
+  const recentButtons = byId("recentHostButtons");
+
+  chips.replaceChildren();
+  state.additionalHostIds.forEach((id) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "additional-host-chip";
+    button.setAttribute("aria-label", `Remove additional host ${id}`);
+    button.innerHTML = `<span>&lt;@${id}&gt;</span><span aria-hidden="true">&times;</span>`;
+    button.addEventListener("click", () => removeAdditionalHost(id));
+    chips.appendChild(button);
+  });
+  chips.hidden = state.additionalHostIds.length === 0;
+
+  composer.hidden = !state.additionalHostComposerOpen;
+  toggle.setAttribute("aria-expanded", String(state.additionalHostComposerOpen));
+  toggle.classList.toggle("is-open", state.additionalHostComposerOpen);
+
+  recentButtons.replaceChildren();
+  state.recentHostIds.forEach((id) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "recent-host-button";
+    button.textContent = `<@${id}>`;
+    button.addEventListener("click", () => addAdditionalHost(id));
+    recentButtons.appendChild(button);
+  });
+  recent.hidden = state.recentHostIds.length === 0;
 }
 
 function renderQueueButtons() {
@@ -1409,7 +1500,8 @@ function buildAnnouncementText() {
   const registrationUnix = state.unix + offset * 60;
   const firstGameUnix = registrationUnix + config.delayMinutes * 60;
   const queueSuffix = mode === "squads" ? " (Squads)" : "";
-  const host = state.discordId.trim() ? `<@${state.discordId.trim()}>` : "<@USER>";
+  const hostIds = [...new Set([state.discordId.trim(), ...state.additionalHostIds].filter(Boolean))];
+  const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
   const unit = mode === "squads" ? "squad" : mode === "duos" ? "duo" : "player";
   const templateKey = state.includeSecondLobby ? "second" : "primary";
   const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, state.includeSecondLobby);
@@ -1465,6 +1557,7 @@ function renderBuilder() {
   renderMinuteAdjustButtons();
   renderSessionCards();
   renderSessionNumberField();
+  renderAdditionalHosts();
   renderQueueButtons();
   renderTimeline();
   renderAnnouncement();
@@ -2037,6 +2130,9 @@ function loadPreferences() {
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
     if (savedDiscordId) state.discordId = savedDiscordId;
 
+    const savedRecentHostIds = localStorage.getItem(STORAGE.recentHostIds);
+    if (savedRecentHostIds) state.recentHostIds = sanitizeRecentHostIds(JSON.parse(savedRecentHostIds));
+
     const savedAnnounceMode = localStorage.getItem(STORAGE.announceMode);
     if (savedAnnounceMode === "0") state.announceMode = false;
     if (savedAnnounceMode === "1") state.announceMode = true;
@@ -2115,13 +2211,28 @@ function bindEvents() {
   });
   byId("discordId").addEventListener("input", (event) => {
     state.discordId = event.target.value.trim();
+    state.additionalHostIds = state.additionalHostIds.filter((id) => id !== state.discordId);
     try {
       if (state.discordId) localStorage.setItem(STORAGE.discordId, state.discordId);
       else localStorage.removeItem(STORAGE.discordId);
     } catch {
       // Browser storage is optional.
     }
+    renderAdditionalHosts();
     renderAnnouncement();
+  });
+  byId("toggleAdditionalHost").addEventListener("click", () => {
+    state.additionalHostComposerOpen = !state.additionalHostComposerOpen;
+    renderAdditionalHosts();
+    if (state.additionalHostComposerOpen) byId("additionalHostId").focus();
+  });
+  byId("addAdditionalHost").addEventListener("click", () => {
+    addAdditionalHost(byId("additionalHostId").value);
+  });
+  byId("additionalHostId").addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    addAdditionalHost(event.target.value);
   });
   byId("announceMode").addEventListener("change", (event) => {
     state.announceMode = event.target.checked;

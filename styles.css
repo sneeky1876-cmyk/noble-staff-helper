@@ -882,6 +882,148 @@ svg {
   gap: 24px;
 }
 
+.host-field-stack {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.additional-hosts {
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface-soft);
+}
+
+.additional-hosts-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.additional-hosts-head b {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.additional-hosts-head small {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.62rem;
+  line-height: 1.4;
+}
+
+.add-host-toggle {
+  display: inline-flex;
+  min-height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--muted-bright);
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.add-host-toggle span {
+  color: var(--gold);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.add-host-toggle:hover,
+.add-host-toggle.is-open {
+  border-color: var(--gold-line);
+  background: var(--gold-soft);
+  color: var(--text);
+}
+
+.additional-host-chips,
+.recent-host-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.additional-host-chips {
+  margin-top: 10px;
+}
+
+.additional-host-chip,
+.recent-host-button {
+  min-height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--muted-bright);
+  font-family: var(--body);
+  font-size: 0.62rem;
+  cursor: pointer;
+  transition: 150ms ease;
+}
+
+.additional-host-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-color: var(--gold-line);
+  background: var(--gold-soft);
+  color: var(--text);
+}
+
+.additional-host-chip span:last-child {
+  color: var(--gold);
+  font-size: 0.85rem;
+}
+
+.additional-host-chip:hover,
+.recent-host-button:hover {
+  border-color: var(--gold-line);
+  color: var(--gold);
+}
+
+.additional-host-composer {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.additional-host-composer[hidden],
+.additional-host-chips[hidden],
+.recent-hosts[hidden] {
+  display: none;
+}
+
+.additional-host-input-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.additional-host-input-row .input,
+.additional-host-input-row .button {
+  min-height: 38px;
+}
+
+.recent-hosts {
+  margin-top: 10px;
+}
+
+.recent-hosts .field-label {
+  display: block;
+  margin-bottom: 7px;
+}
+
 .field-block {
   display: block;
 }

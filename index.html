@@ -15,9 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260718-8" />
+  <link rel="stylesheet" href="styles.css?v=20260718-9" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260718-8" defer></script>
+  <script src="script.js?v=20260718-9" defer></script>
 </head>
 
 <body>
@@ -202,18 +202,53 @@
               </div>
 
               <div class="host-grid">
-                <label class="field-block" for="discordId">
-                  <span class="field-label">Your Discord user ID</span>
-                  <input
-                    id="discordId"
-                    class="input"
-                    type="text"
-                    inputmode="numeric"
-                    autocomplete="off"
-                    placeholder="616671756471762944"
-                  />
-                  <small>Stored only in this browser and inserted as the session host.</small>
-                </label>
+                <div class="host-field-stack">
+                  <label class="field-block" for="discordId">
+                    <span class="field-label">Your Discord user ID</span>
+                    <input
+                      id="discordId"
+                      class="input"
+                      type="text"
+                      inputmode="numeric"
+                      autocomplete="off"
+                      placeholder="616671756471762944"
+                    />
+                    <small>Stored only in this browser and inserted as the main session host.</small>
+                  </label>
+
+                  <div class="additional-hosts">
+                    <div class="additional-hosts-head">
+                      <span>
+                        <b>Additional hosts</b>
+                        <small>Temporary — cleared on refresh or when you switch servers.</small>
+                      </span>
+                      <button class="add-host-toggle" id="toggleAdditionalHost" type="button" aria-expanded="false">
+                        <span aria-hidden="true">+</span> Add host
+                      </button>
+                    </div>
+
+                    <div class="additional-host-chips" id="additionalHostChips" hidden></div>
+
+                    <div class="additional-host-composer" id="additionalHostComposer" hidden>
+                      <div class="additional-host-input-row">
+                        <input
+                          id="additionalHostId"
+                          class="input"
+                          type="text"
+                          inputmode="numeric"
+                          autocomplete="off"
+                          placeholder="Discord user ID"
+                          aria-label="Additional host Discord user ID"
+                        />
+                        <button class="button button-secondary" id="addAdditionalHost" type="button">Add</button>
+                      </div>
+                      <div class="recent-hosts" id="recentHosts" hidden>
+                        <span class="field-label">Recently used</span>
+                        <div class="recent-host-buttons" id="recentHostButtons"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div class="toggle-stack">
                   <label class="toggle-row" for="announceMode">
