@@ -15,9 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260718-7" />
+  <link rel="stylesheet" href="styles.css?v=20260718-8" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260718-7" defer></script>
+  <script src="script.js?v=20260718-8" defer></script>
 </head>
 
 <body>
@@ -173,6 +173,23 @@
                 </div>
               </div>
               <div class="session-grid" id="sessionCards"></div>
+              <label class="session-number-card" id="sessionNumberCard" for="sessionNumberInput" hidden>
+                <span>
+                  <span class="field-label">24/7 session number</span>
+                  <small>Added to the announcement title. Defaults to Session 1.</small>
+                </span>
+                <input
+                  id="sessionNumberInput"
+                  class="input"
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  max="9999"
+                  value="1"
+                  placeholder="1"
+                  aria-label="24/7 session number"
+                />
+              </label>
             </section>
 
             <section class="surface control-section">

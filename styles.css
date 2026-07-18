@@ -842,6 +842,40 @@ svg {
   font-size: 0.65rem;
 }
 
+.session-number-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--gold-line);
+  border-radius: 11px;
+  background: linear-gradient(115deg, var(--gold-soft), rgba(255, 255, 255, 0.018));
+}
+
+.session-number-card[hidden] {
+  display: none;
+}
+
+.session-number-card > span {
+  min-width: 0;
+}
+
+.session-number-card small {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.66rem;
+  line-height: 1.4;
+}
+
+.session-number-card .input {
+  width: 92px;
+  min-width: 92px;
+  text-align: center;
+}
+
 .host-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);

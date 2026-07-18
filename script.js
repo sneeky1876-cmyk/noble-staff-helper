@@ -275,8 +275,8 @@ const DEFAULT_SETTINGS = {
     },
     "247": {
       modes: {
-        duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
-        squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
+        duos: { delayMinutes: 20, firstReacts: 55, secondReacts: 110 },
+        squads: { delayMinutes: 20, firstReacts: 25, secondReacts: 50 },
       },
     },
   },
@@ -343,6 +343,7 @@ const STORAGE = {
   staffLinks: "nobleStaffLinksV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
   div0DelayCorrection: "nobleDiv0Delay15V1",
+  twentyFourSevenDelayCorrection: "noble247Delay20V1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -354,6 +355,7 @@ const state = {
   discordId: "",
   announceMode: true,
   includeSecondLobby: false,
+  sessionNumber: "1",
   settings: cloneDefaults(),
   settingsDirty: false,
   templateSessionKind: "solos",
@@ -519,6 +521,10 @@ function getModeLabel(mode) {
 
 function getSessionSettings(sessionKind = state.sessionKind, mode = getMode(sessionKind)) {
   return state.settings.sessions[sessionKind].modes[mode];
+}
+
+function getTwentyFourSevenSessionNumber() {
+  return clampInteger(state.sessionNumber, 1, 1, 9999);
 }
 
 function mergeSavedSettings(saved) {
@@ -1248,6 +1254,13 @@ function renderSessionCards() {
   });
 }
 
+function renderSessionNumberField() {
+  const field = byId("sessionNumberCard");
+  const input = byId("sessionNumberInput");
+  field.hidden = state.sessionKind !== "247";
+  input.value = state.sessionNumber;
+}
+
 function renderQueueButtons() {
   const block = byId("queueTypeBlock");
   const container = byId("queueButtons");
@@ -1401,7 +1414,9 @@ function buildAnnouncementText() {
   const templateKey = state.includeSecondLobby ? "second" : "primary";
   const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, state.includeSecondLobby);
   const values = {
-    session_title: session.title,
+    session_title: session.value === "247"
+      ? `Noble 24/7 Session ${getTwentyFourSevenSessionNumber()}`
+      : session.title,
     mode: getModeLabel(mode),
     mode_suffix: queueSuffix,
     emoji: session.emoji,
@@ -1449,6 +1464,7 @@ function renderBuilder() {
   renderQuickTimes();
   renderMinuteAdjustButtons();
   renderSessionCards();
+  renderSessionNumberField();
   renderQueueButtons();
   renderTimeline();
   renderAnnouncement();
@@ -2004,6 +2020,18 @@ function applyDiv0DelayCorrection() {
   localStorage.setItem(STORAGE.div0DelayCorrection, "1");
 }
 
+function applyTwentyFourSevenDelayCorrection() {
+  if (localStorage.getItem(STORAGE.twentyFourSevenDelayCorrection) === "1") return;
+
+  ["duos", "squads"].forEach((mode) => {
+    const config = state.settings.sessions?.["247"]?.modes?.[mode];
+    if (config?.delayMinutes === 15) config.delayMinutes = 20;
+  });
+
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.twentyFourSevenDelayCorrection, "1");
+}
+
 function loadPreferences() {
   try {
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
@@ -2017,6 +2045,7 @@ function loadPreferences() {
     if (savedSettings) state.settings = mergeSavedSettings(JSON.parse(savedSettings));
     applySolosSecondLobbyCorrection();
     applyDiv0DelayCorrection();
+    applyTwentyFourSevenDelayCorrection();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
@@ -2106,6 +2135,16 @@ function bindEvents() {
   byId("secondLobby").addEventListener("change", (event) => {
     state.includeSecondLobby = event.target.checked;
     renderTimeline();
+    renderAnnouncement();
+  });
+  byId("sessionNumberInput").addEventListener("input", (event) => {
+    state.sessionNumber = event.target.value.replace(/\D/g, "").slice(0, 4);
+    event.target.value = state.sessionNumber;
+    renderAnnouncement();
+  });
+  byId("sessionNumberInput").addEventListener("blur", (event) => {
+    state.sessionNumber = String(getTwentyFourSevenSessionNumber());
+    event.target.value = state.sessionNumber;
     renderAnnouncement();
   });
   byId("copyAnnouncement").addEventListener("click", () => {
