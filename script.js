@@ -107,6 +107,26 @@ const INTERFACE_TRANSLATIONS = {
     "Website URL": "Website-URL",
     Remove: "Entfernen",
     "Language updated": "Sprache aktualisiert",
+    "Announcement check": "Ankündigungsprüfung",
+    "Checking the current session": "Aktuelle Session wird geprüft",
+    "Session history": "Session-Verlauf",
+    "Copied announcements can be restored or copied again.": "Kopierte Ankündigungen können wiederhergestellt oder erneut kopiert werden.",
+    "Stored only on this device": "Nur auf diesem Gerät gespeichert",
+    "Clear history": "Verlauf löschen",
+    "Configuration backup": "Konfigurationssicherung",
+    "Move settings between devices": "Einstellungen zwischen Geräten übertragen",
+    "Export configuration": "Konfiguration exportieren",
+    "Download a safe snapshot of the current setup.": "Eine sichere Kopie der aktuellen Einstellungen herunterladen.",
+    "Download backup": "Sicherung herunterladen",
+    "Import configuration": "Konfiguration importieren",
+    "Review and replace this device's current setup.": "Die aktuellen Einstellungen dieses Geräts prüfen und ersetzen.",
+    "Choose JSON file": "JSON-Datei auswählen",
+    "Ready to export": "Bereit zum Export",
+    "No copied announcements yet": "Noch keine kopierten Ankündigungen",
+    "A session appears here after it passes preflight and is copied.": "Eine Session erscheint hier, nachdem sie geprüft und kopiert wurde.",
+    Restore: "Wiederherstellen",
+    "Copy again": "Erneut kopieren",
+    Delete: "Löschen",
   },
   fr: {
     "Staff workspace": "Espace du staff",
@@ -195,6 +215,26 @@ const INTERFACE_TRANSLATIONS = {
     "Website URL": "URL du site",
     Remove: "Supprimer",
     "Language updated": "Langue mise à jour",
+    "Announcement check": "Vérification de l'annonce",
+    "Checking the current session": "Vérification de la session actuelle",
+    "Session history": "Historique des sessions",
+    "Copied announcements can be restored or copied again.": "Les annonces copiées peuvent être restaurées ou recopiées.",
+    "Stored only on this device": "Stocké uniquement sur cet appareil",
+    "Clear history": "Effacer l'historique",
+    "Configuration backup": "Sauvegarde de configuration",
+    "Move settings between devices": "Transférer les paramètres entre appareils",
+    "Export configuration": "Exporter la configuration",
+    "Download a safe snapshot of the current setup.": "Télécharger une copie sûre de la configuration actuelle.",
+    "Download backup": "Télécharger la sauvegarde",
+    "Import configuration": "Importer la configuration",
+    "Review and replace this device's current setup.": "Vérifier et remplacer la configuration actuelle de cet appareil.",
+    "Choose JSON file": "Choisir un fichier JSON",
+    "Ready to export": "Prêt à exporter",
+    "No copied announcements yet": "Aucune annonce copiée",
+    "A session appears here after it passes preflight and is copied.": "Une session apparaît ici après vérification et copie.",
+    Restore: "Restaurer",
+    "Copy again": "Copier à nouveau",
+    Delete: "Supprimer",
   },
   es: {
     "Staff workspace": "Espacio del staff",
@@ -283,6 +323,26 @@ const INTERFACE_TRANSLATIONS = {
     "Website URL": "URL del sitio",
     Remove: "Eliminar",
     "Language updated": "Idioma actualizado",
+    "Announcement check": "Comprobación del anuncio",
+    "Checking the current session": "Comprobando la sesión actual",
+    "Session history": "Historial de sesiones",
+    "Copied announcements can be restored or copied again.": "Los anuncios copiados se pueden restaurar o volver a copiar.",
+    "Stored only on this device": "Guardado solo en este dispositivo",
+    "Clear history": "Borrar historial",
+    "Configuration backup": "Copia de configuración",
+    "Move settings between devices": "Mover ajustes entre dispositivos",
+    "Export configuration": "Exportar configuración",
+    "Download a safe snapshot of the current setup.": "Descarga una copia segura de la configuración actual.",
+    "Download backup": "Descargar copia",
+    "Import configuration": "Importar configuración",
+    "Review and replace this device's current setup.": "Revisa y reemplaza la configuración actual de este dispositivo.",
+    "Choose JSON file": "Elegir archivo JSON",
+    "Ready to export": "Listo para exportar",
+    "No copied announcements yet": "Todavía no hay anuncios copiados",
+    "A session appears here after it passes preflight and is copied.": "Una sesión aparecerá aquí después de comprobarla y copiarla.",
+    Restore: "Restaurar",
+    "Copy again": "Copiar otra vez",
+    Delete: "Eliminar",
   },
 };
 
@@ -649,6 +709,7 @@ const STORAGE = {
   scheduleSettings: "nobleScheduleSettingsV1",
   staffLinks: "nobleStaffLinksV1",
   sessionOrder: "nobleSessionOrderV1",
+  announcementHistory: "nobleAnnouncementHistoryV1",
   language: "nobleInterfaceLanguageV1",
   timeFormat: "nobleTimeFormatV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
@@ -692,6 +753,7 @@ const state = {
   staffLinksOpen: false,
   language: "en",
   timeFormat: getPreferredTimeFormat(),
+  announcementHistory: [],
 };
 
 let toastTimer = null;
@@ -778,6 +840,7 @@ function refreshLocaleSensitiveViews() {
   renderScrims();
   renderScheduleBuilder();
   renderScheduleSettings();
+  renderAnnouncementHistory();
   const titles = {
     builder: "Session builder",
     schedule: "Session schedule",
@@ -1074,7 +1137,7 @@ function showToast(message) {
 }
 
 async function copyText(text, successMessage = "Copied to clipboard") {
-  if (!text) return;
+  if (!text) return false;
   try {
     if (navigator.clipboard?.writeText) {
       await navigator.clipboard.writeText(text);
@@ -1089,9 +1152,11 @@ async function copyText(text, successMessage = "Copied to clipboard") {
       temporary.remove();
     }
     showToast(successMessage);
+    return true;
   } catch (error) {
     console.error(error);
     showToast("Clipboard access was blocked");
+    return false;
   }
 }
 
@@ -2263,6 +2328,257 @@ function buildAnnouncementText() {
   );
 }
 
+function isDiscordUserId(value) {
+  return /^\d{17,20}$/.test(String(value || "").trim());
+}
+
+function getAnnouncementPreflight() {
+  if (!state.announceMode) {
+    return [{ label: "Announcement builder", detail: "Turn on Build announcement first.", passed: false, blocking: true }];
+  }
+  if (state.unix === null) {
+    return [{ label: "Registration time", detail: "Choose a date and time first.", passed: false, blocking: true }];
+  }
+
+  const config = getSessionSettings();
+  const offset = getLobbyOffsetMinutes();
+  const registrationUnix = state.unix + offset * 60;
+  const firstGameUnix = registrationUnix + config.delayMinutes * 60;
+  const hostIds = [state.discordId.trim(), ...state.additionalHostIds].filter(Boolean);
+  const uniqueHostIds = new Set(hostIds);
+  const hostIdsValid = hostIds.length > 0 && hostIds.every(isDiscordUserId) && uniqueHostIds.size === hostIds.length;
+  const registrationValid = registrationUnix >= Math.floor(Date.now() / 1000) - 60;
+  const timingValid = Number.isFinite(firstGameUnix) && config.delayMinutes > 0 && firstGameUnix > registrationUnix;
+  const message = buildAnnouncementText();
+  const templateValid = Boolean(message) && !/\{\{[a-z_]+\}\}/i.test(message);
+  const reactionsValid = config.firstReacts > 0 && config.secondReacts >= config.firstReacts;
+
+  return [
+    {
+      label: "Session host",
+      detail: hostIdsValid
+        ? `${hostIds.length} valid Discord ${hostIds.length === 1 ? "ID" : "IDs"}`
+        : hostIds.length
+          ? "Use unique 17–20 digit Discord user IDs."
+          : "Add the main host's Discord user ID.",
+      passed: hostIdsValid,
+      blocking: true,
+    },
+    {
+      label: "Registration timestamp",
+      detail: registrationValid ? `${formatClock(registrationUnix)} is ready to post.` : "The registration time is already in the past.",
+      passed: registrationValid,
+      blocking: true,
+    },
+    {
+      label: "Session timing",
+      detail: timingValid ? `First game follows ${config.delayMinutes} minutes later.` : "The first-game delay must be greater than zero.",
+      passed: timingValid,
+      blocking: true,
+    },
+    {
+      label: "Message template",
+      detail: templateValid ? "All dynamic values were filled." : "A placeholder or template value is still unresolved.",
+      passed: templateValid,
+      blocking: true,
+    },
+    {
+      label: "Reaction goals",
+      detail: reactionsValid
+        ? `${config.firstReacts}+ for one lobby · ${config.secondReacts}+ for two lobbies`
+        : "Reaction goals must be positive and increase for a second lobby.",
+      passed: reactionsValid,
+      blocking: true,
+    },
+  ];
+}
+
+function renderAnnouncementPreflight() {
+  const panel = byId("announcementPreflight");
+  const list = byId("preflightList");
+  if (!panel || !list) return;
+  const checks = getAnnouncementPreflight();
+  const passed = checks.filter((check) => check.passed).length;
+  const blocking = checks.filter((check) => !check.passed && check.blocking).length;
+  const ready = blocking === 0;
+
+  panel.classList.toggle("is-ready", ready);
+  panel.classList.toggle("has-errors", !ready);
+  byId("preflightMark").textContent = ready ? "✓" : "!";
+  byId("preflightSummary").textContent = ready
+    ? "Everything required is ready to copy."
+    : `${blocking} ${blocking === 1 ? "item needs" : "items need"} attention before copying.`;
+  byId("preflightScore").textContent = `${passed}/${checks.length}`;
+  list.replaceChildren();
+
+  checks.forEach((check) => {
+    const item = document.createElement("li");
+    item.className = check.passed ? "is-passed" : "has-error";
+    const mark = document.createElement("span");
+    mark.setAttribute("aria-hidden", "true");
+    mark.textContent = check.passed ? "✓" : "!";
+    const copy = document.createElement("span");
+    const label = document.createElement("b");
+    label.textContent = check.label;
+    const detail = document.createElement("small");
+    detail.textContent = check.detail;
+    copy.append(label, detail);
+    item.append(mark, copy);
+    list.append(item);
+  });
+
+  const badge = byId("outputReadyBadge");
+  badge.classList.toggle("has-errors", !ready);
+  badge.classList.toggle("is-ready", ready);
+  byId("outputReadyLabel").textContent = ready ? "Ready" : "Check details";
+}
+
+function sanitizeAnnouncementHistory(value) {
+  if (!Array.isArray(value)) return [];
+  return value.slice(0, 20).map((item, index) => {
+    const session = SESSION_KINDS.find((candidate) => candidate.value === item?.sessionKind) || SESSION_KINDS[0];
+    const queueType = session.modes.includes(item?.queueType) ? item.queueType : session.modes[0];
+    const lobby = ["primary", "second", "third"].includes(item?.lobby) ? item.lobby : "primary";
+    const unix = Number.isFinite(Number(item?.unix)) ? Math.floor(Number(item.unix)) : Math.floor(Date.now() / 1000);
+    return {
+      id: String(item?.id || `history-${Date.now()}-${index}`).slice(0, 80),
+      createdAt: Number.isFinite(Number(item?.createdAt)) ? Number(item.createdAt) : Date.now(),
+      label: String(item?.label || session.label).slice(0, 100),
+      sessionKind: session.value,
+      queueType,
+      lobby,
+      unix,
+      sessionNumber: String(item?.sessionNumber || "1").replace(/\D/g, "").slice(0, 4) || "1",
+      discordId: isDiscordUserId(item?.discordId) ? String(item.discordId) : "",
+      additionalHostIds: [...new Set((Array.isArray(item?.additionalHostIds) ? item.additionalHostIds : []).filter(isDiscordUserId))].slice(0, 5),
+      text: String(item?.text || "").slice(0, 20000),
+    };
+  }).filter((item) => item.text);
+}
+
+function persistAnnouncementHistory() {
+  try {
+    localStorage.setItem(STORAGE.announcementHistory, JSON.stringify(state.announcementHistory));
+  } catch (error) {
+    console.warn("Announcement history could not be saved", error);
+  }
+}
+
+function rememberCurrentAnnouncement() {
+  const text = byId("announcementText").value;
+  if (!text) return;
+  const duplicateIndex = state.announcementHistory.findIndex((item) => item.text === text);
+  if (duplicateIndex >= 0) state.announcementHistory.splice(duplicateIndex, 1);
+  state.announcementHistory.unshift({
+    id: `announcement-${Date.now().toString(36)}`,
+    createdAt: Date.now(),
+    label: byId("announceSessionTitle").textContent,
+    sessionKind: state.sessionKind,
+    queueType: getMode(),
+    lobby: getLobbyVariant(),
+    unix: state.unix,
+    sessionNumber: String(getTwentyFourSevenSessionNumber()),
+    discordId: state.discordId,
+    additionalHostIds: [...state.additionalHostIds],
+    text,
+  });
+  state.announcementHistory = sanitizeAnnouncementHistory(state.announcementHistory);
+  persistAnnouncementHistory();
+  renderAnnouncementHistory();
+}
+
+function formatHistoryDate(timestamp) {
+  return new Intl.DateTimeFormat(getInterfaceLocale(), {
+    month: "short",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: state.timeFormat === "12h",
+  }).format(new Date(timestamp));
+}
+
+function renderAnnouncementHistory() {
+  const list = byId("announcementHistoryList");
+  const count = byId("announcementHistoryCount");
+  if (!list || !count) return;
+  count.textContent = `${state.announcementHistory.length} saved`;
+  byId("clearAnnouncementHistory").disabled = state.announcementHistory.length === 0;
+  list.replaceChildren();
+
+  if (!state.announcementHistory.length) {
+    const empty = document.createElement("div");
+    empty.className = "history-empty";
+    const title = document.createElement("b");
+    title.textContent = "No copied announcements yet";
+    const detail = document.createElement("span");
+    detail.textContent = "A session appears here after it passes preflight and is copied.";
+    empty.append(title, detail);
+    list.append(empty);
+    return;
+  }
+
+  state.announcementHistory.forEach((entry) => {
+    const session = SESSION_KINDS.find((item) => item.value === entry.sessionKind) || SESSION_KINDS[0];
+    const item = document.createElement("article");
+    item.className = "history-item";
+    item.dataset.historyId = entry.id;
+    const image = document.createElement("img");
+    image.src = session.icon;
+    image.alt = "";
+    const copy = document.createElement("span");
+    copy.className = "history-item-copy";
+    const title = document.createElement("b");
+    title.textContent = entry.label;
+    const meta = document.createElement("small");
+    meta.textContent = `${formatHistoryDate(entry.createdAt)} · Registration ${formatClock(entry.unix)}`;
+    copy.append(title, meta);
+    const actions = document.createElement("span");
+    actions.className = "history-item-actions";
+    [
+      ["restore", "Restore"],
+      ["copy", "Copy again"],
+      ["delete", "Delete"],
+    ].forEach(([action, label]) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.historyAction = action;
+      button.textContent = label;
+      actions.append(button);
+    });
+    item.append(image, copy, actions);
+    list.append(item);
+  });
+}
+
+function restoreAnnouncementHistoryEntry(entry) {
+  const session = SESSION_KINDS.find((item) => item.value === entry.sessionKind) || SESSION_KINDS[0];
+  state.sessionKind = session.value;
+  state.queueType = session.modes.includes(entry.queueType) ? entry.queueType : session.modes[0];
+  state.unix = entry.unix;
+  state.includeSecondLobby = entry.lobby === "second";
+  state.includeThirdLobby = entry.lobby === "third";
+  state.sessionNumber = entry.sessionNumber;
+  state.discordId = entry.discordId;
+  state.additionalHostIds = [...entry.additionalHostIds];
+  state.additionalHostComposerOpen = false;
+  state.announceMode = true;
+
+  byId("datetime").value = dateTimeStringFromDate(new Date(state.unix * 1000));
+  byId("discordId").value = state.discordId;
+  byId("announceMode").checked = true;
+  byId("sessionNumberInput").value = state.sessionNumber;
+  byId("additionalHostId").value = "";
+  try {
+    if (state.discordId) localStorage.setItem(STORAGE.discordId, state.discordId);
+    localStorage.setItem(STORAGE.announceMode, "1");
+  } catch {
+    // Browser storage is optional.
+  }
+  renderBuilder();
+  byId("announceSection").scrollIntoView({ behavior: "smooth", block: "start" });
+  showToast("Session restored from history");
+}
+
 function renderAnnouncement() {
   const session = getSession();
   const lobby = getLobbyVariant();
@@ -2281,16 +2597,19 @@ function renderAnnouncement() {
   if (!state.announceMode) {
     output.value = "Turn on Build announcement to generate a Discord-ready message.";
     copyButton.disabled = true;
+    renderAnnouncementPreflight();
     return;
   }
   if (state.unix === null) {
     output.value = "Choose a registration time to generate the announcement.";
     copyButton.disabled = true;
+    renderAnnouncementPreflight();
     return;
   }
 
   output.value = buildAnnouncementText();
   copyButton.disabled = false;
+  renderAnnouncementPreflight();
 }
 
 function renderBuilder() {
@@ -2794,6 +3113,157 @@ function deleteSelectedScrimCategory() {
   showToast("Scrim category removed");
 }
 
+function setBackupStatus(message, status = "ready") {
+  const element = byId("backupStatus");
+  if (!element) return;
+  element.classList.toggle("is-success", status === "success");
+  element.classList.toggle("has-error", status === "error");
+  element.lastChild.textContent = ` ${message}`;
+}
+
+function buildConfigurationBackup() {
+  return {
+    app: "noble-staff-helper",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    configuration: {
+      settings: state.settings,
+      scheduleSettings: state.scheduleSettings,
+      staffLinks: state.staffLinks,
+      sessionOrder: state.sessionOrder,
+    },
+    preferences: {
+      language: state.language,
+      timeFormat: state.timeFormat,
+      discordId: state.discordId,
+      recentHostIds: state.recentHostIds,
+      announceMode: state.announceMode,
+    },
+  };
+}
+
+function exportConfigurationBackup() {
+  const backup = buildConfigurationBackup();
+  const payload = JSON.stringify(backup, null, 2);
+  const blob = new Blob([payload], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `noble-staff-helper-backup-${localDateString(new Date())}.json`;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+  setBackupStatus(`Exported ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`, "success");
+  showToast("Configuration backup downloaded");
+}
+
+function sanitizeConfigurationBackup(payload) {
+  if (!payload || typeof payload !== "object" || payload.app !== "noble-staff-helper") {
+    throw new Error("This is not a Noble Staff Helper backup.");
+  }
+  if (payload.version !== 1 || !payload.configuration || typeof payload.configuration !== "object") {
+    throw new Error("This backup version is not supported.");
+  }
+  if (!payload.configuration.settings || !payload.configuration.scheduleSettings) {
+    throw new Error("The backup is missing required configuration data.");
+  }
+
+  const preferences = payload.preferences && typeof payload.preferences === "object" ? payload.preferences : {};
+  return {
+    settings: mergeSavedSettings(payload.configuration.settings),
+    scheduleSettings: mergeScheduleSettings(payload.configuration.scheduleSettings),
+    staffLinks: sanitizeStaffLinks(payload.configuration.staffLinks),
+    sessionOrder: sanitizeSessionOrder(payload.configuration.sessionOrder),
+    language: Object.prototype.hasOwnProperty.call(UI_LOCALES, preferences.language) ? preferences.language : "en",
+    timeFormat: preferences.timeFormat === "12h" || preferences.timeFormat === "24h"
+      ? preferences.timeFormat
+      : getPreferredTimeFormat(),
+    discordId: isDiscordUserId(preferences.discordId) ? String(preferences.discordId) : "",
+    recentHostIds: sanitizeRecentHostIds(preferences.recentHostIds),
+    announceMode: preferences.announceMode !== false,
+  };
+}
+
+function persistImportedConfiguration(configuration) {
+  localStorage.setItem(STORAGE.settings, JSON.stringify(configuration.settings));
+  localStorage.setItem(STORAGE.scheduleSettings, JSON.stringify(configuration.scheduleSettings));
+  localStorage.setItem(STORAGE.staffLinks, JSON.stringify(configuration.staffLinks));
+  localStorage.setItem(STORAGE.sessionOrder, JSON.stringify(configuration.sessionOrder));
+  localStorage.setItem(STORAGE.language, configuration.language);
+  localStorage.setItem(STORAGE.timeFormat, configuration.timeFormat);
+  localStorage.setItem(STORAGE.recentHostIds, JSON.stringify(configuration.recentHostIds));
+  localStorage.setItem(STORAGE.announceMode, configuration.announceMode ? "1" : "0");
+  if (configuration.discordId) localStorage.setItem(STORAGE.discordId, configuration.discordId);
+  else localStorage.removeItem(STORAGE.discordId);
+}
+
+function applyImportedConfiguration(configuration) {
+  state.settings = configuration.settings;
+  state.scheduleSettings = configuration.scheduleSettings;
+  state.staffLinks = configuration.staffLinks;
+  state.sessionOrder = configuration.sessionOrder;
+  state.language = configuration.language;
+  state.timeFormat = configuration.timeFormat;
+  state.discordId = configuration.discordId;
+  state.recentHostIds = configuration.recentHostIds;
+  state.announceMode = configuration.announceMode;
+  state.sessionKind = state.sessionOrder[0];
+  state.queueType = getSession().modes[0];
+  state.templateSessionKind = state.sessionKind;
+  state.templateMode = getMode();
+  state.settingsScrimCategoryId = state.settings.scrimCategories[0].id;
+  if (!state.settings.scrimCategories.some((category) => category.id === state.scrimQueueType)) {
+    state.scrimQueueType = state.settings.scrimCategories[0].id;
+  }
+  state.settingsDirty = false;
+
+  byId("discordId").value = state.discordId;
+  byId("announceMode").checked = state.announceMode;
+  renderBuilder();
+  renderScrims();
+  renderSettingsEditor();
+  renderTemplateEditor();
+  renderScrimPresetEditor();
+  renderStaffLinksEditor();
+  renderStaffLinksDock();
+  renderSessionOrderEditor();
+  renderScheduleBuilder();
+  renderScheduleSettings();
+  renderLocalizationControls();
+  applyInterfaceLanguage();
+}
+
+async function importConfigurationBackup(file) {
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) {
+    setBackupStatus("File is larger than 2 MB", "error");
+    showToast("Backup file is too large");
+    return;
+  }
+  try {
+    const payload = JSON.parse(await file.text());
+    const configuration = sanitizeConfigurationBackup(payload);
+    const confirmed = window.confirm(
+      "Import this backup and replace the current server presets, schedules, quick links, and display preferences on this device?"
+    );
+    if (!confirmed) {
+      setBackupStatus("Import cancelled", "ready");
+      return;
+    }
+    persistImportedConfiguration(configuration);
+    applyImportedConfiguration(configuration);
+    setBackupStatus(`Imported ${file.name}`, "success");
+    showToast("Configuration imported successfully");
+  } catch (error) {
+    console.warn("Configuration backup import rejected", error);
+    setBackupStatus(error.message || "Could not read this backup", "error");
+    showToast("Could not import this backup");
+  } finally {
+    byId("configurationBackupFile").value = "";
+  }
+}
+
 function saveSettings() {
   state.settings = mergeSavedSettings(state.settings);
   state.staffLinks = sanitizeStaffLinks(state.staffLinks);
@@ -2926,6 +3396,11 @@ function loadPreferences() {
 
     const savedRecentHostIds = localStorage.getItem(STORAGE.recentHostIds);
     if (savedRecentHostIds) state.recentHostIds = sanitizeRecentHostIds(JSON.parse(savedRecentHostIds));
+
+    const savedAnnouncementHistory = localStorage.getItem(STORAGE.announcementHistory);
+    if (savedAnnouncementHistory) {
+      state.announcementHistory = sanitizeAnnouncementHistory(JSON.parse(savedAnnouncementHistory));
+    }
 
     const savedAnnounceMode = localStorage.getItem(STORAGE.announceMode);
     if (savedAnnounceMode === "0") state.announceMode = false;
@@ -3103,8 +3578,41 @@ function bindEvents() {
     event.target.value = state.sessionNumber;
     renderAnnouncement();
   });
-  byId("copyAnnouncement").addEventListener("click", () => {
-    copyText(byId("announcementText").value, "Announcement copied");
+  byId("copyAnnouncement").addEventListener("click", async () => {
+    const blocking = getAnnouncementPreflight().filter((check) => !check.passed && check.blocking);
+    if (blocking.length) {
+      const panel = byId("announcementPreflight");
+      panel.classList.remove("needs-attention");
+      window.requestAnimationFrame(() => panel.classList.add("needs-attention"));
+      panel.scrollIntoView({ behavior: "smooth", block: "center" });
+      showToast(`Fix ${blocking.length} ${blocking.length === 1 ? "check" : "checks"} before copying`);
+      return;
+    }
+    const copied = await copyText(byId("announcementText").value, "Announcement copied and saved to history");
+    if (copied) rememberCurrentAnnouncement();
+  });
+  byId("announcementHistoryList").addEventListener("click", async (event) => {
+    const action = event.target.closest("[data-history-action]");
+    const item = event.target.closest("[data-history-id]");
+    if (!action || !item) return;
+    const entry = state.announcementHistory.find((historyItem) => historyItem.id === item.dataset.historyId);
+    if (!entry) return;
+    if (action.dataset.historyAction === "restore") restoreAnnouncementHistoryEntry(entry);
+    if (action.dataset.historyAction === "copy") await copyText(entry.text, "Saved announcement copied");
+    if (action.dataset.historyAction === "delete") {
+      state.announcementHistory = state.announcementHistory.filter((historyItem) => historyItem.id !== entry.id);
+      persistAnnouncementHistory();
+      renderAnnouncementHistory();
+      showToast("History entry deleted");
+    }
+  });
+  byId("clearAnnouncementHistory").addEventListener("click", () => {
+    if (!state.announcementHistory.length) return;
+    if (!window.confirm("Clear all copied session announcements from this device?")) return;
+    state.announcementHistory = [];
+    persistAnnouncementHistory();
+    renderAnnouncementHistory();
+    showToast("Session history cleared");
   });
 
   byId("scrimAutoNext").addEventListener("click", () => {
@@ -3195,6 +3703,11 @@ function bindEvents() {
   });
   byId("saveSettings").addEventListener("click", saveSettings);
   byId("resetSettings").addEventListener("click", resetSettings);
+  byId("exportConfiguration").addEventListener("click", exportConfigurationBackup);
+  byId("chooseConfigurationBackup").addEventListener("click", () => byId("configurationBackupFile").click());
+  byId("configurationBackupFile").addEventListener("change", (event) => {
+    importConfigurationBackup(event.target.files?.[0]);
+  });
   byId("templateText").addEventListener("input", (event) => {
     updateSelectedTemplate(event.target.value);
   });
@@ -3282,6 +3795,7 @@ function initialize() {
   renderScheduleBuilder();
   renderScheduleSettings();
   renderLocalizationControls();
+  renderAnnouncementHistory();
   setView(getViewFromHash(), false);
   applyInterfaceLanguage();
   startTranslationObserver();

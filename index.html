@@ -16,9 +16,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260722-14" />
+  <link rel="stylesheet" href="styles.css?v=20260722-16" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260722-15" defer></script>
+  <script src="script.js?v=20260722-16" defer></script>
 </head>
 
 <body>
@@ -317,7 +317,7 @@
                 <p class="section-kicker">Live output</p>
                 <h3 id="announceSessionTitle">Noble Solos</h3>
               </div>
-              <span class="ready-badge"><span></span> Ready</span>
+              <span class="ready-badge" id="outputReadyBadge"><span></span><span id="outputReadyLabel">Ready</span></span>
             </div>
 
             <div class="selected-session">
@@ -358,6 +358,18 @@
               <b id="reactTargetSummary">110+ required</b>
             </div>
 
+            <section class="announcement-preflight" id="announcementPreflight" aria-labelledby="preflightTitle">
+              <header>
+                <span class="preflight-mark" id="preflightMark" aria-hidden="true">&#10003;</span>
+                <span>
+                  <b id="preflightTitle">Announcement check</b>
+                  <small id="preflightSummary">Checking the current session</small>
+                </span>
+                <strong id="preflightScore">0/0</strong>
+              </header>
+              <ul id="preflightList"></ul>
+            </section>
+
             <label class="field-label" for="announcementText">Generated Discord message</label>
             <textarea id="announcementText" class="message-output" readonly spellcheck="false"></textarea>
             <button class="button button-primary button-full" id="copyAnnouncement" type="button">
@@ -369,6 +381,26 @@
             </button>
           </aside>
         </div>
+
+        <details class="surface announcement-history" id="announcementHistory">
+          <summary>
+            <span class="history-summary-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>
+            </span>
+            <span>
+              <b>Session history</b>
+              <small>Copied announcements can be restored or copied again.</small>
+            </span>
+            <span class="history-count" id="announcementHistoryCount">0 saved</span>
+          </summary>
+          <div class="history-content">
+            <div class="history-toolbar">
+              <span>Stored only on this device</span>
+              <button class="text-link danger-link" id="clearAnnouncementHistory" type="button">Clear history</button>
+            </div>
+            <div class="history-list" id="announcementHistoryList"></div>
+          </div>
+        </details>
       </section>
 
       <section class="view" id="view-schedule" data-view-panel="schedule" hidden>
@@ -723,6 +755,30 @@
               </div>
             </div>
             <div id="settingsEditor" class="settings-editor"></div>
+          </section>
+
+          <section class="surface backup-settings" id="backupSettings">
+            <div class="backup-settings-head">
+              <div>
+                <p class="section-kicker">Configuration backup</p>
+                <h3>Move settings between devices</h3>
+                <p>Export server presets, schedules, quick links, display preferences, and your saved host configuration as one JSON file.</p>
+              </div>
+              <span class="backup-status" id="backupStatus"><span></span> Ready to export</span>
+            </div>
+            <div class="backup-actions-grid">
+              <article>
+                <span class="backup-action-index">01</span>
+                <span><b>Export configuration</b><small>Download a safe snapshot of the current setup.</small></span>
+                <button class="button button-primary" id="exportConfiguration" type="button">Download backup</button>
+              </article>
+              <article>
+                <span class="backup-action-index">02</span>
+                <span><b>Import configuration</b><small>Review and replace this device's current setup.</small></span>
+                <button class="button button-secondary" id="chooseConfigurationBackup" type="button">Choose JSON file</button>
+                <input id="configurationBackupFile" type="file" accept="application/json,.json" hidden />
+              </article>
+            </div>
           </section>
 
           <div class="settings-actions">
