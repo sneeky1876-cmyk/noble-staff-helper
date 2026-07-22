@@ -107,8 +107,6 @@ const INTERFACE_TRANSLATIONS = {
     "Website URL": "Website-URL",
     Remove: "Entfernen",
     "Language updated": "Sprache aktualisiert",
-    "Announcement check": "Ankündigungsprüfung",
-    "Checking the current session": "Aktuelle Session wird geprüft",
     "Session history": "Session-Verlauf",
     "Copied announcements can be restored or copied again.": "Kopierte Ankündigungen können wiederhergestellt oder erneut kopiert werden.",
     "Stored only on this device": "Nur auf diesem Gerät gespeichert",
@@ -123,7 +121,7 @@ const INTERFACE_TRANSLATIONS = {
     "Choose JSON file": "JSON-Datei auswählen",
     "Ready to export": "Bereit zum Export",
     "No copied announcements yet": "Noch keine kopierten Ankündigungen",
-    "A session appears here after it passes preflight and is copied.": "Eine Session erscheint hier, nachdem sie geprüft und kopiert wurde.",
+    "A session appears here after it is copied.": "Eine Session erscheint hier, nachdem sie kopiert wurde.",
     Restore: "Wiederherstellen",
     "Copy again": "Erneut kopieren",
     Delete: "Löschen",
@@ -215,8 +213,6 @@ const INTERFACE_TRANSLATIONS = {
     "Website URL": "URL du site",
     Remove: "Supprimer",
     "Language updated": "Langue mise à jour",
-    "Announcement check": "Vérification de l'annonce",
-    "Checking the current session": "Vérification de la session actuelle",
     "Session history": "Historique des sessions",
     "Copied announcements can be restored or copied again.": "Les annonces copiées peuvent être restaurées ou recopiées.",
     "Stored only on this device": "Stocké uniquement sur cet appareil",
@@ -231,7 +227,7 @@ const INTERFACE_TRANSLATIONS = {
     "Choose JSON file": "Choisir un fichier JSON",
     "Ready to export": "Prêt à exporter",
     "No copied announcements yet": "Aucune annonce copiée",
-    "A session appears here after it passes preflight and is copied.": "Une session apparaît ici après vérification et copie.",
+    "A session appears here after it is copied.": "Une session apparaît ici après sa copie.",
     Restore: "Restaurer",
     "Copy again": "Copier à nouveau",
     Delete: "Supprimer",
@@ -323,8 +319,6 @@ const INTERFACE_TRANSLATIONS = {
     "Website URL": "URL del sitio",
     Remove: "Eliminar",
     "Language updated": "Idioma actualizado",
-    "Announcement check": "Comprobación del anuncio",
-    "Checking the current session": "Comprobando la sesión actual",
     "Session history": "Historial de sesiones",
     "Copied announcements can be restored or copied again.": "Los anuncios copiados se pueden restaurar o volver a copiar.",
     "Stored only on this device": "Guardado solo en este dispositivo",
@@ -339,7 +333,7 @@ const INTERFACE_TRANSLATIONS = {
     "Choose JSON file": "Elegir archivo JSON",
     "Ready to export": "Listo para exportar",
     "No copied announcements yet": "Todavía no hay anuncios copiados",
-    "A session appears here after it passes preflight and is copied.": "Una sesión aparecerá aquí después de comprobarla y copiarla.",
+    "A session appears here after it is copied.": "Una sesión aparecerá aquí después de copiarla.",
     Restore: "Restaurar",
     "Copy again": "Copiar otra vez",
     Delete: "Eliminar",
@@ -2332,107 +2326,6 @@ function isDiscordUserId(value) {
   return /^\d{17,20}$/.test(String(value || "").trim());
 }
 
-function getAnnouncementPreflight() {
-  if (!state.announceMode) {
-    return [{ label: "Announcement builder", detail: "Turn on Build announcement first.", passed: false, blocking: true }];
-  }
-  if (state.unix === null) {
-    return [{ label: "Registration time", detail: "Choose a date and time first.", passed: false, blocking: true }];
-  }
-
-  const config = getSessionSettings();
-  const offset = getLobbyOffsetMinutes();
-  const registrationUnix = state.unix + offset * 60;
-  const firstGameUnix = registrationUnix + config.delayMinutes * 60;
-  const hostIds = [state.discordId.trim(), ...state.additionalHostIds].filter(Boolean);
-  const uniqueHostIds = new Set(hostIds);
-  const hostIdsValid = hostIds.length > 0 && hostIds.every(isDiscordUserId) && uniqueHostIds.size === hostIds.length;
-  const registrationValid = registrationUnix >= Math.floor(Date.now() / 1000) - 60;
-  const timingValid = Number.isFinite(firstGameUnix) && config.delayMinutes > 0 && firstGameUnix > registrationUnix;
-  const message = buildAnnouncementText();
-  const templateValid = Boolean(message) && !/\{\{[a-z_]+\}\}/i.test(message);
-  const reactionsValid = config.firstReacts > 0 && config.secondReacts >= config.firstReacts;
-
-  return [
-    {
-      label: "Session host",
-      detail: hostIdsValid
-        ? `${hostIds.length} valid Discord ${hostIds.length === 1 ? "ID" : "IDs"}`
-        : hostIds.length
-          ? "Use unique 17–20 digit Discord user IDs."
-          : "Add the main host's Discord user ID.",
-      passed: hostIdsValid,
-      blocking: true,
-    },
-    {
-      label: "Registration timestamp",
-      detail: registrationValid ? `${formatClock(registrationUnix)} is ready to post.` : "The registration time is already in the past.",
-      passed: registrationValid,
-      blocking: true,
-    },
-    {
-      label: "Session timing",
-      detail: timingValid ? `First game follows ${config.delayMinutes} minutes later.` : "The first-game delay must be greater than zero.",
-      passed: timingValid,
-      blocking: true,
-    },
-    {
-      label: "Message template",
-      detail: templateValid ? "All dynamic values were filled." : "A placeholder or template value is still unresolved.",
-      passed: templateValid,
-      blocking: true,
-    },
-    {
-      label: "Reaction goals",
-      detail: reactionsValid
-        ? `${config.firstReacts}+ for one lobby · ${config.secondReacts}+ for two lobbies`
-        : "Reaction goals must be positive and increase for a second lobby.",
-      passed: reactionsValid,
-      blocking: true,
-    },
-  ];
-}
-
-function renderAnnouncementPreflight() {
-  const panel = byId("announcementPreflight");
-  const list = byId("preflightList");
-  if (!panel || !list) return;
-  const checks = getAnnouncementPreflight();
-  const passed = checks.filter((check) => check.passed).length;
-  const blocking = checks.filter((check) => !check.passed && check.blocking).length;
-  const ready = blocking === 0;
-
-  panel.classList.toggle("is-ready", ready);
-  panel.classList.toggle("has-errors", !ready);
-  byId("preflightMark").textContent = ready ? "✓" : "!";
-  byId("preflightSummary").textContent = ready
-    ? "Everything required is ready to copy."
-    : `${blocking} ${blocking === 1 ? "item needs" : "items need"} attention before copying.`;
-  byId("preflightScore").textContent = `${passed}/${checks.length}`;
-  list.replaceChildren();
-
-  checks.forEach((check) => {
-    const item = document.createElement("li");
-    item.className = check.passed ? "is-passed" : "has-error";
-    const mark = document.createElement("span");
-    mark.setAttribute("aria-hidden", "true");
-    mark.textContent = check.passed ? "✓" : "!";
-    const copy = document.createElement("span");
-    const label = document.createElement("b");
-    label.textContent = check.label;
-    const detail = document.createElement("small");
-    detail.textContent = check.detail;
-    copy.append(label, detail);
-    item.append(mark, copy);
-    list.append(item);
-  });
-
-  const badge = byId("outputReadyBadge");
-  badge.classList.toggle("has-errors", !ready);
-  badge.classList.toggle("is-ready", ready);
-  byId("outputReadyLabel").textContent = ready ? "Ready" : "Check details";
-}
-
 function sanitizeAnnouncementHistory(value) {
   if (!Array.isArray(value)) return [];
   return value.slice(0, 20).map((item, index) => {
@@ -2511,7 +2404,7 @@ function renderAnnouncementHistory() {
     const title = document.createElement("b");
     title.textContent = "No copied announcements yet";
     const detail = document.createElement("span");
-    detail.textContent = "A session appears here after it passes preflight and is copied.";
+    detail.textContent = "A session appears here after it is copied.";
     empty.append(title, detail);
     list.append(empty);
     return;
@@ -2597,19 +2490,16 @@ function renderAnnouncement() {
   if (!state.announceMode) {
     output.value = "Turn on Build announcement to generate a Discord-ready message.";
     copyButton.disabled = true;
-    renderAnnouncementPreflight();
     return;
   }
   if (state.unix === null) {
     output.value = "Choose a registration time to generate the announcement.";
     copyButton.disabled = true;
-    renderAnnouncementPreflight();
     return;
   }
 
   output.value = buildAnnouncementText();
   copyButton.disabled = false;
-  renderAnnouncementPreflight();
 }
 
 function renderBuilder() {
@@ -3579,15 +3469,6 @@ function bindEvents() {
     renderAnnouncement();
   });
   byId("copyAnnouncement").addEventListener("click", async () => {
-    const blocking = getAnnouncementPreflight().filter((check) => !check.passed && check.blocking);
-    if (blocking.length) {
-      const panel = byId("announcementPreflight");
-      panel.classList.remove("needs-attention");
-      window.requestAnimationFrame(() => panel.classList.add("needs-attention"));
-      panel.scrollIntoView({ behavior: "smooth", block: "center" });
-      showToast(`Fix ${blocking.length} ${blocking.length === 1 ? "check" : "checks"} before copying`);
-      return;
-    }
     const copied = await copyText(byId("announcementText").value, "Announcement copied and saved to history");
     if (copied) rememberCurrentAnnouncement();
   });
