@@ -15,9 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260722-13" />
+  <link rel="stylesheet" href="styles.css?v=20260722-14" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260722-13" defer></script>
+  <script src="script.js?v=20260722-14" defer></script>
 </head>
 
 <body>
@@ -141,7 +141,13 @@
               </div>
 
               <div class="datetime-row">
-                <label class="field-label" for="datetime">Date &amp; local time</label>
+                <div class="datetime-heading">
+                  <label class="field-label" for="datetime">Date &amp; local time</label>
+                  <button class="time-format-toggle" type="button" data-time-format-toggle aria-label="Switch time display">
+                    <span>Time display</span>
+                    <b data-time-format-label>24h</b>
+                  </button>
+                </div>
                 <div class="input-action-row">
                   <input id="datetime" class="input" type="datetime-local" step="60" />
                   <button class="button button-secondary" id="resetNow" type="button">Use now</button>
@@ -174,10 +180,7 @@
                 </div>
               </div>
               <div class="session-grid" id="sessionCards"></div>
-              <p class="session-reorder-note">
-                <span class="reorder-grip" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
-                Hold a server, then drag it to change the order. Your first server becomes the default after reload.
-              </p>
+              <p class="session-reorder-note">Hold a server, then drag it to change the order. Your first server becomes the default after reload.</p>
               <label class="session-number-card" id="sessionNumberCard" for="sessionNumberInput" hidden>
                 <span>
                   <span class="field-label">24/7 session number</span>
@@ -547,6 +550,40 @@
                 <small>Choose up to four minute buttons. Use a negative value to subtract; 0 hides it.</small>
               </div>
               <div class="quick-adjust-editor" id="quickAdjustmentSettings"></div>
+            </div>
+          </section>
+
+          <section class="surface localization-settings">
+            <div class="localization-settings-head">
+              <div>
+                <p class="section-kicker">Language &amp; display</p>
+                <h3>Interface preferences</h3>
+                <p>Choose the interface language and clock style for this device. Discord announcement presets stay unchanged.</p>
+              </div>
+            </div>
+            <div class="localization-grid">
+              <div class="localization-option">
+                <span>
+                  <b>Interface language</b>
+                  <small>Translate navigation, controls, and helper text.</small>
+                </span>
+                <div class="language-picker" id="languageButtons" aria-label="Interface language" data-no-translate>
+                  <button type="button" data-language="en">English</button>
+                  <button type="button" data-language="de">Deutsch</button>
+                  <button type="button" data-language="fr">Français</button>
+                  <button type="button" data-language="es">Español</button>
+                </div>
+              </div>
+              <div class="localization-option">
+                <span>
+                  <b>Time display</b>
+                  <small>Use a 24-hour clock or AM/PM across the workspace.</small>
+                </span>
+                <button class="time-format-setting" type="button" data-time-format-toggle aria-label="Switch time display">
+                  <span>Current format</span>
+                  <b data-time-format-label>24h</b>
+                </button>
+              </div>
             </div>
           </section>
 

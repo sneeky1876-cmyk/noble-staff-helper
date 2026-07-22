@@ -12,6 +12,280 @@ const FORMATS = [
 
 const QUICK_HOURS = [15, 16, 17, 18, 19, 20, 21, 22, 23];
 
+const UI_LOCALES = {
+  en: "en-GB",
+  de: "de-DE",
+  fr: "fr-FR",
+  es: "es-ES",
+};
+
+const INTERFACE_TRANSLATIONS = {
+  de: {
+    "Staff workspace": "Staff-Arbeitsbereich",
+    "Session builder": "Session-Builder",
+    "Times & announcements": "Zeiten & Ankündigungen",
+    "Session schedule": "Session-Zeitplan",
+    "Daily announcements": "Tägliche Ankündigungen",
+    "Practice scrims": "Practice Scrims",
+    "First match & conclude": "Erstes Match & Abschluss",
+    "Web extension": "Web-Erweiterung",
+    "Staff guide": "Staff-Leitfaden",
+    "Video & handbook": "Video & Handbuch",
+    Configuration: "Konfiguration",
+    Settings: "Einstellungen",
+    "Customize workspace": "Arbeitsbereich anpassen",
+    "Local time": "Lokale Zeit",
+    "Made by": "Erstellt von",
+    "Current workspace": "Aktueller Arbeitsbereich",
+    "Session tools": "Session-Werkzeuge",
+    "Set the registration time, choose a server, and prepare the Discord announcement.": "Lege die Registrierungszeit fest, wähle einen Server und bereite die Discord-Ankündigung vor.",
+    "Registration opens": "Registrierung öffnet",
+    "Select a date and time": "Datum und Uhrzeit wählen",
+    "Set the clock": "Zeit festlegen",
+    "Registration time": "Registrierungszeit",
+    "Date & local time": "Datum & lokale Zeit",
+    "Use now": "Jetzt verwenden",
+    "Quick pick": "Schnellauswahl",
+    "Today in your timezone": "Heute in deiner Zeitzone",
+    "Adjust selected time": "Gewählte Zeit anpassen",
+    "Quickly add or remove minutes": "Minuten schnell hinzufügen oder entfernen",
+    "Choose the server": "Server wählen",
+    "Session type": "Session-Typ",
+    "Hold a server, then drag it to change the order. Your first server becomes the default after reload.": "Server gedrückt halten und ziehen, um die Reihenfolge zu ändern. Der erste Server ist nach dem Neuladen der Standard.",
+    Personalize: "Personalisieren",
+    "Host & lobby": "Host & Lobby",
+    "Your Discord user ID": "Deine Discord-Benutzer-ID",
+    "Additional hosts": "Weitere Hosts",
+    "Add host": "Host hinzufügen",
+    "Experience settings": "Einstellungen",
+    "Local preferences": "Lokale Einstellungen",
+    "Edit timing, reaction requirements, and announcement text for every server and mode.": "Passe Zeiten, Reaktionsziele und Ankündigungstexte für jeden Server und Modus an.",
+    "Language & display": "Sprache & Anzeige",
+    "Interface preferences": "Oberflächeneinstellungen",
+    "Choose the interface language and clock style for this device. Discord announcement presets stay unchanged.": "Wähle Sprache und Uhrformat für dieses Gerät. Discord-Ankündigungsvorlagen bleiben unverändert.",
+    "Interface language": "Oberflächensprache",
+    "Translate navigation, controls, and helper text.": "Navigation, Bedienelemente und Hilfetexte übersetzen.",
+    "Time display": "Zeitanzeige",
+    "Use a 24-hour clock or AM/PM across the workspace.": "Im gesamten Arbeitsbereich 24-Stunden- oder AM/PM-Format verwenden.",
+    "Current format": "Aktuelles Format",
+    "Global timing": "Globale Zeiten",
+    "Additional lobby offsets": "Zusätzliche Lobby-Verschiebungen",
+    "Second lobby shift": "Verschiebung zweite Lobby",
+    "Third lobby shift": "Verschiebung dritte Lobby",
+    "Quick time adjustments": "Schnelle Zeitanpassungen",
+    "Builder layout": "Builder-Layout",
+    "Session server order": "Reihenfolge der Session-Server",
+    "Saves instantly": "Sofort gespeichert",
+    "Staff shortcuts": "Staff-Verknüpfungen",
+    "Quick links": "Schnellzugriffe",
+    "Message templates": "Nachrichtenvorlagen",
+    "Session requirements": "Session-Anforderungen",
+    "Restore defaults": "Standards wiederherstellen",
+    "Save changes": "Änderungen speichern",
+    "Staff links": "Staff-Links",
+    "Open quickly": "Schnell öffnen",
+    "Customize links": "Links anpassen",
+    "{{minutes}} min to first game": "{{minutes}} Min. bis zum ersten Spiel",
+    "Opens first after reload": "Öffnet nach dem Neuladen zuerst",
+    "Position {{position}}": "Position {{position}}",
+    Default: "Standard",
+    "Uses the same registration time": "Verwendet dieselbe Registrierungszeit",
+    "Registration shifts by {{minutes}} minutes": "Registrierung verschiebt sich um {{minutes}} Minuten",
+    "Berlin schedule: {{time}} / Discord: {{discord}}": "Berlin-Zeit: {{time}} / Discord: {{discord}}",
+    "1 game mode": "1 Spielmodus",
+    "{{count}} game modes": "{{count}} Spielmodi",
+    Mode: "Modus",
+    "Game delay": "Spielverzögerung",
+    "1 lobby": "1 Lobby",
+    "2 lobbies": "2 Lobbys",
+    "Normal lobby": "Normale Lobby",
+    "Second / third lobby": "Zweite / dritte Lobby",
+    Duos: "Duos",
+    Squads: "Squads",
+    "Late night": "Late Night",
+    Label: "Bezeichnung",
+    "Website URL": "Website-URL",
+    Remove: "Entfernen",
+    "Language updated": "Sprache aktualisiert",
+  },
+  fr: {
+    "Staff workspace": "Espace du staff",
+    "Session builder": "Créateur de session",
+    "Times & announcements": "Horaires et annonces",
+    "Session schedule": "Programme des sessions",
+    "Daily announcements": "Annonces quotidiennes",
+    "Practice scrims": "Scrims d'entraînement",
+    "First match & conclude": "Premier match et clôture",
+    "Web extension": "Extension web",
+    "Staff guide": "Guide du staff",
+    "Video & handbook": "Vidéo et manuel",
+    Configuration: "Configuration",
+    Settings: "Paramètres",
+    "Customize workspace": "Personnaliser l'espace",
+    "Local time": "Heure locale",
+    "Made by": "Créé par",
+    "Current workspace": "Espace actuel",
+    "Session tools": "Outils de session",
+    "Set the registration time, choose a server, and prepare the Discord announcement.": "Définissez l'heure d'inscription, choisissez un serveur et préparez l'annonce Discord.",
+    "Registration opens": "Ouverture des inscriptions",
+    "Select a date and time": "Choisir une date et une heure",
+    "Set the clock": "Régler l'heure",
+    "Registration time": "Heure d'inscription",
+    "Date & local time": "Date et heure locale",
+    "Use now": "Utiliser maintenant",
+    "Quick pick": "Choix rapide",
+    "Today in your timezone": "Aujourd'hui dans votre fuseau",
+    "Adjust selected time": "Ajuster l'heure choisie",
+    "Quickly add or remove minutes": "Ajouter ou retirer rapidement des minutes",
+    "Choose the server": "Choisir le serveur",
+    "Session type": "Type de session",
+    "Hold a server, then drag it to change the order. Your first server becomes the default after reload.": "Maintenez un serveur puis faites-le glisser. Le premier devient le serveur par défaut après rechargement.",
+    Personalize: "Personnaliser",
+    "Host & lobby": "Hôte et lobby",
+    "Your Discord user ID": "Votre identifiant Discord",
+    "Additional hosts": "Hôtes supplémentaires",
+    "Add host": "Ajouter un hôte",
+    "Experience settings": "Paramètres",
+    "Local preferences": "Préférences locales",
+    "Edit timing, reaction requirements, and announcement text for every server and mode.": "Modifiez les horaires, réactions requises et textes pour chaque serveur et mode.",
+    "Language & display": "Langue et affichage",
+    "Interface preferences": "Préférences de l'interface",
+    "Choose the interface language and clock style for this device. Discord announcement presets stay unchanged.": "Choisissez la langue et le format horaire. Les modèles d'annonces Discord restent inchangés.",
+    "Interface language": "Langue de l'interface",
+    "Translate navigation, controls, and helper text.": "Traduire la navigation, les commandes et les aides.",
+    "Time display": "Format de l'heure",
+    "Use a 24-hour clock or AM/PM across the workspace.": "Utiliser le format 24 h ou AM/PM dans tout l'espace.",
+    "Current format": "Format actuel",
+    "Global timing": "Horaires globaux",
+    "Additional lobby offsets": "Décalages des lobbies supplémentaires",
+    "Second lobby shift": "Décalage du deuxième lobby",
+    "Third lobby shift": "Décalage du troisième lobby",
+    "Quick time adjustments": "Ajustements rapides",
+    "Builder layout": "Disposition du créateur",
+    "Session server order": "Ordre des serveurs",
+    "Saves instantly": "Enregistré instantanément",
+    "Staff shortcuts": "Raccourcis du staff",
+    "Quick links": "Liens rapides",
+    "Message templates": "Modèles de messages",
+    "Session requirements": "Conditions de session",
+    "Restore defaults": "Restaurer les valeurs",
+    "Save changes": "Enregistrer",
+    "Staff links": "Liens du staff",
+    "Open quickly": "Accès rapide",
+    "Customize links": "Personnaliser les liens",
+    "{{minutes}} min to first game": "Premier match dans {{minutes}} min",
+    "Opens first after reload": "S'ouvre en premier après rechargement",
+    "Position {{position}}": "Position {{position}}",
+    Default: "Par défaut",
+    "Uses the same registration time": "Utilise la même heure d'inscription",
+    "Registration shifts by {{minutes}} minutes": "L'inscription est décalée de {{minutes}} minutes",
+    "Berlin schedule: {{time}} / Discord: {{discord}}": "Horaire de Berlin : {{time}} / Discord : {{discord}}",
+    "1 game mode": "1 mode de jeu",
+    "{{count}} game modes": "{{count}} modes de jeu",
+    Mode: "Mode",
+    "Game delay": "Délai avant le match",
+    "1 lobby": "1 lobby",
+    "2 lobbies": "2 lobbies",
+    "Normal lobby": "Lobby normal",
+    "Second / third lobby": "Deuxième / troisième lobby",
+    Duos: "Duos",
+    Squads: "Escouades",
+    "Late night": "Tard le soir",
+    Label: "Libellé",
+    "Website URL": "URL du site",
+    Remove: "Supprimer",
+    "Language updated": "Langue mise à jour",
+  },
+  es: {
+    "Staff workspace": "Espacio del staff",
+    "Session builder": "Creador de sesiones",
+    "Times & announcements": "Horarios y anuncios",
+    "Session schedule": "Horario de sesiones",
+    "Daily announcements": "Anuncios diarios",
+    "Practice scrims": "Scrims de práctica",
+    "First match & conclude": "Primer partido y cierre",
+    "Web extension": "Extensión web",
+    "Staff guide": "Guía del staff",
+    "Video & handbook": "Vídeo y manual",
+    Configuration: "Configuración",
+    Settings: "Ajustes",
+    "Customize workspace": "Personalizar espacio",
+    "Local time": "Hora local",
+    "Made by": "Creado por",
+    "Current workspace": "Espacio actual",
+    "Session tools": "Herramientas de sesión",
+    "Set the registration time, choose a server, and prepare the Discord announcement.": "Define la hora de registro, elige un servidor y prepara el anuncio de Discord.",
+    "Registration opens": "Abre el registro",
+    "Select a date and time": "Elige fecha y hora",
+    "Set the clock": "Configurar hora",
+    "Registration time": "Hora de registro",
+    "Date & local time": "Fecha y hora local",
+    "Use now": "Usar ahora",
+    "Quick pick": "Selección rápida",
+    "Today in your timezone": "Hoy en tu zona horaria",
+    "Adjust selected time": "Ajustar hora seleccionada",
+    "Quickly add or remove minutes": "Añade o quita minutos rápidamente",
+    "Choose the server": "Elegir servidor",
+    "Session type": "Tipo de sesión",
+    "Hold a server, then drag it to change the order. Your first server becomes the default after reload.": "Mantén pulsado un servidor y arrástralo. El primero será el predeterminado tras recargar.",
+    Personalize: "Personalizar",
+    "Host & lobby": "Host y lobby",
+    "Your Discord user ID": "Tu ID de usuario de Discord",
+    "Additional hosts": "Hosts adicionales",
+    "Add host": "Añadir host",
+    "Experience settings": "Ajustes",
+    "Local preferences": "Preferencias locales",
+    "Edit timing, reaction requirements, and announcement text for every server and mode.": "Edita horarios, reacciones necesarias y textos para cada servidor y modo.",
+    "Language & display": "Idioma y visualización",
+    "Interface preferences": "Preferencias de interfaz",
+    "Choose the interface language and clock style for this device. Discord announcement presets stay unchanged.": "Elige el idioma y formato de hora. Las plantillas de anuncios de Discord no cambian.",
+    "Interface language": "Idioma de la interfaz",
+    "Translate navigation, controls, and helper text.": "Traduce navegación, controles y textos de ayuda.",
+    "Time display": "Formato de hora",
+    "Use a 24-hour clock or AM/PM across the workspace.": "Usa formato de 24 horas o AM/PM en todo el espacio.",
+    "Current format": "Formato actual",
+    "Global timing": "Horarios globales",
+    "Additional lobby offsets": "Desplazamientos de lobbies adicionales",
+    "Second lobby shift": "Desplazamiento del segundo lobby",
+    "Third lobby shift": "Desplazamiento del tercer lobby",
+    "Quick time adjustments": "Ajustes rápidos de hora",
+    "Builder layout": "Diseño del creador",
+    "Session server order": "Orden de servidores",
+    "Saves instantly": "Guardado al instante",
+    "Staff shortcuts": "Atajos del staff",
+    "Quick links": "Enlaces rápidos",
+    "Message templates": "Plantillas de mensajes",
+    "Session requirements": "Requisitos de sesión",
+    "Restore defaults": "Restaurar valores",
+    "Save changes": "Guardar cambios",
+    "Staff links": "Enlaces del staff",
+    "Open quickly": "Abrir rápido",
+    "Customize links": "Personalizar enlaces",
+    "{{minutes}} min to first game": "Primer partido en {{minutes}} min",
+    "Opens first after reload": "Se abre primero al recargar",
+    "Position {{position}}": "Posición {{position}}",
+    Default: "Predeterminado",
+    "Uses the same registration time": "Usa la misma hora de registro",
+    "Registration shifts by {{minutes}} minutes": "El registro se desplaza {{minutes}} minutos",
+    "Berlin schedule: {{time}} / Discord: {{discord}}": "Horario de Berlín: {{time}} / Discord: {{discord}}",
+    "1 game mode": "1 modo de juego",
+    "{{count}} game modes": "{{count}} modos de juego",
+    Mode: "Modo",
+    "Game delay": "Retraso del juego",
+    "1 lobby": "1 lobby",
+    "2 lobbies": "2 lobbies",
+    "Normal lobby": "Lobby normal",
+    "Second / third lobby": "Segundo / tercer lobby",
+    Duos: "Dúos",
+    Squads: "Escuadrones",
+    "Late night": "Sesión nocturna",
+    Label: "Etiqueta",
+    "Website URL": "URL del sitio",
+    Remove: "Eliminar",
+    "Language updated": "Idioma actualizado",
+  },
+};
+
 const DEFAULT_SCRIM_FIRST_TEMPLATE = [
   "<@&854727975550320650>",
   "",
@@ -375,6 +649,8 @@ const STORAGE = {
   scheduleSettings: "nobleScheduleSettingsV1",
   staffLinks: "nobleStaffLinksV1",
   sessionOrder: "nobleSessionOrderV1",
+  language: "nobleInterfaceLanguageV1",
+  timeFormat: "nobleTimeFormatV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
@@ -414,13 +690,126 @@ const state = {
   scheduleActiveTab: "builder",
   staffLinks: cloneStaffLinks(),
   staffLinksOpen: false,
+  language: "en",
+  timeFormat: getPreferredTimeFormat(),
 };
 
 let toastTimer = null;
 let suppressSessionClickUntil = 0;
+const originalInterfaceText = new WeakMap();
+let translationObserver = null;
 
 function byId(id) {
   return document.getElementById(id);
+}
+
+function getPreferredTimeFormat() {
+  try {
+    const options = new Intl.DateTimeFormat([], { hour: "numeric" }).resolvedOptions();
+    return options.hour12 ? "12h" : "24h";
+  } catch {
+    return "24h";
+  }
+}
+
+function getInterfaceLocale() {
+  return UI_LOCALES[state.language] || UI_LOCALES.en;
+}
+
+function tr(source, values = {}) {
+  const translated = INTERFACE_TRANSLATIONS[state.language]?.[source] || source;
+  return Object.entries(values).reduce(
+    (result, [key, value]) => result.split(`{{${key}}}`).join(String(value)),
+    translated
+  );
+}
+
+function applyInterfaceLanguage(root = document.body) {
+  if (!root) return;
+  document.documentElement.lang = state.language;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+
+  nodes.forEach((node) => {
+    const parent = node.parentElement;
+    if (!parent || parent.closest("script, style, textarea, code, [data-no-translate]")) return;
+    const source = originalInterfaceText.get(node) ?? node.nodeValue;
+    if (!originalInterfaceText.has(node)) originalInterfaceText.set(node, source);
+    const key = source.trim();
+    if (!key) return;
+    const translated = INTERFACE_TRANSLATIONS[state.language]?.[key] || key;
+    const leading = source.match(/^\s*/)?.[0] || "";
+    const trailing = source.match(/\s*$/)?.[0] || "";
+    node.nodeValue = `${leading}${translated}${trailing}`;
+  });
+}
+
+function startTranslationObserver() {
+  translationObserver?.disconnect();
+  translationObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) applyInterfaceLanguage(node.parentElement);
+        else if (node.nodeType === Node.ELEMENT_NODE) applyInterfaceLanguage(node);
+      });
+    });
+  });
+  translationObserver.observe(document.body, { childList: true, subtree: true });
+}
+
+function renderLocalizationControls() {
+  document.querySelectorAll("[data-language]").forEach((button) => {
+    const selected = button.dataset.language === state.language;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  document.querySelectorAll("[data-time-format-label]").forEach((label) => {
+    label.textContent = state.timeFormat === "12h" ? "AM/PM" : "24h";
+  });
+  document.querySelectorAll("[data-time-format-toggle]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(state.timeFormat === "12h"));
+  });
+}
+
+function refreshLocaleSensitiveViews() {
+  renderLocalizationControls();
+  renderBuilder();
+  renderScrims();
+  renderScheduleBuilder();
+  renderScheduleSettings();
+  const titles = {
+    builder: "Session builder",
+    schedule: "Session schedule",
+    scrims: "Practice scrims",
+    extension: "Noble web extension",
+    settings: "Experience settings",
+    guide: "Noble staff guide",
+  };
+  byId("activeViewTitle").textContent = tr(titles[getViewFromHash()] || titles.builder);
+  applyInterfaceLanguage();
+}
+
+function setInterfaceLanguage(language) {
+  if (!Object.prototype.hasOwnProperty.call(UI_LOCALES, language)) return;
+  state.language = language;
+  try {
+    localStorage.setItem(STORAGE.language, state.language);
+  } catch {
+    // Browser storage is optional.
+  }
+  refreshLocaleSensitiveViews();
+  showToast(tr("Language updated"));
+}
+
+function toggleTimeFormat() {
+  state.timeFormat = state.timeFormat === "24h" ? "12h" : "24h";
+  try {
+    localStorage.setItem(STORAGE.timeFormat, state.timeFormat);
+  } catch {
+    // Browser storage is optional.
+  }
+  refreshLocaleSensitiveViews();
 }
 
 function sanitizeSessionOrder(value) {
@@ -822,7 +1211,7 @@ function renderStaffLinksDock() {
   if (!validLinks.length) {
     const empty = document.createElement("p");
     empty.className = "staff-links-empty";
-    empty.textContent = "No valid links yet. Add one in settings.";
+    empty.textContent = tr("No valid links yet. Add one in settings.");
     list.append(empty);
   }
 
@@ -891,7 +1280,7 @@ function renderStaffLinksEditor() {
     const nameLabel = document.createElement("label");
     nameLabel.className = "staff-link-setting-field";
     const nameMeta = document.createElement("span");
-    nameMeta.textContent = "Label";
+    nameMeta.textContent = tr("Label");
     const nameInput = document.createElement("input");
     nameInput.className = "input staff-link-name-input";
     nameInput.type = "text";
@@ -907,7 +1296,7 @@ function renderStaffLinksEditor() {
     const urlLabel = document.createElement("label");
     urlLabel.className = "staff-link-setting-field staff-link-url-field";
     const urlMeta = document.createElement("span");
-    urlMeta.textContent = "Website URL";
+    urlMeta.textContent = tr("Website URL");
     const urlInput = document.createElement("input");
     urlInput.className = "input";
     urlInput.type = "url";
@@ -924,7 +1313,7 @@ function renderStaffLinksEditor() {
     const remove = document.createElement("button");
     remove.className = "staff-link-remove";
     remove.type = "button";
-    remove.textContent = "Remove";
+    remove.textContent = tr("Remove");
     remove.setAttribute("aria-label", `Remove ${link.label}`);
     remove.addEventListener("click", () => removeStaffLink(index));
 
@@ -935,7 +1324,7 @@ function renderStaffLinksEditor() {
   if (!state.staffLinks.length) {
     const empty = document.createElement("p");
     empty.className = "staff-link-editor-empty";
-    empty.textContent = "No shortcuts yet. Add a link to rebuild the floating box.";
+    empty.textContent = tr("No shortcuts yet. Add a link to rebuild the floating box.");
     editor.append(empty);
   }
 
@@ -988,7 +1377,7 @@ function setView(view, updateHash = true) {
     else button.removeAttribute("aria-current");
   });
 
-  byId("activeViewTitle").textContent = titles[validView];
+  byId("activeViewTitle").textContent = tr(titles[validView]);
 
   if (validView === "schedule") {
     setScheduleTab(state.scheduleActiveTab);
@@ -1275,7 +1664,9 @@ function renderQuickTimes() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "quick-time";
-    button.textContent = `${pad(hour)}:00`;
+    const quickDate = new Date();
+    quickDate.setHours(hour, 0, 0, 0);
+    button.textContent = formatClock(Math.floor(quickDate.getTime() / 1000));
 
     if (
       selected &&
@@ -1318,14 +1709,6 @@ function renderMinuteAdjustButtons() {
     });
     container.appendChild(button);
   });
-}
-
-function createReorderGrip(className = "") {
-  const grip = document.createElement("span");
-  grip.className = `reorder-grip${className ? ` ${className}` : ""}`;
-  grip.setAttribute("aria-hidden", "true");
-  for (let index = 0; index < 6; index += 1) grip.appendChild(document.createElement("i"));
-  return grip;
 }
 
 function saveSessionOrder() {
@@ -1380,12 +1763,14 @@ function renderSessionOrderEditor() {
     const name = document.createElement("b");
     name.textContent = session.label;
     const meta = document.createElement("small");
-    meta.textContent = index === 0 ? "Opens first after reload" : `Position ${index + 1}`;
+    meta.textContent = index === 0
+      ? tr("Opens first after reload")
+      : tr("Position {{position}}", { position: index + 1 });
     copy.append(name, meta);
 
     const defaultBadge = document.createElement("span");
     defaultBadge.className = "session-default-badge";
-    defaultBadge.textContent = "Default";
+    defaultBadge.textContent = tr("Default");
     defaultBadge.hidden = index !== 0;
 
     const actions = document.createElement("span");
@@ -1406,7 +1791,7 @@ function renderSessionOrderEditor() {
     moveDown.disabled = index === sessions.length - 1;
     actions.append(moveUp, moveDown);
 
-    item.append(createReorderGrip(), image, copy, defaultBadge, actions);
+    item.append(image, copy, defaultBadge, actions);
     editor.appendChild(item);
   });
 }
@@ -1423,8 +1808,17 @@ function installLongPressReorder(container, itemSelector, onCommit) {
 
   const updateGhostPosition = (clientX, clientY) => {
     if (!interaction?.ghost) return;
-    interaction.ghost.style.left = `${clientX - interaction.offsetX}px`;
-    interaction.ghost.style.top = `${clientY - interaction.offsetY}px`;
+    interaction.ghost.style.setProperty("--drag-x", `${clientX - interaction.offsetX}px`);
+    interaction.ghost.style.setProperty("--drag-y", `${clientY - interaction.offsetY}px`);
+  };
+
+  const queueGhostPosition = () => {
+    if (!interaction?.ghost || interaction.frameId) return;
+    interaction.frameId = window.requestAnimationFrame(() => {
+      if (!interaction) return;
+      interaction.frameId = 0;
+      updateGhostPosition(interaction.latestX, interaction.latestY);
+    });
   };
 
   const activate = () => {
@@ -1469,9 +1863,14 @@ function installLongPressReorder(container, itemSelector, onCommit) {
     }
 
     event.preventDefault();
-    updateGhostPosition(event.clientX, event.clientY);
+    queueGhostPosition();
     const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(itemSelector);
-    if (!target || target === interaction.source || target.parentElement !== container) return;
+    if (!target || target === interaction.source || target.parentElement !== container) {
+      interaction.lastTarget = null;
+      return;
+    }
+    if (target === interaction.lastTarget) return;
+    interaction.lastTarget = target;
 
     const items = [...container.querySelectorAll(itemSelector)];
     const startRects = new Map(items.map((item) => [item, item.getBoundingClientRect()]));
@@ -1487,9 +1886,10 @@ function installLongPressReorder(container, itemSelector, onCommit) {
       const x = start.left - end.left;
       const y = start.top - end.top;
       if (!x && !y) return;
+      item.getAnimations?.().forEach((animation) => animation.cancel());
       item.animate(
-        [{ transform: `translate(${x}px, ${y}px)` }, { transform: "translate(0, 0)" }],
-        { duration: 180, easing: "cubic-bezier(.2,.8,.2,1)" }
+        [{ transform: `translate3d(${x}px, ${y}px, 0)` }, { transform: "translate3d(0, 0, 0)" }],
+        { duration: 210, easing: "cubic-bezier(.22,.75,.18,1)" }
       );
     });
   }
@@ -1497,6 +1897,7 @@ function installLongPressReorder(container, itemSelector, onCommit) {
   function onPointerEnd(event) {
     if (!interaction || event.pointerId !== interaction.pointerId) return;
     window.clearTimeout(interaction.timer);
+    if (interaction.frameId) window.cancelAnimationFrame(interaction.frameId);
     removeWindowListeners();
 
     if (interaction.active) {
@@ -1521,6 +1922,8 @@ function installLongPressReorder(container, itemSelector, onCommit) {
     interaction = {
       active: false,
       ghost: null,
+      frameId: 0,
+      lastTarget: null,
       latestX: event.clientX,
       latestY: event.clientY,
       offsetX: 0,
@@ -1565,9 +1968,9 @@ function renderSessionCards() {
     const name = document.createElement("b");
     name.textContent = session.label;
     const meta = document.createElement("small");
-    meta.textContent = `${config.delayMinutes} min to first game`;
+    meta.textContent = tr("{{minutes}} min to first game", { minutes: config.delayMinutes });
     copy.append(name, meta);
-    button.append(image, copy, createReorderGrip("session-card-grip"));
+    button.append(image, copy);
 
     button.addEventListener("click", () => {
       if (Date.now() < suppressSessionClickUntil) return;
@@ -1691,7 +2094,9 @@ function renderQueueButtons() {
 }
 
 function formatLobbyOffsetHint(minutes) {
-  return minutes === 0 ? "Uses the same registration time" : `Registration shifts by ${minutes} minutes`;
+  return minutes === 0
+    ? tr("Uses the same registration time")
+    : tr("Registration shifts by {{minutes}} minutes", { minutes });
 }
 
 function renderLobbyControls() {
@@ -1703,12 +2108,16 @@ function renderLobbyControls() {
 
 function formatClock(unix) {
   if (unix === null) return "--:--";
-  return new Intl.DateTimeFormat([], { hour: "2-digit", minute: "2-digit" }).format(new Date(unix * 1000));
+  return new Intl.DateTimeFormat(getInterfaceLocale(), {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: state.timeFormat === "12h",
+  }).format(new Date(unix * 1000));
 }
 
 function formatHeroDate(unix) {
-  if (unix === null) return "Select a date and time";
-  return new Intl.DateTimeFormat([], {
+  if (unix === null) return tr("Select a date and time");
+  return new Intl.DateTimeFormat(getInterfaceLocale(), {
     weekday: "long",
     day: "2-digit",
     month: "short",
@@ -1990,12 +2399,16 @@ function renderScrims() {
   renderScrimQueueButtons();
   if (state.scrimUnix === null) return;
   const date = new Date(state.scrimUnix * 1000);
-  const berlinTime = new Intl.DateTimeFormat([], {
+  const berlinTime = new Intl.DateTimeFormat(getInterfaceLocale(), {
     timeZone: "Europe/Berlin",
     dateStyle: "medium",
     timeStyle: "short",
+    hour12: state.timeFormat === "12h",
   }).format(date);
-  byId("scrimTimePreview").textContent = `Berlin schedule: ${berlinTime} / Discord: <t:${state.scrimUnix}:t>`;
+  byId("scrimTimePreview").textContent = tr("Berlin schedule: {{time}} / Discord: {{discord}}", {
+    time: berlinTime,
+    discord: `<t:${state.scrimUnix}:t>`,
+  });
   const category = getScrimCategory();
   byId("scrimFirstText").value = renderScrimTemplate(category.firstTemplate);
   byId("scrimConcludeText").value = renderScrimTemplate(category.concludeTemplate);
@@ -2124,7 +2537,7 @@ function renderSettingsEditor() {
     const name = document.createElement("b");
     name.textContent = session.label;
     const meta = document.createElement("small");
-    meta.textContent = session.modes.length === 1 ? "1 game mode" : `${session.modes.length} game modes`;
+    meta.textContent = session.modes.length === 1 ? tr("1 game mode") : tr("{{count}} game modes", { count: session.modes.length });
     identityCopy.append(name, meta);
     identity.append(image, identityCopy);
 
@@ -2134,7 +2547,7 @@ function renderSettingsEditor() {
     columnHead.className = "settings-mode-columns";
     ["Mode", "Game delay", "1 lobby", "2 lobbies"].forEach((column) => {
       const label = document.createElement("span");
-      label.textContent = column;
+      label.textContent = tr(column);
       columnHead.appendChild(label);
     });
     modeList.appendChild(columnHead);
@@ -2144,7 +2557,7 @@ function renderSettingsEditor() {
       row.className = "settings-mode-row";
       const modeName = document.createElement("span");
       modeName.className = "mode-name";
-      modeName.textContent = getModeLabel(mode);
+      modeName.textContent = tr(getModeLabel(mode));
       row.append(
         modeName,
         createSettingInput(session, mode, "delayMinutes", "min", config.delayMinutes),
@@ -2204,7 +2617,7 @@ function renderTemplateEditor() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "segment-button";
-    button.textContent = getModeLabel(mode);
+    button.textContent = tr(getModeLabel(mode));
     button.setAttribute("aria-pressed", String(mode === state.templateMode));
     if (mode === state.templateMode) button.classList.add("is-selected");
     button.addEventListener("click", () => {
@@ -2223,7 +2636,7 @@ function renderTemplateEditor() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "segment-button";
-    button.textContent = lobby.label;
+    button.textContent = tr(lobby.label);
     button.setAttribute("aria-pressed", String(lobby.value === state.templateLobby));
     if (lobby.value === state.templateLobby) button.classList.add("is-selected");
     button.addEventListener("click", () => {
@@ -2500,6 +2913,14 @@ function applyZnturoStaffLinkCorrection() {
 
 function loadPreferences() {
   try {
+    const savedLanguage = localStorage.getItem(STORAGE.language);
+    if (savedLanguage && Object.prototype.hasOwnProperty.call(UI_LOCALES, savedLanguage)) {
+      state.language = savedLanguage;
+    }
+
+    const savedTimeFormat = localStorage.getItem(STORAGE.timeFormat);
+    if (savedTimeFormat === "12h" || savedTimeFormat === "24h") state.timeFormat = savedTimeFormat;
+
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
     if (savedDiscordId) state.discordId = savedDiscordId;
 
@@ -2547,6 +2968,13 @@ function configureCreatorLink() {
 }
 
 function bindEvents() {
+  document.querySelectorAll("[data-time-format-toggle]").forEach((button) => {
+    button.addEventListener("click", toggleTimeFormat);
+  });
+  document.querySelectorAll("[data-language]").forEach((button) => {
+    button.addEventListener("click", () => setInterfaceLanguage(button.dataset.language));
+  });
+
   document.querySelectorAll("[data-view]").forEach((button) => {
     button.addEventListener("click", () => setView(button.dataset.view));
   });
@@ -2831,7 +3259,10 @@ function initialize() {
   renderSessionOrderEditor();
   renderScheduleBuilder();
   renderScheduleSettings();
+  renderLocalizationControls();
   setView(getViewFromHash(), false);
+  applyInterfaceLanguage();
+  startTranslationObserver();
 }
 
 document.addEventListener("DOMContentLoaded", initialize);
