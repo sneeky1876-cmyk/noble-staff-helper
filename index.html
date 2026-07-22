@@ -16,9 +16,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260722-21" />
+  <link rel="stylesheet" href="styles.css?v=20260722-22" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260722-21" defer></script>
+  <script src="script.js?v=20260722-22" defer></script>
 </head>
 
 <body>
@@ -133,22 +133,20 @@
         <div class="builder-layout">
           <div class="builder-controls">
             <section class="surface control-section">
-              <div class="section-heading">
+              <div class="section-heading has-utility">
                 <div class="section-number">01</div>
                 <div>
                   <p class="section-kicker">Set the clock</p>
                   <h3>Registration time</h3>
                 </div>
+                <button class="time-format-toggle time-format-header" type="button" data-time-format-toggle aria-label="Switch time display">
+                  <span>Time display</span>
+                  <b data-time-format-label>24h</b>
+                </button>
               </div>
 
               <div class="datetime-row">
-                <div class="datetime-heading">
-                  <label class="field-label" for="datetime">Date &amp; local time</label>
-                  <button class="time-format-toggle" type="button" data-time-format-toggle aria-label="Switch time display">
-                    <span>Time display</span>
-                    <b data-time-format-label>24h</b>
-                  </button>
-                </div>
+                <label class="field-label datetime-field-label" for="datetime">Date &amp; local time</label>
                 <div class="input-action-row">
                   <input id="datetime" class="input" type="datetime-local" step="60" />
                   <button class="button button-secondary" id="resetNow" type="button">Use now</button>

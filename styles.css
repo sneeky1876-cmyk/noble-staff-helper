@@ -7281,16 +7281,17 @@ a {
 }
 
 /* Localization and clock preferences */
-.datetime-heading {
-  display: flex;
+.section-heading.has-utility {
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+}
+
+.datetime-field-label {
   margin-bottom: 8px;
 }
 
-.datetime-heading .field-label {
-  margin: 0;
+.time-format-header {
+  flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .time-format-toggle,
@@ -7516,7 +7517,7 @@ a {
   }
 
   .time-format-toggle {
-    min-height: 40px;
+    min-height: 38px;
   }
 }
 
@@ -7531,6 +7532,10 @@ a {
 
   .time-format-toggle span {
     display: none;
+  }
+
+  .time-format-header {
+    padding: 5px;
   }
 }
 
