@@ -1362,6 +1362,23 @@ svg {
   color: #11141a;
 }
 
+.segment-button.is-late-night:not(.is-selected) {
+  border: 1px solid rgba(125, 151, 255, 0.28);
+  background: linear-gradient(135deg, rgba(79, 94, 166, 0.18), rgba(31, 38, 68, 0.12));
+  color: #cbd4ff;
+}
+
+.segment-button.is-late-night::before {
+  content: "\263E";
+  margin-right: 6px;
+  font-size: 0.88rem;
+}
+
+.toggle-row.is-disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .session-timeline {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 78px minmax(0, 1fr);

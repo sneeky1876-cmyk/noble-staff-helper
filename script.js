@@ -28,6 +28,23 @@ const DEFAULT_SCRIM_CONCLUDE_TEMPLATE = [
   "\u2022 Make sure to invite your friends over, https://discord.gg/EU",
 ].join("\n");
 
+const DIV0_LATE_NIGHT_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 0 Practice Late Night Session ( 2 GAMES )**",
+  "",
+  ":ArrowRight: Registration opens {{registration}}",
+  "",
+  ":ArrowRight: First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 Session lasts 2 Games. **Miss a single game and you will be banned.**",
+  "\u2022 Make sure to read #custom-rules, #ban-offences & #how-to-play before the games.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
+].join("\n");
+
 const SESSION_KINDS = [
   {
     value: "solos",
@@ -59,7 +76,7 @@ const SESSION_KINDS = [
     title: "Noble Division 0 Practice Session",
     emoji: "<:ArrowRight:1398422494817419385>",
     channels: "<#1282840995846950962>, <#1282841044521717761> & <#1282841572336996372>",
-    modes: ["duos", "squads"],
+    modes: ["duos", "squads", "late_night"],
   },
   {
     value: "div2",
@@ -264,6 +281,7 @@ const DEFAULT_SETTINGS = {
       modes: {
         duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
         squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
+        late_night: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
       },
     },
     div2: {
@@ -288,6 +306,10 @@ const DEFAULT_SETTINGS = {
 };
 
 function createDefaultTemplate(session, mode, secondLobby) {
+  if (session.value === "div0" && mode === "late_night") {
+    return DIV0_LATE_NIGHT_TEMPLATE;
+  }
+
   const lines = [
     "@everyone",
     "",
@@ -530,13 +552,20 @@ function getSession() {
 }
 
 function getMode(sessionKind = state.sessionKind) {
-  return sessionKind === "solos" || sessionKind === "solos_closed" ? "solos" : state.queueType;
+  const session = SESSION_KINDS.find((candidate) => candidate.value === sessionKind) || SESSION_KINDS[0];
+  if (session.modes.length === 1) return session.modes[0];
+  return session.modes.includes(state.queueType) ? state.queueType : session.modes[0];
 }
 
 function getModeLabel(mode) {
   if (mode === "solos") return "Solos";
   if (mode === "squads") return "Squads";
+  if (mode === "late_night") return "Late Night";
   return "Duos";
+}
+
+function isLateNightMode() {
+  return state.sessionKind === "div0" && getMode() === "late_night";
 }
 
 function getSessionSettings(sessionKind = state.sessionKind, mode = getMode(sessionKind)) {
@@ -1363,28 +1392,42 @@ function renderAdditionalHosts() {
 function renderQueueButtons() {
   const block = byId("queueTypeBlock");
   const container = byId("queueButtons");
-  const singleMode = getSession().modes.length === 1;
+  const session = getSession();
+  const singleMode = session.modes.length === 1;
+  const selectedMode = getMode();
   block.hidden = singleMode;
   container.replaceChildren();
 
   if (singleMode) return;
 
-  [
-    { value: "duos", label: "Duos" },
-    { value: "squads", label: "Squads" },
-  ].forEach((mode) => {
+  session.modes.map((value) => ({ value, label: getModeLabel(value) })).forEach((mode) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "segment-button";
+    if (mode.value === "late_night") button.classList.add("is-late-night");
     button.textContent = mode.label;
-    button.setAttribute("aria-pressed", String(state.queueType === mode.value));
-    if (state.queueType === mode.value) button.classList.add("is-selected");
+    button.setAttribute("aria-pressed", String(selectedMode === mode.value));
+    if (selectedMode === mode.value) button.classList.add("is-selected");
     button.addEventListener("click", () => {
       state.queueType = mode.value;
+      if (mode.value === "late_night") state.includeSecondLobby = false;
       renderBuilder();
     });
     container.appendChild(button);
   });
+}
+
+function renderSecondLobbyControl() {
+  const input = byId("secondLobby");
+  const row = input.closest(".toggle-row");
+  const lateNight = isLateNightMode();
+  if (lateNight) state.includeSecondLobby = false;
+  input.checked = state.includeSecondLobby;
+  input.disabled = lateNight;
+  row?.classList.toggle("is-disabled", lateNight);
+  byId("secondLobbyHint").textContent = lateNight
+    ? "Late Night uses its own two-game preset"
+    : `Registration shifts by ${state.settings.secondLobbyOffsetMinutes} minutes`;
 }
 
 function formatClock(unix) {
@@ -1413,8 +1456,6 @@ function renderTimeline() {
   byId("timelineDelay").textContent = `+${config.delayMinutes} min`;
   byId("heroTime").textContent = formatClock(registrationUnix);
   byId("heroDate").textContent = formatHeroDate(registrationUnix);
-  byId("secondLobbyHint").textContent = `Registration shifts by ${state.settings.secondLobbyOffsetMinutes} minutes`;
-
   const summary = state.includeSecondLobby
     ? `${state.sessionKind === "solos" || state.sessionKind === "solos_closed" ? config.secondReacts : config.firstReacts}+ required for this lobby`
     : `${config.firstReacts}+ for 1 lobby / ${config.secondReacts}+ for 2`;
@@ -1510,9 +1551,9 @@ function buildAnnouncementText() {
   const queueSuffix = mode === "squads" ? " (Squads)" : "";
   const hostIds = [...new Set([state.discordId.trim(), ...state.additionalHostIds].filter(Boolean))];
   const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
-  const unit = mode === "squads" ? "squad" : mode === "duos" ? "duo" : "player";
-  const templateKey = state.includeSecondLobby ? "second" : "primary";
-  const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, state.includeSecondLobby);
+  const unit = mode === "squads" ? "squad" : mode === "duos" || mode === "late_night" ? "duo" : "player";
+  const templateKey = state.includeSecondLobby && !isLateNightMode() ? "second" : "primary";
+  const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, templateKey === "second");
   const values = {
     session_title: session.value === "247"
       ? `Noble 24/7 Session ${getTwentyFourSevenSessionNumber()}`
@@ -1537,11 +1578,12 @@ function buildAnnouncementText() {
 
 function renderAnnouncement() {
   const session = getSession();
+  const outputLabel = isLateNightMode() ? `${session.label} · Late Night` : session.label;
   const output = byId("announcementText");
   const copyButton = byId("copyAnnouncement");
 
-  byId("announceSessionTitle").textContent = session.label;
-  byId("selectedSessionName").textContent = session.label;
+  byId("announceSessionTitle").textContent = outputLabel;
+  byId("selectedSessionName").textContent = outputLabel;
   byId("announceSessionIcon").src = session.icon;
   byId("announceSessionIcon").alt = session.label;
 
@@ -1567,6 +1609,7 @@ function renderBuilder() {
   renderSessionNumberField();
   renderAdditionalHosts();
   renderQueueButtons();
+  renderSecondLobbyControl();
   renderTimeline();
   renderAnnouncement();
   renderFormatTable();
