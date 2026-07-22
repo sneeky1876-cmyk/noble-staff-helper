@@ -6589,6 +6589,315 @@ a {
   }
 }
 
+/* Session server ordering */
+.session-reorder-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 2px 0;
+  color: var(--muted);
+  font-size: 0.63rem;
+  line-height: 1.45;
+}
+
+.reorder-grip {
+  display: grid;
+  width: 14px;
+  min-width: 14px;
+  grid-template-columns: repeat(2, 3px);
+  gap: 3px;
+  align-content: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.reorder-grip i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.session-card-grip {
+  position: absolute;
+  right: 9px;
+  bottom: 9px;
+  margin: 0;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateX(5px);
+  transition: opacity 160ms ease, transform 160ms ease, color 160ms ease;
+}
+
+.session-card:hover .session-card-grip,
+.session-card:focus-visible .session-card-grip,
+.session-grid.is-reordering .session-card-grip {
+  color: var(--gold);
+  opacity: 0.82;
+  transform: translateX(0);
+}
+
+.session-order-settings {
+  padding: clamp(22px, 2.6vw, 30px);
+  background: linear-gradient(150deg, rgba(18, 21, 29, 0.92), rgba(12, 15, 21, 0.92));
+}
+
+.session-order-settings-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.session-order-settings-head h3 {
+  margin: 5px 0 0;
+  font-family: var(--heading);
+  font-size: 1.15rem;
+}
+
+.session-order-settings-head p:last-child {
+  max-width: 700px;
+  margin: 7px 0 0;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.session-order-saved {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1px solid rgba(91, 205, 151, 0.2);
+  border-radius: 999px;
+  background: rgba(91, 205, 151, 0.07);
+  color: #91e2b8;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.session-order-saved > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 4px rgba(91, 205, 151, 0.08);
+}
+
+.session-order-editor {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.session-order-item {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 72px;
+  grid-template-columns: 16px 42px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.018);
+  color: var(--text);
+  cursor: grab;
+  touch-action: pan-y;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.session-order-item:hover {
+  border-color: var(--line-strong);
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.session-order-item > .reorder-grip {
+  color: var(--muted);
+}
+
+.session-order-item > img {
+  width: 42px;
+  height: 42px;
+  border-radius: 9px;
+  object-fit: cover;
+}
+
+.session-order-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.session-order-copy b {
+  overflow: hidden;
+  font-size: 0.7rem;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.session-order-copy small {
+  color: var(--muted);
+  font-size: 0.58rem;
+}
+
+.session-default-badge {
+  position: absolute;
+  top: 7px;
+  right: 8px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: var(--gold-soft);
+  color: var(--gold);
+  font-size: 0.49rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.session-order-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.session-order-actions button {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(4, 6, 10, 0.46);
+  color: var(--muted-bright);
+  font-size: 0.72rem;
+  cursor: pointer;
+  transition: 150ms ease;
+}
+
+.session-order-actions button:hover:not(:disabled) {
+  border-color: var(--gold-line);
+  color: var(--gold);
+}
+
+.session-order-actions button:disabled {
+  opacity: 0.28;
+  cursor: default;
+}
+
+.session-card,
+.session-order-item {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.session-card {
+  touch-action: pan-y;
+  -webkit-touch-callout: none;
+}
+
+.session-grid.is-reordering .session-card,
+.session-order-editor.is-reordering .session-order-item {
+  cursor: grabbing;
+  touch-action: none;
+  animation: session-wiggle 180ms ease-in-out infinite alternate;
+}
+
+.session-grid.is-reordering .session-card:nth-child(even),
+.session-order-editor.is-reordering .session-order-item:nth-child(even) {
+  animation-direction: alternate-reverse;
+}
+
+.session-grid .is-drag-source,
+.session-order-editor .is-drag-source {
+  border-style: dashed;
+  opacity: 0.16;
+  animation: none;
+  transform: none !important;
+}
+
+.session-drag-ghost {
+  position: fixed !important;
+  z-index: 500;
+  margin: 0 !important;
+  pointer-events: none !important;
+  opacity: 0.98;
+  transform: scale(1.04) rotate(1deg) !important;
+  animation: none !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.52), 0 0 0 1px var(--gold-line);
+  cursor: grabbing;
+}
+
+.session-drag-ghost.session-card-grip,
+.session-drag-ghost .session-card-grip {
+  opacity: 1;
+}
+
+.is-session-reordering,
+.is-session-reordering * {
+  cursor: grabbing !important;
+}
+
+@keyframes session-wiggle {
+  from { transform: rotate(-0.35deg); }
+  to { transform: rotate(0.35deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .session-grid.is-reordering .session-card,
+  .session-order-editor.is-reordering .session-order-item {
+    animation: none;
+  }
+}
+
+@media (max-width: 1100px) {
+  .session-order-editor {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .session-card-grip {
+    color: var(--muted);
+    opacity: 0.55;
+    transform: none;
+  }
+
+  .session-reorder-note {
+    align-items: flex-start;
+    margin-top: 10px;
+    font-size: 0.6rem;
+  }
+
+  .session-order-settings {
+    padding: 16px;
+  }
+
+  .session-order-settings-head {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .session-order-saved {
+    align-self: flex-start;
+  }
+
+  .session-order-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .session-order-item {
+    min-height: 68px;
+  }
+}
+
 @media (max-width: 350px) {
   .input-action-row {
     grid-template-columns: 1fr;

@@ -110,6 +110,8 @@ const SESSION_KINDS = [
   },
 ];
 
+const DEFAULT_SESSION_ORDER = SESSION_KINDS.map((session) => session.value);
+
 const SCHEDULE_TEMPLATE = [
   "@everyone",
   "",
@@ -372,6 +374,7 @@ const STORAGE = {
   settings: "nobleCustomSettingsV1",
   scheduleSettings: "nobleScheduleSettingsV1",
   staffLinks: "nobleStaffLinksV1",
+  sessionOrder: "nobleSessionOrderV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
@@ -384,6 +387,7 @@ const CREATOR_DISCORD_USER_ID = "831136990102945833";
 const state = {
   unix: null,
   sessionKind: "solos",
+  sessionOrder: [...DEFAULT_SESSION_ORDER],
   queueType: "duos",
   discordId: "",
   additionalHostIds: [],
@@ -413,9 +417,26 @@ const state = {
 };
 
 let toastTimer = null;
+let suppressSessionClickUntil = 0;
 
 function byId(id) {
   return document.getElementById(id);
+}
+
+function sanitizeSessionOrder(value) {
+  const valid = new Set(DEFAULT_SESSION_ORDER);
+  const ordered = Array.isArray(value)
+    ? value.filter((sessionId, index, items) => valid.has(sessionId) && items.indexOf(sessionId) === index)
+    : [];
+  DEFAULT_SESSION_ORDER.forEach((sessionId) => {
+    if (!ordered.includes(sessionId)) ordered.push(sessionId);
+  });
+  return ordered;
+}
+
+function getOrderedSessions() {
+  const sessionsById = new Map(SESSION_KINDS.map((session) => [session.value, session]));
+  return state.sessionOrder.map((sessionId) => sessionsById.get(sessionId)).filter(Boolean);
 }
 
 function cloneDefaults() {
@@ -553,11 +574,11 @@ function toUnixFromLocalInput(value) {
 }
 
 function getSession() {
-  return SESSION_KINDS.find((session) => session.value === state.sessionKind) || SESSION_KINDS[0];
+  return SESSION_KINDS.find((session) => session.value === state.sessionKind) || getOrderedSessions()[0] || SESSION_KINDS[0];
 }
 
 function getMode(sessionKind = state.sessionKind) {
-  const session = SESSION_KINDS.find((candidate) => candidate.value === sessionKind) || SESSION_KINDS[0];
+  const session = SESSION_KINDS.find((candidate) => candidate.value === sessionKind) || getOrderedSessions()[0] || SESSION_KINDS[0];
   if (session.modes.length === 1) return session.modes[0];
   return session.modes.includes(state.queueType) ? state.queueType : session.modes[0];
 }
@@ -1299,16 +1320,239 @@ function renderMinuteAdjustButtons() {
   });
 }
 
+function createReorderGrip(className = "") {
+  const grip = document.createElement("span");
+  grip.className = `reorder-grip${className ? ` ${className}` : ""}`;
+  grip.setAttribute("aria-hidden", "true");
+  for (let index = 0; index < 6; index += 1) grip.appendChild(document.createElement("i"));
+  return grip;
+}
+
+function saveSessionOrder() {
+  state.sessionOrder = sanitizeSessionOrder(state.sessionOrder);
+  try {
+    localStorage.setItem(STORAGE.sessionOrder, JSON.stringify(state.sessionOrder));
+    return true;
+  } catch (error) {
+    console.warn("Session order could not be saved", error);
+    return false;
+  }
+}
+
+function applySessionOrder(order, announce = true) {
+  state.sessionOrder = sanitizeSessionOrder(order);
+  const saved = saveSessionOrder();
+  renderSessionCards();
+  renderSessionOrderEditor();
+  renderSettingsEditor();
+  renderTemplateEditor();
+  if (announce) showToast(saved ? "Session order saved" : "Order changed for this visit");
+}
+
+function moveSessionOrder(sessionId, direction) {
+  const order = [...state.sessionOrder];
+  const index = order.indexOf(sessionId);
+  const nextIndex = index + direction;
+  if (index < 0 || nextIndex < 0 || nextIndex >= order.length) return;
+  [order[index], order[nextIndex]] = [order[nextIndex], order[index]];
+  applySessionOrder(order);
+}
+
+function renderSessionOrderEditor() {
+  const editor = byId("sessionOrderEditor");
+  if (!editor) return;
+  editor.replaceChildren();
+  editor.setAttribute("role", "list");
+
+  getOrderedSessions().forEach((session, index, sessions) => {
+    const item = document.createElement("div");
+    item.className = "session-order-item";
+    item.dataset.sessionId = session.value;
+    item.setAttribute("role", "listitem");
+    item.setAttribute("aria-label", `${session.label}, position ${index + 1} of ${sessions.length}`);
+
+    const image = document.createElement("img");
+    image.src = session.icon;
+    image.alt = "";
+
+    const copy = document.createElement("span");
+    copy.className = "session-order-copy";
+    const name = document.createElement("b");
+    name.textContent = session.label;
+    const meta = document.createElement("small");
+    meta.textContent = index === 0 ? "Opens first after reload" : `Position ${index + 1}`;
+    copy.append(name, meta);
+
+    const defaultBadge = document.createElement("span");
+    defaultBadge.className = "session-default-badge";
+    defaultBadge.textContent = "Default";
+    defaultBadge.hidden = index !== 0;
+
+    const actions = document.createElement("span");
+    actions.className = "session-order-actions";
+    const moveUp = document.createElement("button");
+    moveUp.type = "button";
+    moveUp.dataset.orderAction = "up";
+    moveUp.dataset.sessionId = session.value;
+    moveUp.setAttribute("aria-label", `Move ${session.label} earlier`);
+    moveUp.textContent = "\u2191";
+    moveUp.disabled = index === 0;
+    const moveDown = document.createElement("button");
+    moveDown.type = "button";
+    moveDown.dataset.orderAction = "down";
+    moveDown.dataset.sessionId = session.value;
+    moveDown.setAttribute("aria-label", `Move ${session.label} later`);
+    moveDown.textContent = "\u2193";
+    moveDown.disabled = index === sessions.length - 1;
+    actions.append(moveUp, moveDown);
+
+    item.append(createReorderGrip(), image, copy, defaultBadge, actions);
+    editor.appendChild(item);
+  });
+}
+
+function installLongPressReorder(container, itemSelector, onCommit) {
+  if (!container) return;
+  let interaction = null;
+
+  const removeWindowListeners = () => {
+    window.removeEventListener("pointermove", onPointerMove);
+    window.removeEventListener("pointerup", onPointerEnd);
+    window.removeEventListener("pointercancel", onPointerEnd);
+  };
+
+  const updateGhostPosition = (clientX, clientY) => {
+    if (!interaction?.ghost) return;
+    interaction.ghost.style.left = `${clientX - interaction.offsetX}px`;
+    interaction.ghost.style.top = `${clientY - interaction.offsetY}px`;
+  };
+
+  const activate = () => {
+    if (!interaction || interaction.active) return;
+    const rect = interaction.source.getBoundingClientRect();
+    const ghost = interaction.source.cloneNode(true);
+    ghost.removeAttribute("id");
+    ghost.removeAttribute("aria-pressed");
+    ghost.classList.remove("is-selected", "is-drag-source");
+    ghost.classList.add("session-drag-ghost");
+    ghost.style.width = `${rect.width}px`;
+    ghost.style.height = `${rect.height}px`;
+    ghost.querySelectorAll("button").forEach((button) => {
+      button.disabled = true;
+      button.tabIndex = -1;
+    });
+    document.body.appendChild(ghost);
+
+    interaction.active = true;
+    interaction.ghost = ghost;
+    interaction.offsetX = interaction.latestX - rect.left;
+    interaction.offsetY = interaction.latestY - rect.top;
+    interaction.source.classList.add("is-drag-source");
+    container.classList.add("is-reordering");
+    document.body.classList.add("is-session-reordering");
+    updateGhostPosition(interaction.latestX, interaction.latestY);
+    if (navigator.vibrate) navigator.vibrate(24);
+  };
+
+  function onPointerMove(event) {
+    if (!interaction || event.pointerId !== interaction.pointerId) return;
+    interaction.latestX = event.clientX;
+    interaction.latestY = event.clientY;
+
+    if (!interaction.active) {
+      const distance = Math.hypot(event.clientX - interaction.startX, event.clientY - interaction.startY);
+      if (distance > 10) {
+        window.clearTimeout(interaction.timer);
+        interaction.timer = null;
+      }
+      return;
+    }
+
+    event.preventDefault();
+    updateGhostPosition(event.clientX, event.clientY);
+    const target = document.elementFromPoint(event.clientX, event.clientY)?.closest(itemSelector);
+    if (!target || target === interaction.source || target.parentElement !== container) return;
+
+    const items = [...container.querySelectorAll(itemSelector)];
+    const startRects = new Map(items.map((item) => [item, item.getBoundingClientRect()]));
+    const sourceIndex = items.indexOf(interaction.source);
+    const targetIndex = items.indexOf(target);
+    if (sourceIndex < targetIndex) target.after(interaction.source);
+    else target.before(interaction.source);
+
+    items.forEach((item) => {
+      if (item === interaction.source || !item.animate) return;
+      const start = startRects.get(item);
+      const end = item.getBoundingClientRect();
+      const x = start.left - end.left;
+      const y = start.top - end.top;
+      if (!x && !y) return;
+      item.animate(
+        [{ transform: `translate(${x}px, ${y}px)` }, { transform: "translate(0, 0)" }],
+        { duration: 180, easing: "cubic-bezier(.2,.8,.2,1)" }
+      );
+    });
+  }
+
+  function onPointerEnd(event) {
+    if (!interaction || event.pointerId !== interaction.pointerId) return;
+    window.clearTimeout(interaction.timer);
+    removeWindowListeners();
+
+    if (interaction.active) {
+      event.preventDefault();
+      const order = [...container.querySelectorAll(itemSelector)].map((item) => item.dataset.sessionId);
+      interaction.source.classList.remove("is-drag-source");
+      interaction.ghost?.remove();
+      container.classList.remove("is-reordering");
+      document.body.classList.remove("is-session-reordering");
+      suppressSessionClickUntil = Date.now() + 500;
+      onCommit(order);
+    }
+    interaction = null;
+  }
+
+  container.addEventListener("pointerdown", (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+    if (event.target.closest("[data-order-action]")) return;
+    const source = event.target.closest(itemSelector);
+    if (!source || source.parentElement !== container) return;
+
+    interaction = {
+      active: false,
+      ghost: null,
+      latestX: event.clientX,
+      latestY: event.clientY,
+      offsetX: 0,
+      offsetY: 0,
+      pointerId: event.pointerId,
+      source,
+      startX: event.clientX,
+      startY: event.clientY,
+      timer: null,
+    };
+    interaction.timer = window.setTimeout(activate, 420);
+    window.addEventListener("pointermove", onPointerMove, { passive: false });
+    window.addEventListener("pointerup", onPointerEnd, { passive: false });
+    window.addEventListener("pointercancel", onPointerEnd, { passive: false });
+  });
+
+  container.addEventListener("contextmenu", (event) => {
+    if (interaction?.active && event.target.closest(itemSelector)) event.preventDefault();
+  });
+}
+
 function renderSessionCards() {
   const container = byId("sessionCards");
   container.replaceChildren();
 
-  SESSION_KINDS.forEach((session) => {
+  getOrderedSessions().forEach((session) => {
     const mode = session.modes[0];
     const config = getSessionSettings(session.value, mode);
     const button = document.createElement("button");
     button.type = "button";
     button.className = "session-card";
+    button.dataset.sessionId = session.value;
     button.setAttribute("aria-pressed", String(state.sessionKind === session.value));
     if (state.sessionKind === session.value) button.classList.add("is-selected");
 
@@ -1323,9 +1567,10 @@ function renderSessionCards() {
     const meta = document.createElement("small");
     meta.textContent = `${config.delayMinutes} min to first game`;
     copy.append(name, meta);
-    button.append(image, copy);
+    button.append(image, copy, createReorderGrip("session-card-grip"));
 
     button.addEventListener("click", () => {
+      if (Date.now() < suppressSessionClickUntil) return;
       if (state.sessionKind !== session.value) {
         state.additionalHostIds = [];
         state.additionalHostComposerOpen = false;
@@ -1867,7 +2112,7 @@ function renderSettingsEditor() {
   byId("thirdLobbyOffset").value = String(state.settings.thirdLobbyOffsetMinutes);
   renderQuickAdjustmentSettings();
 
-  SESSION_KINDS.forEach((session) => {
+  getOrderedSessions().forEach((session) => {
     const server = document.createElement("article");
     server.className = "settings-server";
     const identity = document.createElement("div");
@@ -1915,7 +2160,7 @@ function renderSettingsEditor() {
 }
 
 function getTemplateSession() {
-  return SESSION_KINDS.find((session) => session.value === state.templateSessionKind) || SESSION_KINDS[0];
+  return SESSION_KINDS.find((session) => session.value === state.templateSessionKind) || getOrderedSessions()[0] || SESSION_KINDS[0];
 }
 
 function updateSelectedTemplate(value) {
@@ -1933,7 +2178,7 @@ function renderTemplateEditor() {
 
   const serverButtons = byId("templateServerButtons");
   serverButtons.replaceChildren();
-  SESSION_KINDS.forEach((session) => {
+  getOrderedSessions().forEach((session) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "template-server-button";
@@ -2142,6 +2387,7 @@ function saveSettings() {
   try {
     localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
     localStorage.setItem(STORAGE.staffLinks, JSON.stringify(state.staffLinks));
+    localStorage.setItem(STORAGE.sessionOrder, JSON.stringify(state.sessionOrder));
   } catch (error) {
     console.error(error);
     showToast("Could not save settings in this browser");
@@ -2154,6 +2400,7 @@ function saveSettings() {
   renderScrimPresetEditor();
   renderStaffLinksEditor();
   renderStaffLinksDock();
+  renderSessionOrderEditor();
   byId("templateSaveState").textContent = "Saved locally";
   renderBuilder();
   renderScrims();
@@ -2161,9 +2408,11 @@ function saveSettings() {
 }
 
 function resetSettings() {
-  if (!window.confirm("Restore timing, reaction goals, message templates, and staff links to the Noble defaults?")) return;
+  if (!window.confirm("Restore timing, reaction goals, message templates, server order, and staff links to the Noble defaults?")) return;
   state.settings = cloneDefaults();
   state.staffLinks = cloneStaffLinks();
+  state.sessionOrder = [...DEFAULT_SESSION_ORDER];
+  state.sessionKind = state.sessionOrder[0];
   state.settingsScrimCategoryId = state.settings.scrimCategories[0].id;
   state.scrimQueueType = state.settings.scrimCategories[0].id;
   state.settingsDirty = true;
@@ -2261,6 +2510,10 @@ function loadPreferences() {
     if (savedAnnounceMode === "0") state.announceMode = false;
     if (savedAnnounceMode === "1") state.announceMode = true;
 
+    const savedSessionOrder = localStorage.getItem(STORAGE.sessionOrder);
+    if (savedSessionOrder) state.sessionOrder = sanitizeSessionOrder(JSON.parse(savedSessionOrder));
+    state.sessionKind = state.sessionOrder[0];
+
     const savedSettings = localStorage.getItem(STORAGE.settings);
     if (savedSettings) state.settings = mergeSavedSettings(JSON.parse(savedSettings));
     applySolosSecondLobbyCorrection();
@@ -2314,6 +2567,14 @@ function bindEvents() {
     });
   });
   window.addEventListener("hashchange", () => setView(getViewFromHash(), false));
+
+  installLongPressReorder(byId("sessionCards"), ".session-card", (order) => applySessionOrder(order));
+  installLongPressReorder(byId("sessionOrderEditor"), ".session-order-item", (order) => applySessionOrder(order));
+  byId("sessionOrderEditor").addEventListener("click", (event) => {
+    const action = event.target.closest("[data-order-action]");
+    if (!action) return;
+    moveSessionOrder(action.dataset.sessionId, action.dataset.orderAction === "up" ? -1 : 1);
+  });
 
   document.querySelectorAll("[data-step-target]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -2567,6 +2828,7 @@ function initialize() {
   renderScrimPresetEditor();
   renderStaffLinksEditor();
   renderStaffLinksDock();
+  renderSessionOrderEditor();
   renderScheduleBuilder();
   renderScheduleSettings();
   setView(getViewFromHash(), false);
