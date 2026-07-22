@@ -16,9 +16,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260722-16" />
+  <link rel="stylesheet" href="styles.css?v=20260722-21" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260722-16" defer></script>
+  <script src="script.js?v=20260722-21" defer></script>
 </head>
 
 <body>
@@ -605,6 +605,32 @@
                   <b data-time-format-label>24h</b>
                 </button>
               </div>
+              <div class="localization-option theme-preference-option">
+                <span>
+                  <b>Workspace theme</b>
+                  <small>Switch the complete workspace look without changing your presets.</small>
+                </span>
+                <div class="theme-picker" id="themeButtons" aria-label="Workspace theme" data-no-translate>
+                  <button type="button" data-theme-option="staff" aria-pressed="true">
+                    <span class="theme-preview theme-preview-staff" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span><b>Staff Gold</b><small>Original</small></span>
+                  </button>
+                  <button type="button" data-theme-option="nobleprac" aria-pressed="false">
+                    <span class="theme-preview theme-preview-noble" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span><b>NoblePrac</b><small>Deep teal</small></span>
+                  </button>
+                </div>
+              </div>
+              <label class="localization-option copy-animation-option" for="copyAnimationToggle">
+                <span>
+                  <b>Copy confirmation</b>
+                  <small>Show a short animated confirmation after clipboard actions.</small>
+                </span>
+                <span class="copy-animation-control">
+                  <input id="copyAnimationToggle" type="checkbox" checked />
+                  <span class="toggle" aria-hidden="true"></span>
+                </span>
+              </label>
             </div>
           </section>
 
@@ -1010,6 +1036,13 @@
     </button>
   </aside>
 
+  <div class="copy-confirmation" id="copyConfirmation" role="status" aria-live="polite" aria-atomic="true" hidden>
+    <span class="copy-confirmation-mark" aria-hidden="true"></span>
+    <span class="copy-confirmation-copy">
+      <b>Copied</b>
+      <small id="copyConfirmationMessage">Ready to paste</small>
+    </span>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite">Copied</div>
 </body>
 </html>

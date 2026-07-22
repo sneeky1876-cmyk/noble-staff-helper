@@ -2244,6 +2244,432 @@ svg {
   }
 }
 
+/* Display preferences */
+.theme-preference-option,
+.copy-animation-option {
+  grid-column: span 1;
+}
+
+.theme-picker {
+  display: grid;
+  min-width: min(100%, 330px);
+  grid-template-columns: repeat(2, minmax(125px, 1fr));
+  gap: 7px;
+}
+
+.theme-picker > button {
+  display: grid;
+  min-height: 58px;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: rgba(4, 6, 10, 0.3);
+  color: var(--muted-bright);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.theme-picker > button:hover {
+  border-color: var(--line-strong);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.theme-picker > button.is-selected {
+  border-color: var(--gold-line);
+  background: var(--gold-soft);
+  color: var(--text);
+}
+
+.theme-picker > button > span:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.theme-picker b {
+  font-size: 0.62rem;
+}
+
+.theme-picker small {
+  color: var(--muted);
+  font-size: 0.53rem;
+}
+
+.theme-preview {
+  position: relative;
+  display: grid;
+  width: 54px;
+  height: 40px;
+  grid-template-columns: 14px 1fr;
+  gap: 4px;
+  padding: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+}
+
+.theme-preview i {
+  display: block;
+  border-radius: 2px;
+}
+
+.theme-preview i:first-child {
+  grid-row: 1 / 3;
+}
+
+.theme-preview-staff {
+  background: #080a10;
+}
+
+.theme-preview-staff i:first-child { background: #171b24; }
+.theme-preview-staff i:nth-child(2) { background: #202532; }
+.theme-preview-staff i:last-child { background: #efca7a; }
+
+.theme-preview-noble {
+  background: #152530;
+}
+
+.theme-preview-noble i:first-child { background: #0f1c25; }
+.theme-preview-noble i:nth-child(2) { background: #1a2c38; }
+.theme-preview-noble i:last-child { background: #f5b500; }
+
+.copy-animation-option {
+  cursor: pointer;
+}
+
+.copy-animation-control {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+}
+
+.copy-animation-control input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.copy-animation-control input:checked + .toggle {
+  border-color: var(--gold);
+  background: var(--gold);
+}
+
+.copy-animation-control input:checked + .toggle::after {
+  transform: translateX(20px);
+}
+
+.copy-animation-control input:focus-visible + .toggle {
+  outline: 3px solid var(--gold-soft);
+  outline-offset: 2px;
+}
+
+/* Clipboard confirmation: intentionally transient, validation stays invisible. */
+.copy-confirmation {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 240;
+  display: grid;
+  min-width: 260px;
+  max-width: min(380px, calc(100vw - 32px));
+  grid-template-columns: 44px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px 15px 12px 12px;
+  border: 1px solid rgba(112, 214, 160, 0.3);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--surface-solid) 94%, #163728 6%);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px) scale(0.96);
+}
+
+.copy-confirmation[hidden] {
+  display: none;
+}
+
+.copy-confirmation.is-visible {
+  animation: copy-confirmation-enter 420ms cubic-bezier(0.2, 0.86, 0.25, 1.12) forwards;
+}
+
+.copy-confirmation-mark {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(112, 214, 160, 0.12);
+  color: #8ce2b3;
+}
+
+.copy-confirmation-mark::before {
+  width: 13px;
+  height: 7px;
+  border-bottom: 2px solid currentColor;
+  border-left: 2px solid currentColor;
+  content: "";
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transform-origin: center;
+}
+
+.copy-confirmation-mark::after {
+  position: absolute;
+  inset: -1px;
+  border: 1px solid rgba(112, 214, 160, 0.5);
+  border-radius: inherit;
+  content: "";
+  opacity: 0;
+}
+
+.copy-confirmation.is-visible .copy-confirmation-mark::before {
+  animation: copy-check-draw 340ms 110ms cubic-bezier(0.2, 0.9, 0.3, 1.2) forwards;
+}
+
+.copy-confirmation.is-visible .copy-confirmation-mark::after {
+  animation: copy-ring 700ms 80ms ease-out forwards;
+}
+
+.copy-confirmation-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.copy-confirmation-copy b {
+  color: var(--text);
+  font-size: 0.72rem;
+}
+
+.copy-confirmation-copy small {
+  overflow: hidden;
+  color: var(--muted-bright);
+  font-size: 0.58rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@keyframes copy-confirmation-enter {
+  0% { opacity: 0; transform: translateY(-12px) scale(0.96); }
+  65%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes copy-check-draw {
+  to { transform: translateY(-1px) rotate(-45deg) scale(1); }
+}
+
+@keyframes copy-ring {
+  0% { opacity: 0.7; transform: scale(0.82); }
+  100% { opacity: 0; transform: scale(1.45); }
+}
+
+/* Optional NoblePrac-inspired theme. */
+html[data-theme="nobleprac"] {
+  color-scheme: dark;
+  --bg: #152530;
+  --bg-deep: #0d1921;
+  --sidebar: rgba(15, 28, 37, 0.97);
+  --surface: rgba(26, 44, 56, 0.95);
+  --surface-solid: #1a2c38;
+  --surface-raised: #213746;
+  --surface-soft: rgba(255, 255, 255, 0.045);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.58);
+  --muted-bright: rgba(255, 255, 255, 0.8);
+  --gold: #f5b500;
+  --gold-soft: rgba(245, 181, 0, 0.12);
+  --gold-line: rgba(245, 181, 0, 0.4);
+  --green: #70d6a0;
+  --shadow: 0 22px 60px rgba(3, 12, 17, 0.24);
+}
+
+html[data-theme="nobleprac"] body {
+  background:
+    radial-gradient(circle at 68% 4%, rgba(245, 181, 0, 0.075), transparent 29%),
+    radial-gradient(circle at 18% 90%, rgba(52, 152, 178, 0.08), transparent 32%),
+    var(--bg);
+}
+
+html[data-theme="nobleprac"] .site-glow-one {
+  background: #f5b500;
+  opacity: 0.08;
+}
+
+html[data-theme="nobleprac"] .site-glow-two {
+  background: #3baac5;
+  opacity: 0.07;
+}
+
+html[data-theme="nobleprac"] .sidebar {
+  background: var(--sidebar);
+  backdrop-filter: blur(18px);
+}
+
+html[data-theme="nobleprac"] .topbar {
+  background: rgba(21, 37, 48, 0.76);
+  backdrop-filter: blur(16px);
+}
+
+html[data-theme="nobleprac"] .surface,
+html[data-theme="nobleprac"] .localization-settings,
+html[data-theme="nobleprac"] .backup-settings {
+  border-color: var(--line);
+  background: linear-gradient(145deg, rgba(26, 44, 56, 0.98), rgba(21, 37, 48, 0.98));
+  box-shadow: var(--shadow);
+}
+
+html[data-theme="nobleprac"] .nav-item.is-active {
+  border-color: rgba(245, 181, 0, 0.24);
+  background: rgba(245, 181, 0, 0.1);
+}
+
+html[data-theme="nobleprac"] .input,
+html[data-theme="nobleprac"] .message-output,
+html[data-theme="nobleprac"] .template-textarea,
+html[data-theme="nobleprac"] .session-card,
+html[data-theme="nobleprac"] .toggle-row,
+html[data-theme="nobleprac"] .selected-session,
+html[data-theme="nobleprac"] .localization-option,
+html[data-theme="nobleprac"] .backup-actions-grid article {
+  background: #0f1c25;
+}
+
+html[data-theme="nobleprac"] .input:focus,
+html[data-theme="nobleprac"] .template-textarea:focus {
+  border-color: rgba(245, 181, 0, 0.66);
+  box-shadow: 0 0 0 3px rgba(245, 181, 0, 0.1);
+}
+
+html[data-theme="nobleprac"] .button-primary {
+  border-color: #f5b500;
+  background: #f5b500;
+  color: #152530;
+}
+
+html[data-theme="nobleprac"] .button-primary:hover {
+  border-color: #ffc31a;
+  background: #ffc31a;
+  box-shadow: 0 8px 24px rgba(245, 181, 0, 0.16);
+}
+
+html[data-theme="nobleprac"] .session-card:hover,
+html[data-theme="nobleprac"] .localization-option:hover {
+  border-color: rgba(255, 255, 255, 0.17);
+}
+
+html[data-theme="nobleprac"] .session-card.is-selected {
+  border-color: rgba(245, 181, 0, 0.46);
+  background: linear-gradient(135deg, rgba(245, 181, 0, 0.09), #0f1c25 55%);
+}
+
+html[data-theme="nobleprac"] .target-strip,
+html[data-theme="nobleprac"] .history-summary-icon,
+html[data-theme="nobleprac"] .section-number {
+  background: rgba(245, 181, 0, 0.1);
+}
+
+html[data-theme="nobleprac"] .staff-links-panel,
+html[data-theme="nobleprac"] .staff-links-toggle,
+html[data-theme="nobleprac"] .toast {
+  background: #0f1c25;
+}
+
+html[data-theme="nobleprac"] .staff-link-card {
+  background: #1a2c38;
+}
+
+
+
+html[data-theme="nobleprac"] .copy-confirmation {
+  background: #0f1c25;
+}
+
+.button,
+.nav-item,
+.session-card,
+.surface,
+.staff-link-card {
+  transition-property: transform, border-color, background-color, box-shadow, color;
+  transition-duration: 180ms;
+  transition-timing-function: ease;
+}
+
+.button:active,
+.session-card:active {
+  transform: translateY(0) scale(0.985);
+}
+
+@media (max-width: 900px) {
+  .theme-preference-option,
+  .copy-animation-option {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .theme-picker {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .theme-picker > button {
+    min-height: 66px;
+  }
+
+  .copy-animation-option {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .copy-confirmation {
+    top: auto;
+    right: 12px;
+    bottom: calc(var(--mobile-nav-height, 72px) + env(safe-area-inset-bottom) + 12px);
+    left: 12px;
+    min-width: 0;
+    max-width: none;
+  }
+}
+
+@media (max-width: 390px) {
+  .theme-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .theme-picker > button {
+    min-height: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-confirmation.is-visible,
+  .copy-confirmation.is-visible .copy-confirmation-mark::before,
+  .copy-confirmation.is-visible .copy-confirmation-mark::after {
+    animation: none;
+  }
+
+  .copy-confirmation.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  .copy-confirmation-mark::before {
+    transform: translateY(-1px) rotate(-45deg) scale(1);
+  }
+}
+
 @media (max-width: 600px) {
   .settings-mode-columns {
     display: none;
@@ -5441,6 +5867,10 @@ body {
   pointer-events: auto;
 }
 
+.staff-links-dock ~ .toast {
+  bottom: 92px;
+}
+
 .staff-links-toggle {
   display: grid;
   min-width: 176px;
@@ -5835,7 +6265,7 @@ body {
   font-weight: 700;
 }
 
-.staff-links-dock.is-open + .toast {
+.staff-links-dock.is-open ~ .toast {
   right: 374px;
 }
 
@@ -5881,7 +6311,7 @@ body {
     grid-column: 1 / -1;
   }
 
-  .staff-links-dock.is-open + .toast {
+  .staff-links-dock.is-open ~ .toast {
     right: 12px;
     bottom: 82px;
   }
@@ -6069,7 +6499,7 @@ a {
     bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 12px);
   }
 
-  .staff-links-dock.is-open + .toast {
+  .staff-links-dock.is-open ~ .toast {
     right: 12px;
     bottom: calc(var(--mobile-nav-height) + env(safe-area-inset-bottom) + 70px);
   }
@@ -7476,4 +7906,181 @@ a {
     min-height: 44px;
     grid-column: 1 / -1;
   }
+}
+
+/* Final theme layer: kept last so it also covers the responsive refresh above. */
+.localization-option > .copy-animation-control {
+  display: inline-flex;
+  min-width: 42px;
+  flex: 0 0 auto;
+  align-items: center;
+  flex-direction: row;
+}
+
+@media (max-width: 720px) {
+  .workspace,
+  .view,
+  .settings-layout,
+  .global-settings,
+  .lobby-offset-settings,
+  .setting-inline,
+  .quick-adjust-settings,
+  .quick-adjust-editor,
+  .quick-adjust-setting {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .global-settings {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: hidden;
+  }
+
+  .setting-inline {
+    width: 100%;
+    padding: 13px;
+  }
+
+  .setting-inline > .clean-stepper {
+    width: 100%;
+    max-width: none;
+    grid-template-columns: 36px minmax(44px, 1fr) auto 36px;
+  }
+
+  .quick-adjust-setting {
+    display: grid;
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr) minmax(148px, 48vw);
+  }
+
+  .quick-adjust-setting .clean-stepper {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .topbar {
+    padding-right: 62px;
+  }
+
+  .staff-links-dock {
+    top: 7px;
+    right: 10px;
+  }
+
+  .staff-links-toggle {
+    width: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 7px;
+  }
+
+  .staff-links-toggle > span:nth-child(2) {
+    display: none;
+  }
+
+  .staff-links-toggle-icon {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+html[data-theme="nobleprac"] {
+  --bg: #152530;
+  --bg-deep: #0d1921;
+  --sidebar: rgba(15, 28, 37, 0.97);
+  --surface: rgba(26, 44, 56, 0.96);
+  --surface-solid: #1a2c38;
+  --surface-raised: #213746;
+  --surface-soft: rgba(255, 255, 255, 0.045);
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.18);
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.58);
+  --muted-bright: rgba(255, 255, 255, 0.8);
+  --gold: #f5b500;
+  --gold-soft: rgba(245, 181, 0, 0.12);
+  --gold-line: rgba(245, 181, 0, 0.4);
+  --shadow: 0 22px 60px rgba(3, 12, 17, 0.24);
+}
+
+html[data-theme="nobleprac"] body {
+  background:
+    radial-gradient(circle at 68% 4%, rgba(245, 181, 0, 0.075), transparent 29%),
+    radial-gradient(circle at 18% 90%, rgba(52, 152, 178, 0.08), transparent 32%),
+    var(--bg);
+}
+
+html[data-theme="nobleprac"] .sidebar {
+  border-color: var(--line);
+  background: var(--sidebar);
+}
+
+html[data-theme="nobleprac"] .topbar {
+  border-color: var(--line);
+  background: rgba(21, 37, 48, 0.76);
+  backdrop-filter: blur(16px);
+}
+
+html[data-theme="nobleprac"] .surface,
+html[data-theme="nobleprac"] .control-section,
+html[data-theme="nobleprac"] .live-output,
+html[data-theme="nobleprac"] .message-card,
+html[data-theme="nobleprac"] .guide-card,
+html[data-theme="nobleprac"] .global-settings,
+html[data-theme="nobleprac"] .mode-settings,
+html[data-theme="nobleprac"] .template-settings,
+html[data-theme="nobleprac"] .staff-links-settings,
+html[data-theme="nobleprac"] .localization-settings,
+html[data-theme="nobleprac"] .backup-settings {
+  border-color: var(--line);
+  background: linear-gradient(145deg, rgba(26, 44, 56, 0.98), rgba(21, 37, 48, 0.98));
+  box-shadow: var(--shadow);
+}
+
+html[data-theme="nobleprac"] .input,
+html[data-theme="nobleprac"] .message-output,
+html[data-theme="nobleprac"] .template-textarea,
+html[data-theme="nobleprac"] .session-card,
+html[data-theme="nobleprac"] .toggle-row,
+html[data-theme="nobleprac"] .selected-session,
+html[data-theme="nobleprac"] .localization-option,
+html[data-theme="nobleprac"] .backup-actions-grid article {
+  border-color: var(--line);
+  background: #0f1c25;
+}
+
+html[data-theme="nobleprac"] .nav-item.is-active {
+  border-color: rgba(245, 181, 0, 0.24);
+  background: rgba(245, 181, 0, 0.1);
+}
+
+html[data-theme="nobleprac"] .session-card.is-selected {
+  border-color: rgba(245, 181, 0, 0.46);
+  background: linear-gradient(135deg, rgba(245, 181, 0, 0.09), #0f1c25 55%);
+}
+
+html[data-theme="nobleprac"] .button-primary {
+  border-color: #f5b500;
+  background: #f5b500;
+  color: #152530;
+}
+
+html[data-theme="nobleprac"] .button-primary:hover {
+  border-color: #ffc31a;
+  background: #ffc31a;
+  box-shadow: 0 8px 24px rgba(245, 181, 0, 0.16);
+}
+
+html[data-theme="nobleprac"] .staff-links-panel,
+html[data-theme="nobleprac"] .staff-links-toggle,
+html[data-theme="nobleprac"] .toast,
+html[data-theme="nobleprac"] .copy-confirmation {
+  background: #0f1c25;
+}
+
+html[data-theme="nobleprac"] .staff-link-card {
+  background: #1a2c38;
 }

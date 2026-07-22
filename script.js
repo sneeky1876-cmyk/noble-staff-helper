@@ -68,6 +68,10 @@ const INTERFACE_TRANSLATIONS = {
     "Time display": "Zeitanzeige",
     "Use a 24-hour clock or AM/PM across the workspace.": "Im gesamten Arbeitsbereich 24-Stunden- oder AM/PM-Format verwenden.",
     "Current format": "Aktuelles Format",
+    "Workspace theme": "Arbeitsbereich-Design",
+    "Switch the complete workspace look without changing your presets.": "Ändere das komplette Design, ohne deine Vorlagen zu verändern.",
+    "Copy confirmation": "Kopierbestätigung",
+    "Show a short animated confirmation after clipboard actions.": "Nach dem Kopieren eine kurze animierte Bestätigung anzeigen.",
     "Global timing": "Globale Zeiten",
     "Additional lobby offsets": "Zusätzliche Lobby-Verschiebungen",
     "Second lobby shift": "Verschiebung zweite Lobby",
@@ -174,6 +178,10 @@ const INTERFACE_TRANSLATIONS = {
     "Time display": "Format de l'heure",
     "Use a 24-hour clock or AM/PM across the workspace.": "Utiliser le format 24 h ou AM/PM dans tout l'espace.",
     "Current format": "Format actuel",
+    "Workspace theme": "Thème de l'espace",
+    "Switch the complete workspace look without changing your presets.": "Changez l'apparence sans modifier vos préréglages.",
+    "Copy confirmation": "Confirmation de copie",
+    "Show a short animated confirmation after clipboard actions.": "Afficher une brève confirmation animée après la copie.",
     "Global timing": "Horaires globaux",
     "Additional lobby offsets": "Décalages des lobbies supplémentaires",
     "Second lobby shift": "Décalage du deuxième lobby",
@@ -280,6 +288,10 @@ const INTERFACE_TRANSLATIONS = {
     "Time display": "Formato de hora",
     "Use a 24-hour clock or AM/PM across the workspace.": "Usa formato de 24 horas o AM/PM en todo el espacio.",
     "Current format": "Formato actual",
+    "Workspace theme": "Tema del espacio",
+    "Switch the complete workspace look without changing your presets.": "Cambia el aspecto completo sin modificar tus ajustes.",
+    "Copy confirmation": "Confirmación de copia",
+    "Show a short animated confirmation after clipboard actions.": "Muestra una breve confirmación animada al copiar.",
     "Global timing": "Horarios globales",
     "Additional lobby offsets": "Desplazamientos de lobbies adicionales",
     "Second lobby shift": "Desplazamiento del segundo lobby",
@@ -706,6 +718,8 @@ const STORAGE = {
   announcementHistory: "nobleAnnouncementHistoryV1",
   language: "nobleInterfaceLanguageV1",
   timeFormat: "nobleTimeFormatV1",
+  theme: "nobleWorkspaceThemeV1",
+  copyAnimation: "nobleCopyAnimationV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
@@ -747,10 +761,13 @@ const state = {
   staffLinksOpen: false,
   language: "en",
   timeFormat: getPreferredTimeFormat(),
+  theme: "staff",
+  copyAnimationEnabled: true,
   announcementHistory: [],
 };
 
 let toastTimer = null;
+let copyConfirmationTimer = null;
 let suppressSessionClickUntil = 0;
 const originalInterfaceText = new WeakMap();
 let translationObserver = null;
@@ -826,6 +843,28 @@ function renderLocalizationControls() {
   document.querySelectorAll("[data-time-format-toggle]").forEach((button) => {
     button.setAttribute("aria-pressed", String(state.timeFormat === "12h"));
   });
+  document.querySelectorAll("[data-theme-option]").forEach((button) => {
+    const selected = button.dataset.themeOption === state.theme;
+    button.classList.toggle("is-selected", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  const copyAnimationToggle = byId("copyAnimationToggle");
+  if (copyAnimationToggle) copyAnimationToggle.checked = state.copyAnimationEnabled;
+}
+
+function applyWorkspaceTheme(theme, persist = true) {
+  state.theme = theme === "nobleprac" ? "nobleprac" : "staff";
+  document.documentElement.dataset.theme = state.theme;
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  if (themeColor) themeColor.content = state.theme === "nobleprac" ? "#152530" : "#090b10";
+  if (persist) {
+    try {
+      localStorage.setItem(STORAGE.theme, state.theme);
+    } catch {
+      // Browser storage is optional.
+    }
+  }
+  renderLocalizationControls();
 }
 
 function refreshLocaleSensitiveViews() {
@@ -1130,22 +1169,55 @@ function showToast(message) {
   toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 1800);
 }
 
+function showCopyConfirmation(message) {
+  const confirmation = byId("copyConfirmation");
+  const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  if (!state.copyAnimationEnabled || !confirmation || reducedMotion) {
+    showToast(message);
+    return;
+  }
+
+  byId("copyConfirmationMessage").textContent = message;
+  confirmation.hidden = false;
+  confirmation.classList.remove("is-visible");
+  void confirmation.offsetWidth;
+  confirmation.classList.add("is-visible");
+  window.clearTimeout(copyConfirmationTimer);
+  copyConfirmationTimer = window.setTimeout(() => {
+    confirmation.classList.remove("is-visible");
+    window.setTimeout(() => {
+      if (!confirmation.classList.contains("is-visible")) confirmation.hidden = true;
+    }, 260);
+  }, 1650);
+}
+
 async function copyText(text, successMessage = "Copied to clipboard") {
   if (!text) return false;
+  const copyWithSelection = () => {
+    const temporary = document.createElement("textarea");
+    temporary.value = text;
+    temporary.setAttribute("readonly", "");
+    temporary.style.position = "fixed";
+    temporary.style.inset = "0 auto auto -9999px";
+    temporary.style.opacity = "0";
+    document.body.appendChild(temporary);
+    temporary.select();
+    const copied = document.execCommand("copy");
+    temporary.remove();
+    if (!copied) throw new Error("Legacy clipboard copy was rejected");
+  };
+
   try {
     if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch {
+        copyWithSelection();
+      }
     } else {
-      const temporary = document.createElement("textarea");
-      temporary.value = text;
-      temporary.style.position = "fixed";
-      temporary.style.opacity = "0";
-      document.body.appendChild(temporary);
-      temporary.select();
-      document.execCommand("copy");
-      temporary.remove();
+      copyWithSelection();
     }
-    showToast(successMessage);
+    showCopyConfirmation(successMessage);
     return true;
   } catch (error) {
     console.error(error);
@@ -2326,6 +2398,52 @@ function isDiscordUserId(value) {
   return /^\d{17,20}$/.test(String(value || "").trim());
 }
 
+function getAnnouncementPreflight() {
+  if (!state.announceMode) {
+    return [{ detail: "Turn on Build announcement first.", passed: false, blocking: true }];
+  }
+  if (state.unix === null) {
+    return [{ detail: "Choose a date and time first.", passed: false, blocking: true }];
+  }
+
+  const config = getSessionSettings();
+  const registrationUnix = state.unix + getLobbyOffsetMinutes() * 60;
+  const firstGameUnix = registrationUnix + config.delayMinutes * 60;
+  const hostIds = [state.discordId.trim(), ...state.additionalHostIds].filter(Boolean);
+  const uniqueHostIds = new Set(hostIds);
+  const message = buildAnnouncementText();
+
+  return [
+    {
+      detail: hostIds.length
+        ? "Use unique 17–20 digit Discord user IDs."
+        : "Add the main host's Discord user ID.",
+      passed: hostIds.length > 0 && hostIds.every(isDiscordUserId) && uniqueHostIds.size === hostIds.length,
+      blocking: true,
+    },
+    {
+      detail: "The registration time is already in the past.",
+      passed: registrationUnix >= Math.floor(Date.now() / 1000) - 60,
+      blocking: true,
+    },
+    {
+      detail: "The first-game delay must be greater than zero.",
+      passed: Number.isFinite(firstGameUnix) && config.delayMinutes > 0 && firstGameUnix > registrationUnix,
+      blocking: true,
+    },
+    {
+      detail: "A placeholder or template value is still unresolved.",
+      passed: Boolean(message) && !/\{\{[a-z_]+\}\}/i.test(message),
+      blocking: true,
+    },
+    {
+      detail: "Reaction goals must be positive and increase for a second lobby.",
+      passed: config.firstReacts > 0 && config.secondReacts >= config.firstReacts,
+      blocking: true,
+    },
+  ];
+}
+
 function sanitizeAnnouncementHistory(value) {
   if (!Array.isArray(value)) return [];
   return value.slice(0, 20).map((item, index) => {
@@ -3025,6 +3143,8 @@ function buildConfigurationBackup() {
     preferences: {
       language: state.language,
       timeFormat: state.timeFormat,
+      theme: state.theme,
+      copyAnimationEnabled: state.copyAnimationEnabled,
       discordId: state.discordId,
       recentHostIds: state.recentHostIds,
       announceMode: state.announceMode,
@@ -3069,6 +3189,8 @@ function sanitizeConfigurationBackup(payload) {
     timeFormat: preferences.timeFormat === "12h" || preferences.timeFormat === "24h"
       ? preferences.timeFormat
       : getPreferredTimeFormat(),
+    theme: preferences.theme === "nobleprac" ? "nobleprac" : "staff",
+    copyAnimationEnabled: preferences.copyAnimationEnabled !== false,
     discordId: isDiscordUserId(preferences.discordId) ? String(preferences.discordId) : "",
     recentHostIds: sanitizeRecentHostIds(preferences.recentHostIds),
     announceMode: preferences.announceMode !== false,
@@ -3082,6 +3204,8 @@ function persistImportedConfiguration(configuration) {
   localStorage.setItem(STORAGE.sessionOrder, JSON.stringify(configuration.sessionOrder));
   localStorage.setItem(STORAGE.language, configuration.language);
   localStorage.setItem(STORAGE.timeFormat, configuration.timeFormat);
+  localStorage.setItem(STORAGE.theme, configuration.theme);
+  localStorage.setItem(STORAGE.copyAnimation, configuration.copyAnimationEnabled ? "1" : "0");
   localStorage.setItem(STORAGE.recentHostIds, JSON.stringify(configuration.recentHostIds));
   localStorage.setItem(STORAGE.announceMode, configuration.announceMode ? "1" : "0");
   if (configuration.discordId) localStorage.setItem(STORAGE.discordId, configuration.discordId);
@@ -3095,6 +3219,8 @@ function applyImportedConfiguration(configuration) {
   state.sessionOrder = configuration.sessionOrder;
   state.language = configuration.language;
   state.timeFormat = configuration.timeFormat;
+  state.theme = configuration.theme;
+  state.copyAnimationEnabled = configuration.copyAnimationEnabled;
   state.discordId = configuration.discordId;
   state.recentHostIds = configuration.recentHostIds;
   state.announceMode = configuration.announceMode;
@@ -3110,6 +3236,7 @@ function applyImportedConfiguration(configuration) {
 
   byId("discordId").value = state.discordId;
   byId("announceMode").checked = state.announceMode;
+  applyWorkspaceTheme(state.theme, false);
   renderBuilder();
   renderScrims();
   renderSettingsEditor();
@@ -3281,6 +3408,13 @@ function loadPreferences() {
     const savedTimeFormat = localStorage.getItem(STORAGE.timeFormat);
     if (savedTimeFormat === "12h" || savedTimeFormat === "24h") state.timeFormat = savedTimeFormat;
 
+    const savedTheme = localStorage.getItem(STORAGE.theme);
+    if (savedTheme === "staff" || savedTheme === "nobleprac") state.theme = savedTheme;
+
+    const savedCopyAnimation = localStorage.getItem(STORAGE.copyAnimation);
+    if (savedCopyAnimation === "0") state.copyAnimationEnabled = false;
+    if (savedCopyAnimation === "1") state.copyAnimationEnabled = true;
+
     const savedDiscordId = localStorage.getItem(STORAGE.discordId);
     if (savedDiscordId) state.discordId = savedDiscordId;
 
@@ -3354,6 +3488,18 @@ function configureStaffGuideVideo() {
 }
 
 function bindEvents() {
+  document.querySelectorAll("[data-theme-option]").forEach((button) => {
+    button.addEventListener("click", () => applyWorkspaceTheme(button.dataset.themeOption));
+  });
+  byId("copyAnimationToggle").addEventListener("change", (event) => {
+    state.copyAnimationEnabled = event.target.checked;
+    try {
+      localStorage.setItem(STORAGE.copyAnimation, state.copyAnimationEnabled ? "1" : "0");
+    } catch {
+      // Browser storage is optional.
+    }
+    showToast(state.copyAnimationEnabled ? "Copy animation enabled" : "Copy animation disabled");
+  });
   document.querySelectorAll("[data-time-format-toggle]").forEach((button) => {
     button.addEventListener("click", toggleTimeFormat);
   });
@@ -3469,6 +3615,11 @@ function bindEvents() {
     renderAnnouncement();
   });
   byId("copyAnnouncement").addEventListener("click", async () => {
+    const blocking = getAnnouncementPreflight().filter((check) => !check.passed && check.blocking);
+    if (blocking.length) {
+      showToast(blocking[0].detail);
+      return;
+    }
     const copied = await copyText(byId("announcementText").value, "Announcement copied and saved to history");
     if (copied) rememberCurrentAnnouncement();
   });
@@ -3642,6 +3793,7 @@ function bindEvents() {
 
 function initialize() {
   loadPreferences();
+  applyWorkspaceTheme(state.theme, false);
   if (!state.settings.scrimCategories.some((category) => category.id === state.scrimQueueType)) {
     state.scrimQueueType = state.settings.scrimCategories[0].id;
   }
