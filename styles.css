@@ -1650,6 +1650,8 @@ svg {
 }
 
 .global-settings .section-heading {
+  grid-row: span 2;
+  align-self: start;
   margin: 0;
 }
 
@@ -4507,6 +4509,10 @@ input[type="number"]::-webkit-outer-spin-button {
 
   .global-settings {
     grid-template-columns: 1fr;
+  }
+
+  .global-settings .section-heading {
+    grid-row: auto;
   }
 }
 

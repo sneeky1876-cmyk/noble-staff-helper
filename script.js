@@ -235,7 +235,8 @@ const SCHEDULE_DEFAULTS = {
 };
 
 const DEFAULT_SETTINGS = {
-  secondLobbyOffsetMinutes: 5,
+  secondLobbyOffsetMinutes: 0,
+  thirdLobbyOffsetMinutes: 0,
   quickAdjustments: [-15, 5, 10, 30],
   scrimCategories: [
     {
@@ -305,8 +306,10 @@ const DEFAULT_SETTINGS = {
   },
 };
 
-function createDefaultTemplate(session, mode, secondLobby) {
-  if (session.value === "div0" && mode === "late_night") {
+function createDefaultTemplate(session, mode, lobby = "primary") {
+  const additionalLobby = lobby === "second" || lobby === "third";
+
+  if (session.value === "div0" && mode === "late_night" && !additionalLobby) {
     return DIV0_LATE_NIGHT_TEMPLATE;
   }
 
@@ -317,7 +320,7 @@ function createDefaultTemplate(session, mode, secondLobby) {
     "",
   ];
 
-  if (secondLobby) lines.push("**Second Lobby**", "");
+  if (additionalLobby) lines.push(`**${lobby === "third" ? "Third" : "Second"} Lobby**`, "");
 
   lines.push(
     "{{emoji}} Registration opens @ {{registration}}",
@@ -328,7 +331,7 @@ function createDefaultTemplate(session, mode, secondLobby) {
     ""
   );
 
-  if (!secondLobby || session.value.startsWith("solos")) {
+  if (!additionalLobby || session.value.startsWith("solos")) {
     lines.push(
       "\u2022 Session lasts 3 Games. **Miss a single game and you will be banned.**",
       "\u2022 Make sure to read {{channels}} before the games."
@@ -337,7 +340,7 @@ function createDefaultTemplate(session, mode, secondLobby) {
     lines.push("");
   }
 
-  if (secondLobby) {
+  if (additionalLobby) {
     const reactionToken = session.value === "solos" || session.value === "solos_closed"
       ? "second_reacts"
       : "first_reacts";
@@ -354,8 +357,9 @@ function createDefaultTemplate(session, mode, secondLobby) {
 SESSION_KINDS.forEach((session) => {
   session.modes.forEach((mode) => {
     DEFAULT_SETTINGS.sessions[session.value].modes[mode].templates = {
-      primary: createDefaultTemplate(session, mode, false),
-      second: createDefaultTemplate(session, mode, true),
+      primary: createDefaultTemplate(session, mode, "primary"),
+      second: createDefaultTemplate(session, mode, "second"),
+      third: createDefaultTemplate(session, mode, "third"),
     };
   });
 });
@@ -373,6 +377,7 @@ const STORAGE = {
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
+  lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -387,6 +392,7 @@ const state = {
   additionalHostComposerOpen: false,
   announceMode: true,
   includeSecondLobby: false,
+  includeThirdLobby: false,
   sessionNumber: "1",
   settings: cloneDefaults(),
   settingsDirty: false,
@@ -568,6 +574,19 @@ function isLateNightMode() {
   return state.sessionKind === "div0" && getMode() === "late_night";
 }
 
+function getLobbyVariant() {
+  if (state.includeThirdLobby) return "third";
+  if (state.includeSecondLobby) return "second";
+  return "primary";
+}
+
+function getLobbyOffsetMinutes() {
+  const lobby = getLobbyVariant();
+  if (lobby === "third") return state.settings.thirdLobbyOffsetMinutes;
+  if (lobby === "second") return state.settings.secondLobbyOffsetMinutes;
+  return 0;
+}
+
 function getSessionSettings(sessionKind = state.sessionKind, mode = getMode(sessionKind)) {
   return state.settings.sessions[sessionKind].modes[mode];
 }
@@ -583,6 +602,12 @@ function mergeSavedSettings(saved) {
   merged.secondLobbyOffsetMinutes = clampInteger(
     saved.secondLobbyOffsetMinutes,
     merged.secondLobbyOffsetMinutes,
+    0,
+    60
+  );
+  merged.thirdLobbyOffsetMinutes = clampInteger(
+    saved.thirdLobbyOffsetMinutes,
+    merged.thirdLobbyOffsetMinutes,
     0,
     60
   );
@@ -613,6 +638,9 @@ function mergeSavedSettings(saved) {
       }
       if (typeof incoming.templates?.second === "string") {
         target.templates.second = incoming.templates.second.slice(0, 20000);
+      }
+      if (typeof incoming.templates?.third === "string") {
+        target.templates.third = incoming.templates.third.slice(0, 20000);
       }
     });
   });
@@ -1410,24 +1438,21 @@ function renderQueueButtons() {
     if (selectedMode === mode.value) button.classList.add("is-selected");
     button.addEventListener("click", () => {
       state.queueType = mode.value;
-      if (mode.value === "late_night") state.includeSecondLobby = false;
       renderBuilder();
     });
     container.appendChild(button);
   });
 }
 
-function renderSecondLobbyControl() {
-  const input = byId("secondLobby");
-  const row = input.closest(".toggle-row");
-  const lateNight = isLateNightMode();
-  if (lateNight) state.includeSecondLobby = false;
-  input.checked = state.includeSecondLobby;
-  input.disabled = lateNight;
-  row?.classList.toggle("is-disabled", lateNight);
-  byId("secondLobbyHint").textContent = lateNight
-    ? "Late Night uses its own two-game preset"
-    : `Registration shifts by ${state.settings.secondLobbyOffsetMinutes} minutes`;
+function formatLobbyOffsetHint(minutes) {
+  return minutes === 0 ? "Uses the same registration time" : `Registration shifts by ${minutes} minutes`;
+}
+
+function renderLobbyControls() {
+  byId("secondLobby").checked = state.includeSecondLobby;
+  byId("thirdLobby").checked = state.includeThirdLobby;
+  byId("secondLobbyHint").textContent = formatLobbyOffsetHint(state.settings.secondLobbyOffsetMinutes);
+  byId("thirdLobbyHint").textContent = formatLobbyOffsetHint(state.settings.thirdLobbyOffsetMinutes);
 }
 
 function formatClock(unix) {
@@ -1447,7 +1472,8 @@ function formatHeroDate(unix) {
 
 function renderTimeline() {
   const config = getSessionSettings();
-  const offset = state.includeSecondLobby ? state.settings.secondLobbyOffsetMinutes : 0;
+  const lobby = getLobbyVariant();
+  const offset = getLobbyOffsetMinutes();
   const registrationUnix = state.unix === null ? null : state.unix + offset * 60;
   const firstGameUnix = registrationUnix === null ? null : registrationUnix + config.delayMinutes * 60;
 
@@ -1456,7 +1482,7 @@ function renderTimeline() {
   byId("timelineDelay").textContent = `+${config.delayMinutes} min`;
   byId("heroTime").textContent = formatClock(registrationUnix);
   byId("heroDate").textContent = formatHeroDate(registrationUnix);
-  const summary = state.includeSecondLobby
+  const summary = lobby !== "primary"
     ? `${state.sessionKind === "solos" || state.sessionKind === "solos_closed" ? config.secondReacts : config.firstReacts}+ required for this lobby`
     : `${config.firstReacts}+ for 1 lobby / ${config.secondReacts}+ for 2`;
   byId("reactTargetSummary").textContent = summary;
@@ -1545,17 +1571,19 @@ function buildAnnouncementText() {
   const session = getSession();
   const mode = getMode();
   const config = getSessionSettings();
-  const offset = state.includeSecondLobby ? state.settings.secondLobbyOffsetMinutes : 0;
+  const templateKey = getLobbyVariant();
+  const offset = getLobbyOffsetMinutes();
   const registrationUnix = state.unix + offset * 60;
   const firstGameUnix = registrationUnix + config.delayMinutes * 60;
   const queueSuffix = mode === "squads" ? " (Squads)" : "";
   const hostIds = [...new Set([state.discordId.trim(), ...state.additionalHostIds].filter(Boolean))];
   const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
   const unit = mode === "squads" ? "squad" : mode === "duos" || mode === "late_night" ? "duo" : "player";
-  const templateKey = state.includeSecondLobby && !isLateNightMode() ? "second" : "primary";
-  const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, templateKey === "second");
+  const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, templateKey);
   const values = {
-    session_title: session.value === "247"
+    session_title: isLateNightMode()
+      ? "Noble Division 0 Practice Late Night Session ( 2 GAMES )"
+      : session.value === "247"
       ? `Noble 24/7 Session ${getTwentyFourSevenSessionNumber()}`
       : session.title,
     mode: getModeLabel(mode),
@@ -1578,7 +1606,11 @@ function buildAnnouncementText() {
 
 function renderAnnouncement() {
   const session = getSession();
-  const outputLabel = isLateNightMode() ? `${session.label} · Late Night` : session.label;
+  const lobby = getLobbyVariant();
+  const baseLabel = isLateNightMode() ? `${session.label} \u00b7 Late Night` : session.label;
+  const outputLabel = lobby === "primary"
+    ? baseLabel
+    : `${baseLabel} \u00b7 ${lobby === "third" ? "Third" : "Second"} Lobby`;
   const output = byId("announcementText");
   const copyButton = byId("copyAnnouncement");
 
@@ -1609,7 +1641,7 @@ function renderBuilder() {
   renderSessionNumberField();
   renderAdditionalHosts();
   renderQueueButtons();
-  renderSecondLobbyControl();
+  renderLobbyControls();
   renderTimeline();
   renderAnnouncement();
   renderFormatTable();
@@ -1827,6 +1859,7 @@ function renderSettingsEditor() {
   const editor = byId("settingsEditor");
   editor.replaceChildren();
   byId("secondLobbyOffset").value = String(state.settings.secondLobbyOffsetMinutes);
+  byId("thirdLobbyOffset").value = String(state.settings.thirdLobbyOffsetMinutes);
   renderQuickAdjustmentSettings();
 
   SESSION_KINDS.forEach((session) => {
@@ -1936,6 +1969,7 @@ function renderTemplateEditor() {
   [
     { value: "primary", label: "Normal lobby" },
     { value: "second", label: "Second lobby" },
+    { value: "third", label: "Third lobby" },
   ].forEach((lobby) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -2176,6 +2210,26 @@ function applyTwentyFourSevenDelayCorrection() {
   localStorage.setItem(STORAGE.twentyFourSevenDelayCorrection, "1");
 }
 
+function applyLobbyOffsetCorrection() {
+  if (localStorage.getItem(STORAGE.lobbyOffsetCorrection) === "1") return;
+
+  if (state.settings.secondLobbyOffsetMinutes === 5) {
+    state.settings.secondLobbyOffsetMinutes = 0;
+  }
+  if (!Number.isFinite(Number(state.settings.thirdLobbyOffsetMinutes))) {
+    state.settings.thirdLobbyOffsetMinutes = 0;
+  }
+
+  const div0Session = SESSION_KINDS.find((session) => session.value === "div0");
+  const lateNightTemplates = state.settings.sessions?.div0?.modes?.late_night?.templates;
+  if (div0Session && lateNightTemplates?.second === DIV0_LATE_NIGHT_TEMPLATE) {
+    lateNightTemplates.second = createDefaultTemplate(div0Session, "late_night", "second");
+  }
+
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.lobbyOffsetCorrection, "1");
+}
+
 function applyZnturoStaffLinkCorrection() {
   if (localStorage.getItem(STORAGE.znturoStaffLinkCorrection) === "1") return;
 
@@ -2212,6 +2266,7 @@ function loadPreferences() {
     applySolosSecondLobbyCorrection();
     applyDiv0DelayCorrection();
     applyTwentyFourSevenDelayCorrection();
+    applyLobbyOffsetCorrection();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
@@ -2316,6 +2371,15 @@ function bindEvents() {
   });
   byId("secondLobby").addEventListener("change", (event) => {
     state.includeSecondLobby = event.target.checked;
+    if (state.includeSecondLobby) state.includeThirdLobby = false;
+    renderLobbyControls();
+    renderTimeline();
+    renderAnnouncement();
+  });
+  byId("thirdLobby").addEventListener("change", (event) => {
+    state.includeThirdLobby = event.target.checked;
+    if (state.includeThirdLobby) state.includeSecondLobby = false;
+    renderLobbyControls();
     renderTimeline();
     renderAnnouncement();
   });
@@ -2408,6 +2472,19 @@ function bindEvents() {
       60
     );
     markSettingsDirty();
+    renderLobbyControls();
+    renderTimeline();
+    renderAnnouncement();
+  });
+  byId("thirdLobbyOffset").addEventListener("input", (event) => {
+    state.settings.thirdLobbyOffsetMinutes = clampInteger(
+      event.target.value,
+      state.settings.thirdLobbyOffsetMinutes,
+      0,
+      60
+    );
+    markSettingsDirty();
+    renderLobbyControls();
     renderTimeline();
     renderAnnouncement();
   });

@@ -262,9 +262,17 @@
                   <label class="toggle-row" for="secondLobby">
                     <span>
                       <b>Second lobby template</b>
-                      <small id="secondLobbyHint">Registration shifts by 5 minutes</small>
+                      <small id="secondLobbyHint">Uses the same registration time</small>
                     </span>
                     <input id="secondLobby" type="checkbox" />
+                    <span class="toggle" aria-hidden="true"></span>
+                  </label>
+                  <label class="toggle-row" for="thirdLobby">
+                    <span>
+                      <b>Third lobby template</b>
+                      <small id="thirdLobbyHint">Uses the same registration time</small>
+                    </span>
+                    <input id="thirdLobby" type="checkbox" />
                     <span class="toggle" aria-hidden="true"></span>
                   </label>
                 </div>
@@ -424,7 +432,7 @@
               <div class="section-number">A</div>
               <div>
                 <p class="section-kicker">Global timing</p>
-                <h3>Second lobby offset</h3>
+                <h3>Additional lobby offsets</h3>
               </div>
             </div>
             <label class="setting-inline" for="secondLobbyOffset">
@@ -437,6 +445,18 @@
                 <input id="secondLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
                 <span class="stepper-unit">min</span>
                 <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="1" aria-label="Increase registration shift">+</button>
+              </span>
+            </label>
+            <label class="setting-inline" for="thirdLobbyOffset">
+              <span>
+                <b>Third lobby shift</b>
+                <small>How much later the third lobby opens</small>
+              </span>
+              <span class="clean-stepper">
+                <button class="stepper-button" type="button" data-step-target="thirdLobbyOffset" data-step="-1" aria-label="Reduce third lobby registration shift">&minus;</button>
+                <input id="thirdLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
+                <span class="stepper-unit">min</span>
+                <button class="stepper-button" type="button" data-step-target="thirdLobbyOffset" data-step="1" aria-label="Increase third lobby registration shift">+</button>
               </span>
             </label>
 
@@ -470,7 +490,7 @@
               <div>
                 <p class="section-kicker">Announcement content</p>
                 <h3>Message templates</h3>
-                <p>Edit the normal and second-lobby preset for each server and game mode.</p>
+                <p>Edit the normal, second-lobby, and third-lobby preset for each server and game mode.</p>
               </div>
               <span class="template-save-state" id="templateSaveState">Using saved template</span>
             </div>
