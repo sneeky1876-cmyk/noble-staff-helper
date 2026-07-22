@@ -15,9 +15,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260718-11" />
+  <link rel="stylesheet" href="styles.css?v=20260722-12" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260718-11" defer></script>
+  <script src="script.js?v=20260722-12" defer></script>
 </head>
 
 <body>
@@ -40,6 +40,13 @@
           <span>
             <b>Session builder</b>
             <small>Times &amp; announcements</small>
+          </span>
+        </button>
+        <button class="nav-item" type="button" data-view="schedule">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v3M18 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="M8 12h3v3H8z"/></svg>
+          <span>
+            <b>Session schedule</b>
+            <small>Daily announcements</small>
           </span>
         </button>
         <button class="nav-item" type="button" data-view="scrims">
@@ -103,12 +110,6 @@
         <div>
           <p class="topbar-label">Current workspace</p>
           <h2 id="activeViewTitle">Session builder</h2>
-        </div>
-        <div class="topbar-actions">
-          <button class="schedule-launch" id="openScheduleModal" type="button" aria-label="Open session schedule">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3v3M18 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z"/><path d="M8 12h3v3H8z"/></svg>
-            <span><small>Announcement tool</small><b>Session schedule</b></span>
-          </button>
         </div>
       </header>
 
@@ -362,6 +363,80 @@
         </div>
       </section>
 
+      <section class="view" id="view-schedule" data-view-panel="schedule" hidden>
+        <div class="view-hero compact-hero schedule-page-hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Discord announcement</p>
+            <h1>Session schedule</h1>
+            <p class="hero-text">
+              Build a complete daily schedule for each server and copy it straight into Discord.
+            </p>
+          </div>
+        </div>
+
+        <section class="surface schedule-workspace">
+          <div class="schedule-modal-tabs" role="tablist" aria-label="Schedule workspace">
+            <button class="is-active" type="button" data-schedule-tab="builder" role="tab" aria-selected="true">Build schedule</button>
+            <button type="button" data-schedule-tab="settings" role="tab" aria-selected="false">Preset settings</button>
+          </div>
+
+          <div class="schedule-tab-panel is-active" id="scheduleBuilderPanel" data-schedule-panel="builder">
+            <div class="schedule-builder-grid">
+              <div class="schedule-controls">
+                <div class="schedule-server-block">
+                  <span class="field-label">Server</span>
+                  <div class="schedule-server-buttons" id="scheduleServerButtons"></div>
+                </div>
+
+                <label class="field-block" for="scheduleDate">
+                  <span class="field-label">Schedule date</span>
+                  <input class="input" id="scheduleDate" type="date" />
+                  <small>The heading date updates automatically; each Discord time stays local for every viewer.</small>
+                </label>
+
+                <div class="schedule-session-heading">
+                  <div><span class="field-label">Sessions</span><small>Set every start time individually.</small></div>
+                  <button class="button button-secondary button-small" id="addScheduleSession" type="button">+ Add session</button>
+                </div>
+                <div class="schedule-session-list" id="scheduleSessionRows"></div>
+              </div>
+
+              <div class="schedule-preview">
+                <div class="schedule-preview-head">
+                  <div><span class="field-label">Discord preview</span><small>Dynamic date and timestamp syntax included.</small></div>
+                  <span class="ready-badge"><span></span> Ready</span>
+                </div>
+                <textarea class="message-output schedule-output" id="scheduleAnnouncementText" readonly></textarea>
+                <button class="button button-primary button-full" id="copyScheduleAnnouncement" type="button">Copy schedule announcement</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="schedule-tab-panel" id="scheduleSettingsPanel" data-schedule-panel="settings" hidden>
+            <div class="schedule-settings-grid">
+              <aside class="schedule-settings-sidebar">
+                <span class="field-label">Edit server preset</span>
+                <div class="schedule-server-buttons is-vertical" id="scheduleSettingsServerButtons"></div>
+              </aside>
+              <div class="schedule-settings-form">
+                <div class="schedule-settings-fields">
+                  <label class="field-block" for="scheduleTitleInput"><span class="field-label">Schedule title</span><input class="input" id="scheduleTitleInput" type="text" maxlength="80" /></label>
+                  <label class="field-block" for="scheduleHeaderEmojiInput"><span class="field-label">Header emoji</span><input class="input" id="scheduleHeaderEmojiInput" type="text" maxlength="120" /></label>
+                  <label class="field-block" for="scheduleArrowEmojiInput"><span class="field-label">Session arrow emoji</span><input class="input" id="scheduleArrowEmojiInput" type="text" maxlength="120" /></label>
+                  <label class="field-block schedule-details-field" for="scheduleDetailsInput"><span class="field-label">More details link or channel</span><input class="input" id="scheduleDetailsInput" type="text" maxlength="300" /></label>
+                </div>
+                <label class="field-block" for="scheduleFooterInput"><span class="field-label">Footer note</span><textarea class="template-textarea schedule-small-textarea" id="scheduleFooterInput" spellcheck="false"></textarea></label>
+                <label class="field-block" for="scheduleTemplateInput"><span class="field-label">Full preset template</span><textarea class="template-textarea schedule-template-textarea" id="scheduleTemplateInput" spellcheck="false"></textarea><small>Available: {{header_emoji}}, {{title}}, {{date}}, {{sessions}}, {{details}}, {{footer}}</small></label>
+                <div class="schedule-settings-actions">
+                  <button class="button button-secondary" id="resetSchedulePreset" type="button">Restore this preset</button>
+                  <button class="button button-primary" id="saveScheduleSettings" type="button">Save schedule settings</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
       <section class="view" id="view-scrims" data-view-panel="scrims" hidden>
         <div class="view-hero compact-hero">
           <div class="hero-copy">
@@ -435,30 +510,32 @@
                 <h3>Additional lobby offsets</h3>
               </div>
             </div>
-            <label class="setting-inline" for="secondLobbyOffset">
-              <span>
-                <b>Registration shift</b>
-                <small>How much later the second lobby opens</small>
-              </span>
-              <span class="clean-stepper">
-                <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="-1" aria-label="Reduce registration shift">&minus;</button>
-                <input id="secondLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
-                <span class="stepper-unit">min</span>
-                <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="1" aria-label="Increase registration shift">+</button>
-              </span>
-            </label>
-            <label class="setting-inline" for="thirdLobbyOffset">
-              <span>
-                <b>Third lobby shift</b>
-                <small>How much later the third lobby opens</small>
-              </span>
-              <span class="clean-stepper">
-                <button class="stepper-button" type="button" data-step-target="thirdLobbyOffset" data-step="-1" aria-label="Reduce third lobby registration shift">&minus;</button>
-                <input id="thirdLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
-                <span class="stepper-unit">min</span>
-                <button class="stepper-button" type="button" data-step-target="thirdLobbyOffset" data-step="1" aria-label="Increase third lobby registration shift">+</button>
-              </span>
-            </label>
+            <div class="lobby-offset-settings">
+              <label class="setting-inline" for="secondLobbyOffset">
+                <span>
+                  <b>Second lobby shift</b>
+                  <small>How much later the second lobby opens</small>
+                </span>
+                <span class="clean-stepper">
+                  <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="-1" aria-label="Reduce second lobby registration shift">&minus;</button>
+                  <input id="secondLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
+                  <span class="stepper-unit">min</span>
+                  <button class="stepper-button" type="button" data-step-target="secondLobbyOffset" data-step="1" aria-label="Increase second lobby registration shift">+</button>
+                </span>
+              </label>
+              <label class="setting-inline" for="thirdLobbyOffset">
+                <span>
+                  <b>Third lobby shift</b>
+                  <small>How much later the third lobby opens</small>
+                </span>
+                <span class="clean-stepper">
+                  <button class="stepper-button" type="button" data-step-target="thirdLobbyOffset" data-step="-1" aria-label="Reduce third lobby registration shift">&minus;</button>
+                  <input id="thirdLobbyOffset" class="input number-input" type="number" min="0" max="60" step="1" />
+                  <span class="stepper-unit">min</span>
+                  <button class="stepper-button" type="button" data-step-target="thirdLobbyOffset" data-step="1" aria-label="Increase third lobby registration shift">+</button>
+                </span>
+              </label>
+            </div>
 
             <div class="quick-adjust-settings">
               <div>
@@ -490,7 +567,7 @@
               <div>
                 <p class="section-kicker">Announcement content</p>
                 <h3>Message templates</h3>
-                <p>Edit the normal, second-lobby, and third-lobby preset for each server and game mode.</p>
+                <p>Edit the normal preset and the shared second/third-lobby preset for each server and game mode.</p>
               </div>
               <span class="template-save-state" id="templateSaveState">Using saved template</span>
             </div>
@@ -807,80 +884,6 @@
         </div>
       </section>
     </main>
-  </div>
-
-  <div class="app-modal schedule-modal" id="scheduleModal" hidden>
-    <button class="modal-backdrop" type="button" data-close-modal="scheduleModal" aria-label="Close schedule builder"></button>
-    <section class="modal-panel schedule-modal-panel" role="dialog" aria-modal="true" aria-labelledby="scheduleModalTitle">
-      <header class="modal-header">
-        <div>
-          <p class="eyebrow">Discord announcement</p>
-          <h2 id="scheduleModalTitle">Session schedule</h2>
-          <p>Build every server's daily schedule without adding another crowded page.</p>
-        </div>
-        <button class="modal-close" type="button" data-close-modal="scheduleModal" aria-label="Close">&times;</button>
-      </header>
-
-      <div class="schedule-modal-tabs" role="tablist" aria-label="Schedule workspace">
-        <button class="is-active" type="button" data-schedule-tab="builder" role="tab" aria-selected="true">Build schedule</button>
-        <button type="button" data-schedule-tab="settings" role="tab" aria-selected="false">Preset settings</button>
-      </div>
-
-      <div class="schedule-tab-panel is-active" id="scheduleBuilderPanel" data-schedule-panel="builder">
-        <div class="schedule-builder-grid">
-          <div class="schedule-controls">
-            <div class="schedule-server-block">
-              <span class="field-label">Server</span>
-              <div class="schedule-server-buttons" id="scheduleServerButtons"></div>
-            </div>
-
-            <label class="field-block" for="scheduleDate">
-              <span class="field-label">Schedule date</span>
-              <input class="input" id="scheduleDate" type="date" />
-              <small>The heading date updates automatically; each Discord time stays local for every viewer.</small>
-            </label>
-
-            <div class="schedule-session-heading">
-              <div><span class="field-label">Sessions</span><small>Set every start time individually.</small></div>
-              <button class="button button-secondary button-small" id="addScheduleSession" type="button">+ Add session</button>
-            </div>
-            <div class="schedule-session-list" id="scheduleSessionRows"></div>
-          </div>
-
-          <div class="schedule-preview">
-            <div class="schedule-preview-head">
-              <div><span class="field-label">Discord preview</span><small>Dynamic date and timestamp syntax included.</small></div>
-              <span class="ready-badge"><span></span> Ready</span>
-            </div>
-            <textarea class="message-output schedule-output" id="scheduleAnnouncementText" readonly></textarea>
-            <button class="button button-primary button-full" id="copyScheduleAnnouncement" type="button">Copy schedule announcement</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="schedule-tab-panel" id="scheduleSettingsPanel" data-schedule-panel="settings" hidden>
-        <div class="schedule-settings-grid">
-          <aside class="schedule-settings-sidebar">
-            <span class="field-label">Edit server preset</span>
-            <div class="schedule-server-buttons is-vertical" id="scheduleSettingsServerButtons"></div>
-          </aside>
-          <div class="schedule-settings-form">
-            <div class="schedule-settings-fields">
-              <label class="field-block" for="scheduleTitleInput"><span class="field-label">Schedule title</span><input class="input" id="scheduleTitleInput" type="text" maxlength="80" /></label>
-              <label class="field-block" for="scheduleHeaderEmojiInput"><span class="field-label">Header emoji</span><input class="input" id="scheduleHeaderEmojiInput" type="text" maxlength="120" /></label>
-              <label class="field-block" for="scheduleArrowEmojiInput"><span class="field-label">Session arrow emoji</span><input class="input" id="scheduleArrowEmojiInput" type="text" maxlength="120" /></label>
-              <label class="field-block schedule-details-field" for="scheduleDetailsInput"><span class="field-label">More details link or channel</span><input class="input" id="scheduleDetailsInput" type="text" maxlength="300" /></label>
-            </div>
-            <label class="field-block" for="scheduleFooterInput"><span class="field-label">Footer note</span><textarea class="template-textarea schedule-small-textarea" id="scheduleFooterInput" spellcheck="false"></textarea></label>
-            <label class="field-block" for="scheduleTemplateInput"><span class="field-label">Full preset template</span><textarea class="template-textarea schedule-template-textarea" id="scheduleTemplateInput" spellcheck="false"></textarea><small>Available: {{header_emoji}}, {{title}}, {{date}}, {{sessions}}, {{details}}, {{footer}}</small></label>
-            <div class="schedule-settings-actions">
-              <button class="button button-secondary" id="resetSchedulePreset" type="button">Restore this preset</button>
-              <button class="button button-primary" id="saveScheduleSettings" type="button">Save schedule settings</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 
   <aside class="staff-links-dock" id="staffLinksDock" aria-label="Staff quick links">

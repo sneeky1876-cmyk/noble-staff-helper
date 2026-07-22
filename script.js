@@ -359,7 +359,6 @@ SESSION_KINDS.forEach((session) => {
     DEFAULT_SETTINGS.sessions[session.value].modes[mode].templates = {
       primary: createDefaultTemplate(session, mode, "primary"),
       second: createDefaultTemplate(session, mode, "second"),
-      third: createDefaultTemplate(session, mode, "third"),
     };
   });
 });
@@ -377,7 +376,7 @@ const STORAGE = {
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
-  lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV1",
+  lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -638,9 +637,6 @@ function mergeSavedSettings(saved) {
       }
       if (typeof incoming.templates?.second === "string") {
         target.templates.second = incoming.templates.second.slice(0, 20000);
-      }
-      if (typeof incoming.templates?.third === "string") {
-        target.templates.third = incoming.templates.third.slice(0, 20000);
       }
     });
   });
@@ -944,13 +940,14 @@ function markSettingsDirty() {
 
 function getViewFromHash() {
   const view = window.location.hash.replace(/^#/, "");
-  return ["builder", "scrims", "extension", "settings", "guide"].includes(view) ? view : "builder";
+  return ["builder", "schedule", "scrims", "extension", "settings", "guide"].includes(view) ? view : "builder";
 }
 
 function setView(view, updateHash = true) {
-  const validView = ["builder", "scrims", "extension", "settings", "guide"].includes(view) ? view : "builder";
+  const validView = ["builder", "schedule", "scrims", "extension", "settings", "guide"].includes(view) ? view : "builder";
   const titles = {
     builder: "Session builder",
+    schedule: "Session schedule",
     scrims: "Practice scrims",
     extension: "Noble web extension",
     settings: "Experience settings",
@@ -971,6 +968,10 @@ function setView(view, updateHash = true) {
   });
 
   byId("activeViewTitle").textContent = titles[validView];
+
+  if (validView === "schedule") {
+    setScheduleTab(state.scheduleActiveTab);
+  }
 
   if (updateHash && window.location.hash !== `#${validView}`) {
     history.pushState(null, "", `#${validView}`);
@@ -1579,7 +1580,11 @@ function buildAnnouncementText() {
   const hostIds = [...new Set([state.discordId.trim(), ...state.additionalHostIds].filter(Boolean))];
   const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
   const unit = mode === "squads" ? "squad" : mode === "duos" || mode === "late_night" ? "duo" : "player";
-  const template = config.templates?.[templateKey] || createDefaultTemplate(session, mode, templateKey);
+  const templateSource = templateKey === "third" ? "second" : templateKey;
+  let template = config.templates?.[templateSource] || createDefaultTemplate(session, mode, templateSource);
+  if (templateKey === "third") {
+    template = template.replace(/\*\*Second Lobby\*\*/gi, "**Third Lobby**");
+  }
   const values = {
     session_title: isLateNightMode()
       ? "Noble Division 0 Practice Late Night Session ( 2 GAMES )"
@@ -1968,8 +1973,7 @@ function renderTemplateEditor() {
   lobbyButtons.replaceChildren();
   [
     { value: "primary", label: "Normal lobby" },
-    { value: "second", label: "Second lobby" },
-    { value: "third", label: "Third lobby" },
+    { value: "second", label: "Second / third lobby" },
   ].forEach((lobby) => {
     const button = document.createElement("button");
     button.type = "button";
@@ -2213,12 +2217,8 @@ function applyTwentyFourSevenDelayCorrection() {
 function applyLobbyOffsetCorrection() {
   if (localStorage.getItem(STORAGE.lobbyOffsetCorrection) === "1") return;
 
-  if (state.settings.secondLobbyOffsetMinutes === 5) {
-    state.settings.secondLobbyOffsetMinutes = 0;
-  }
-  if (!Number.isFinite(Number(state.settings.thirdLobbyOffsetMinutes))) {
-    state.settings.thirdLobbyOffsetMinutes = 0;
-  }
+  state.settings.secondLobbyOffsetMinutes = 0;
+  state.settings.thirdLobbyOffsetMinutes = 0;
 
   const div0Session = SESSION_KINDS.find((session) => session.value === "div0");
   const lateNightTemplates = state.settings.sessions?.div0?.modes?.late_night?.templates;
@@ -2411,11 +2411,6 @@ function bindEvents() {
   });
   byId("copyScrimConclude").addEventListener("click", () => {
     copyText(byId("scrimConcludeText").value, "Conclude message copied");
-  });
-  byId("openScheduleModal").addEventListener("click", () => {
-    renderScheduleBuilder();
-    setScheduleTab("builder");
-    openAppModal("scheduleModal");
   });
   byId("toggleStaffLinks").addEventListener("click", () => setStaffLinksOpen(!state.staffLinksOpen));
   byId("closeStaffLinks").addEventListener("click", () => setStaffLinksOpen(false));
