@@ -2967,6 +2967,27 @@ function configureCreatorLink() {
   }
 }
 
+function configureStaffGuideVideo() {
+  const iframe = byId("staffGuideVideo");
+  if (!iframe) return;
+  const videoId = iframe.dataset.videoId;
+  if (!/^[A-Za-z0-9_-]{11}$/.test(videoId || "")) return;
+
+  const publicOrigin = "https://sneeky1876-cmyk.github.io";
+  const pageOrigin = /^https?:$/.test(window.location.protocol) ? window.location.origin : publicOrigin;
+  const pageUrl = /^https?:$/.test(window.location.protocol)
+    ? `${window.location.origin}${window.location.pathname}`
+    : `${publicOrigin}/noble-staff-helper/`;
+  const parameters = new URLSearchParams({
+    enablejsapi: "1",
+    origin: pageOrigin,
+    widget_referrer: pageUrl,
+    playsinline: "1",
+    rel: "0",
+  });
+  iframe.src = `https://www.youtube.com/embed/${videoId}?${parameters.toString()}`;
+}
+
 function bindEvents() {
   document.querySelectorAll("[data-time-format-toggle]").forEach((button) => {
     button.addEventListener("click", toggleTimeFormat);
@@ -3247,6 +3268,7 @@ function initialize() {
 
   setTimezoneLabel();
   configureCreatorLink();
+  configureStaffGuideVideo();
   bindEvents();
 
   renderBuilder();
