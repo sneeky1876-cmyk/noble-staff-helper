@@ -2398,52 +2398,6 @@ function isDiscordUserId(value) {
   return /^\d{17,20}$/.test(String(value || "").trim());
 }
 
-function getAnnouncementPreflight() {
-  if (!state.announceMode) {
-    return [{ detail: "Turn on Build announcement first.", passed: false, blocking: true }];
-  }
-  if (state.unix === null) {
-    return [{ detail: "Choose a date and time first.", passed: false, blocking: true }];
-  }
-
-  const config = getSessionSettings();
-  const registrationUnix = state.unix + getLobbyOffsetMinutes() * 60;
-  const firstGameUnix = registrationUnix + config.delayMinutes * 60;
-  const hostIds = [state.discordId.trim(), ...state.additionalHostIds].filter(Boolean);
-  const uniqueHostIds = new Set(hostIds);
-  const message = buildAnnouncementText();
-
-  return [
-    {
-      detail: hostIds.length
-        ? "Use unique 17–20 digit Discord user IDs."
-        : "Add the main host's Discord user ID.",
-      passed: hostIds.length > 0 && hostIds.every(isDiscordUserId) && uniqueHostIds.size === hostIds.length,
-      blocking: true,
-    },
-    {
-      detail: "The registration time is already in the past.",
-      passed: registrationUnix >= Math.floor(Date.now() / 1000) - 60,
-      blocking: true,
-    },
-    {
-      detail: "The first-game delay must be greater than zero.",
-      passed: Number.isFinite(firstGameUnix) && config.delayMinutes > 0 && firstGameUnix > registrationUnix,
-      blocking: true,
-    },
-    {
-      detail: "A placeholder or template value is still unresolved.",
-      passed: Boolean(message) && !/\{\{[a-z_]+\}\}/i.test(message),
-      blocking: true,
-    },
-    {
-      detail: "Reaction goals must be positive and increase for a second lobby.",
-      passed: config.firstReacts > 0 && config.secondReacts >= config.firstReacts,
-      blocking: true,
-    },
-  ];
-}
-
 function sanitizeAnnouncementHistory(value) {
   if (!Array.isArray(value)) return [];
   return value.slice(0, 20).map((item, index) => {
@@ -3615,11 +3569,6 @@ function bindEvents() {
     renderAnnouncement();
   });
   byId("copyAnnouncement").addEventListener("click", async () => {
-    const blocking = getAnnouncementPreflight().filter((check) => !check.passed && check.blocking);
-    if (blocking.length) {
-      showToast(blocking[0].detail);
-      return;
-    }
     const copied = await copyText(byId("announcementText").value, "Announcement copied and saved to history");
     if (copied) rememberCurrentAnnouncement();
   });
