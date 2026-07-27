@@ -385,6 +385,41 @@ const DIV0_LATE_NIGHT_TEMPLATE = [
   "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
 ].join("\n");
 
+const SOLOS_CLOSED_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Solos Closed Practice Session** (3 Games)",
+  "Solo FNCS <t:1790848800:R>",
+  "",
+  "\u2192 Registration: {{registration}}",
+  "\u2192 First Game: {{first_game}}",
+  "\u2192 Host: {{host}} (DM if you need help.)",
+  "",
+  "\u2022 Read #custom-rules, #ban-offences & #how-to-play before playing.",
+  "\u2022 Top 1 = Division 2 Access :noble_division2_icon: (Top 5 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "\u2022 Top 5 = Division 3 Invite :noble_division3_icon: (Top 20 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "",
+  "**Required:** {{first_reacts}}+ Reacts",
+].join("\n");
+
+const SOLOS_CLOSED_LEGACY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**{{session_title}}{{mode_suffix}}**",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 Session lasts 3 Games. **Miss a single game and you will be banned.**",
+  "\u2022 Make sure to read {{channels}} before the games.",
+  "{{extra}}",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per {{unit}}).",
+].join("\n");
+
 const SESSION_KINDS = [
   {
     value: "solos",
@@ -465,7 +500,7 @@ const SCHEDULE_TEMPLATE = [
 ].join("\n");
 
 const SCHEDULE_FOOTER = "-# Please note that session times may shift depending on how earlier sessions progress.";
-const SCHEDULE_SERVER_ORDER = ["div0", "div3", "div2", "solos", "247"];
+const SCHEDULE_SERVER_ORDER = ["div0", "div3", "div2", "solos", "solos_closed", "247"];
 
 const DEFAULT_STAFF_LINKS = [
   {
@@ -555,6 +590,20 @@ const SCHEDULE_DEFAULTS = {
     sessions: [
       { time: "16:30", note: "" },
       { time: "22:40", note: "2 Games" },
+    ],
+  },
+  solos_closed: {
+    label: "Noble Solos Closed",
+    icon: "img/noble-closedsolos.png",
+    title: "Noble Solos Closed",
+    headerEmoji: ":Solos_Closed:",
+    arrowEmoji: ":ArrowRight:",
+    details: "#announcements .",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+    sessions: [
+      { time: "15:00", note: "" },
+      { time: "19:30", note: "" },
     ],
   },
   "247": {
@@ -655,6 +704,10 @@ function createDefaultTemplate(session, mode, lobby = "primary") {
     return DIV0_LATE_NIGHT_TEMPLATE;
   }
 
+  if (session.value === "solos_closed" && !additionalLobby) {
+    return SOLOS_CLOSED_TEMPLATE;
+  }
+
   const lines = [
     "@everyone",
     "",
@@ -721,6 +774,7 @@ const STORAGE = {
   theme: "nobleWorkspaceThemeV1",
   copyAnimation: "nobleCopyAnimationV1",
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
+  solosClosedPresetCorrection: "nobleSolosClosedPresetV2",
   div0DelayCorrection: "nobleDiv0Delay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
@@ -3293,6 +3347,18 @@ function applySolosSecondLobbyCorrection() {
   localStorage.setItem(STORAGE.solosSecondLobbyCorrection, "1");
 }
 
+function applySolosClosedPresetCorrection() {
+  if (localStorage.getItem(STORAGE.solosClosedPresetCorrection) === "1") return;
+
+  const config = state.settings.sessions?.solos_closed?.modes?.solos;
+  if (config?.templates?.primary === SOLOS_CLOSED_LEGACY_TEMPLATE) {
+    config.templates.primary = SOLOS_CLOSED_TEMPLATE;
+  }
+
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.solosClosedPresetCorrection, "1");
+}
+
 function applyDiv0DelayCorrection() {
   if (localStorage.getItem(STORAGE.div0DelayCorrection) === "1") return;
 
@@ -3391,6 +3457,7 @@ function loadPreferences() {
     const savedSettings = localStorage.getItem(STORAGE.settings);
     if (savedSettings) state.settings = mergeSavedSettings(JSON.parse(savedSettings));
     applySolosSecondLobbyCorrection();
+    applySolosClosedPresetCorrection();
     applyDiv0DelayCorrection();
     applyTwentyFourSevenDelayCorrection();
     applyLobbyOffsetCorrection();
