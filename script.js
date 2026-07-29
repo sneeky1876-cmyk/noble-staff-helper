@@ -385,6 +385,44 @@ const DIV0_LATE_NIGHT_TEMPLATE = [
   "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
 ].join("\n");
 
+const SOLOS_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Solos Practice Session ({{game_count}} Games)**",
+  "",
+  "{{emoji}} Registration opens {{registration}}",
+  "",
+  "{{emoji}} First Game Commences {{first_game}}",
+  "",
+  "The host for this session is {{host}}. Direct message them if you need help.",
+  "",
+  "\u2022 Make sure to read <#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391> before the games.",
+  "\u2022 Check out <#1252253168729985096> to see our sessions schedule for today if you're interested in playing sessions later today.",
+  "\u2022 Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534>",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** and **{{second_reacts}}+** for a 2nd lobby",
+].join("\n");
+
+const SOLOS_SECOND_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Solos Practice Session ({{game_count}} Games)**",
+  "",
+  "**Second Lobby**",
+  "",
+  "{{emoji}} Registration opens {{registration}}",
+  "",
+  "{{emoji}} First Game Commences {{first_game}}",
+  "",
+  "The host for this session is {{host}}. Direct message them if you need help.",
+  "",
+  "\u2022 Make sure to read <#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391> before the games.",
+  "\u2022 Check out <#1252253168729985096> to see our sessions schedule for today if you're interested in playing sessions later today.",
+  "\u2022 Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534>",
+  "",
+  "Required at least **{{second_reacts}}+ Reacts**",
+].join("\n");
+
 const SOLOS_CLOSED_TEMPLATE = [
   "@everyone",
   "",
@@ -418,6 +456,28 @@ const SOLOS_CLOSED_LEGACY_TEMPLATE = [
   "{{extra}}",
   "",
   "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per {{unit}}).",
+].join("\n");
+
+const SOLOS_LEGACY_PRIMARY_TEMPLATE = SOLOS_CLOSED_LEGACY_TEMPLATE;
+
+const SOLOS_LEGACY_SECOND_TEMPLATE = [
+  "@everyone",
+  "",
+  "**{{session_title}}{{mode_suffix}}**",
+  "",
+  "**Second Lobby**",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 Session lasts 3 Games. **Miss a single game and you will be banned.**",
+  "\u2022 Make sure to read {{channels}} before the games.",
+  "{{extra}}",
+  "",
+  "Required at least **{{second_reacts}}+ Reacts** (1 per {{unit}}).",
 ].join("\n");
 
 const DIV3_LADDER_PRIMARY_TEMPLATE = [
@@ -468,7 +528,7 @@ const SESSION_KINDS = [
     title: "Noble Solos Practice Session",
     emoji: "<:ArrowRight:1398336238448152717>",
     channels: "<#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391>",
-    extra: "\u2022 Top 10 = Noble Solos Closed <:solos_closed:1403796828239040534>",
+    extra: "\u2022 Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534>",
     modes: ["solos"],
   },
   {
@@ -744,6 +804,10 @@ function createDefaultTemplate(session, mode, lobby = "primary") {
     return DIV0_LATE_NIGHT_TEMPLATE;
   }
 
+  if (session.value === "solos") {
+    return additionalLobby ? SOLOS_SECOND_TEMPLATE : SOLOS_PRIMARY_TEMPLATE;
+  }
+
   if (session.value === "solos_closed" && !additionalLobby) {
     return SOLOS_CLOSED_TEMPLATE;
   }
@@ -824,6 +888,7 @@ const STORAGE = {
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
   lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
   extensionUpdateDismissed: "nobleExtensionUpdateDismissedV272",
+  solosPresetCorrection: "nobleSolosPresetV2",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -840,6 +905,7 @@ const state = {
   announceMode: true,
   includeSecondLobby: false,
   includeThirdLobby: false,
+  solosGameCount: 3,
   sessionNumber: "1",
   settings: cloneDefaults(),
   settingsDirty: false,
@@ -2324,6 +2390,16 @@ function renderQueueButtons() {
   });
 }
 
+function renderSolosGameCountControl() {
+  const control = byId("solosGameCountControl");
+  if (!control) return;
+  control.hidden = state.sessionKind !== "solos";
+  control.querySelectorAll("[data-solos-game-count]").forEach((button) => {
+    const selected = Number(button.dataset.solosGameCount) === state.solosGameCount;
+    button.setAttribute("aria-pressed", String(selected));
+  });
+}
+
 function formatLobbyOffsetHint(minutes) {
   return minutes === 0
     ? tr("Uses the same registration time")
@@ -2486,6 +2562,7 @@ function buildAnnouncementText() {
     extra: session.extra || "",
     first_reacts: String(config.firstReacts),
     second_reacts: String(config.secondReacts),
+    game_count: String(state.solosGameCount),
     unit,
   };
 
@@ -2514,6 +2591,7 @@ function sanitizeAnnouncementHistory(value) {
       lobby,
       unix,
       sessionNumber: String(item?.sessionNumber || "1").replace(/\D/g, "").slice(0, 4) || "1",
+      solosGameCount: Number(item?.solosGameCount) === 2 ? 2 : 3,
       discordId: isDiscordUserId(item?.discordId) ? String(item.discordId) : "",
       additionalHostIds: [...new Set((Array.isArray(item?.additionalHostIds) ? item.additionalHostIds : []).filter(isDiscordUserId))].slice(0, 5),
       text: String(item?.text || "").slice(0, 20000),
@@ -2543,6 +2621,7 @@ function rememberCurrentAnnouncement() {
     lobby: getLobbyVariant(),
     unix: state.unix,
     sessionNumber: String(getTwentyFourSevenSessionNumber()),
+    solosGameCount: state.solosGameCount,
     discordId: state.discordId,
     additionalHostIds: [...state.additionalHostIds],
     text,
@@ -2623,6 +2702,7 @@ function restoreAnnouncementHistoryEntry(entry) {
   state.includeSecondLobby = entry.lobby === "second";
   state.includeThirdLobby = entry.lobby === "third";
   state.sessionNumber = entry.sessionNumber;
+  state.solosGameCount = entry.solosGameCount;
   state.discordId = entry.discordId;
   state.additionalHostIds = [...entry.additionalHostIds];
   state.additionalHostComposerOpen = false;
@@ -2681,6 +2761,7 @@ function renderBuilder() {
   renderSessionNumberField();
   renderAdditionalHosts();
   renderQueueButtons();
+  renderSolosGameCountControl();
   renderLobbyControls();
   renderTimeline();
   renderAnnouncement();
@@ -3038,6 +3119,7 @@ function renderTemplateEditor() {
     ["{{first_game}}", "First game time"],
     ["{{first_reacts}}", "One-lobby react goal"],
     ["{{second_reacts}}", "Two-lobby react goal"],
+    ["{{game_count}}", "Selected Solos game count"],
     ["{{session_title}}", "Session title"],
     ["{{mode}}", "Game mode"],
     ["{{mode_suffix}}", "Optional squads title suffix"],
@@ -3393,6 +3475,28 @@ function applySolosSecondLobbyCorrection() {
   localStorage.setItem(STORAGE.solosSecondLobbyCorrection, "1");
 }
 
+function applySolosPresetCorrection() {
+  if (localStorage.getItem(STORAGE.solosPresetCorrection) === "1") return;
+
+  const config = state.settings.sessions?.solos?.modes?.solos;
+  if (config?.templates?.primary === SOLOS_LEGACY_PRIMARY_TEMPLATE) {
+    config.templates.primary = SOLOS_PRIMARY_TEMPLATE;
+  }
+  const legacySecondWithFirstReacts = SOLOS_LEGACY_SECOND_TEMPLATE.replace(
+    "{{second_reacts}}",
+    "{{first_reacts}}"
+  );
+  if (
+    config?.templates?.second === SOLOS_LEGACY_SECOND_TEMPLATE ||
+    config?.templates?.second === legacySecondWithFirstReacts
+  ) {
+    config.templates.second = SOLOS_SECOND_TEMPLATE;
+  }
+
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.solosPresetCorrection, "1");
+}
+
 function applySolosClosedPresetCorrection() {
   if (localStorage.getItem(STORAGE.solosClosedPresetCorrection) === "1") return;
 
@@ -3503,6 +3607,7 @@ function loadPreferences() {
     const savedSettings = localStorage.getItem(STORAGE.settings);
     if (savedSettings) state.settings = mergeSavedSettings(JSON.parse(savedSettings));
     applySolosSecondLobbyCorrection();
+    applySolosPresetCorrection();
     applySolosClosedPresetCorrection();
     applyDiv0DelayCorrection();
     applyTwentyFourSevenDelayCorrection();
@@ -3595,6 +3700,13 @@ function bindEvents() {
   });
   document.querySelectorAll("[data-language]").forEach((button) => {
     button.addEventListener("click", () => setInterfaceLanguage(button.dataset.language));
+  });
+  document.querySelectorAll("[data-solos-game-count]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.solosGameCount = Number(button.dataset.solosGameCount) === 2 ? 2 : 3;
+      renderSolosGameCountControl();
+      renderAnnouncement();
+    });
   });
 
   document.querySelectorAll("[data-view]").forEach((button) => {

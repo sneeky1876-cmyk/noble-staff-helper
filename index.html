@@ -16,9 +16,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260730-1" />
+  <link rel="stylesheet" href="styles.css?v=20260730-2" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260730-1" defer></script>
+  <script src="script.js?v=20260730-2" defer></script>
 </head>
 
 <body>
@@ -337,7 +337,14 @@
                 <p class="section-kicker">Live output</p>
                 <h3 id="announceSessionTitle">Noble Solos</h3>
               </div>
-              <span class="ready-badge"><span></span> Ready</span>
+              <div class="output-head-actions">
+                <div class="solos-game-count" id="solosGameCountControl" aria-label="Number of games" hidden>
+                  <small>Games</small>
+                  <button type="button" data-solos-game-count="3" aria-pressed="true">3</button>
+                  <button type="button" data-solos-game-count="2" aria-pressed="false">2</button>
+                </div>
+                <span class="ready-badge"><span></span> Ready</span>
+              </div>
             </div>
 
             <div class="selected-session">

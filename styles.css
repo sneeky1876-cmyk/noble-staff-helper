@@ -1461,6 +1461,61 @@ svg {
   margin-bottom: 20px;
 }
 
+.output-head-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.solos-game-count {
+  display: grid;
+  grid-template-columns: auto repeat(2, 30px);
+  align-items: center;
+  gap: 3px;
+  min-height: 34px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.solos-game-count[hidden] {
+  display: none;
+}
+
+.solos-game-count small {
+  padding: 0 5px 0 6px;
+  color: var(--muted);
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.solos-game-count button {
+  display: grid;
+  width: 30px;
+  height: 28px;
+  place-items: center;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted-bright);
+  font-size: 0.65rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 150ms ease;
+}
+
+.solos-game-count button:hover {
+  color: var(--text);
+}
+
+.solos-game-count button[aria-pressed="true"] {
+  background: var(--gold);
+  color: #11141a;
+}
+
 .ready-badge {
   display: inline-flex;
   align-items: center;
@@ -1473,6 +1528,26 @@ svg {
   font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+@media (max-width: 440px) {
+  .output-head {
+    gap: 10px;
+  }
+
+  .output-head-actions {
+    align-items: flex-end;
+    flex-direction: column-reverse;
+    gap: 5px;
+  }
+
+  .solos-game-count {
+    grid-template-columns: repeat(2, 31px);
+  }
+
+  .solos-game-count small {
+    display: none;
+  }
 }
 
 .ready-badge span {
