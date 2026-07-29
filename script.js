@@ -420,6 +420,45 @@ const SOLOS_CLOSED_LEGACY_TEMPLATE = [
   "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per {{unit}}).",
 ].join("\n");
 
+const DIV3_LADDER_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 3 Practice Session (5 Games)**",
+  "",
+  "{{emoji}} Registration opens {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 **Session lasts 5 Games. -> Miss a single game and you will be banned.**",
+  "\u2022 **Top 2 will get access to Division 2 <:div2:1022985780383195157>.** (Only the registered players)",
+  "\u2022 Make sure to read <#902656971801493545>, <#902656971801493547> & <#1383042801754968135> before the games.",
+  "",
+  "Required at least {{first_reacts}}+ Reacts (1 per duo)",
+  "**{{second_reacts}}+ Reacts** for a second lobby",
+].join("\n");
+
+const DIV3_LADDER_SECOND_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 3 Practice Session (5 Games)**",
+  "",
+  "**Second Lobby**",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 **Session lasts 5 Games. -> Miss a single game and you will be banned.**",
+  "\u2022 **Top 2 will get access to Division 2 <:div2:1022985780383195157>.** (Only the registered players)",
+  "\u2022 Make sure to read <#902656971801493545>, <#902656971801493547> & <#1383042801754968135> before the games.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** (1 per duo)",
+].join("\n");
+
 const SESSION_KINDS = [
   {
     value: "solos",
@@ -471,7 +510,7 @@ const SESSION_KINDS = [
     title: "Noble Division 3 Practice Session",
     emoji: "<:ArrowRight:1398315425913372872>",
     channels: "<#902656971801493545>, <#902656971801493547> & <#1383042801754968135>",
-    modes: ["duos", "squads"],
+    modes: ["duos", "squads", "ladder"],
   },
   {
     value: "247",
@@ -686,6 +725,7 @@ const DEFAULT_SETTINGS = {
       modes: {
         duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
         squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
+        ladder: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
       },
     },
     "247": {
@@ -706,6 +746,10 @@ function createDefaultTemplate(session, mode, lobby = "primary") {
 
   if (session.value === "solos_closed" && !additionalLobby) {
     return SOLOS_CLOSED_TEMPLATE;
+  }
+
+  if (session.value === "div3" && mode === "ladder") {
+    return additionalLobby ? DIV3_LADDER_SECOND_TEMPLATE : DIV3_LADDER_PRIMARY_TEMPLATE;
   }
 
   const lines = [
@@ -779,6 +823,7 @@ const STORAGE = {
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
   lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
+  extensionUpdateDismissed: "nobleExtensionUpdateDismissedV272",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -1126,6 +1171,7 @@ function getModeLabel(mode) {
   if (mode === "solos") return "Solos";
   if (mode === "squads") return "Squads";
   if (mode === "late_night") return "Late Night";
+  if (mode === "ladder") return "Ladder";
   return "Duos";
 }
 
@@ -2418,7 +2464,7 @@ function buildAnnouncementText() {
   const queueSuffix = mode === "squads" ? " (Squads)" : "";
   const hostIds = [...new Set([state.discordId.trim(), ...state.additionalHostIds].filter(Boolean))];
   const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
-  const unit = mode === "squads" ? "squad" : mode === "duos" || mode === "late_night" ? "duo" : "player";
+  const unit = mode === "squads" ? "squad" : mode === "duos" || mode === "late_night" || mode === "ladder" ? "duo" : "player";
   const templateSource = templateKey === "third" ? "second" : templateKey;
   let template = config.templates?.[templateSource] || createDefaultTemplate(session, mode, templateSource);
   if (templateKey === "third") {
@@ -3487,6 +3533,29 @@ function configureCreatorLink() {
   }
 }
 
+function configureExtensionUpdateNotice() {
+  const notice = byId("extensionUpdateNotice");
+  const dismissButton = byId("dismissExtensionUpdate");
+  if (!notice || !dismissButton) return;
+
+  let dismissed = false;
+  try {
+    dismissed = localStorage.getItem(STORAGE.extensionUpdateDismissed) === "1";
+  } catch {
+    // The notice can still work without browser storage.
+  }
+
+  notice.hidden = dismissed;
+  dismissButton.addEventListener("click", () => {
+    notice.hidden = true;
+    try {
+      localStorage.setItem(STORAGE.extensionUpdateDismissed, "1");
+    } catch {
+      // Dismissing for the current page is enough when storage is unavailable.
+    }
+  });
+}
+
 function configureStaffGuideVideo() {
   const iframe = byId("staffGuideVideo");
   if (!iframe) return;
@@ -3829,6 +3898,7 @@ function initialize() {
   byId("scrimTimeInput").value = dateTimeStringFromDate(new Date(state.scrimUnix * 1000));
 
   setTimezoneLabel();
+  configureExtensionUpdateNotice();
   configureCreatorLink();
   configureStaffGuideVideo();
   bindEvents();

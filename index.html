@@ -16,9 +16,9 @@
     href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="styles.css?v=20260722-22" />
+  <link rel="stylesheet" href="styles.css?v=20260730-1" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260722-22" defer></script>
+  <script src="script.js?v=20260730-1" defer></script>
 </head>
 
 <body>
@@ -107,6 +107,28 @@
     </aside>
 
     <main class="workspace">
+      <section class="extension-update-notice" id="extensionUpdateNotice" aria-label="Extension update" hidden>
+        <div class="extension-update-identity">
+          <img src="img/noble-helper-logo.png" alt="" />
+          <span>
+            <small><b>New</b> Extension update</small>
+            <strong>Noble Toolkit 2.7.2 is ready</strong>
+          </span>
+        </div>
+        <p>Download the latest NoblePrac tools and improvements.</p>
+        <div class="extension-update-actions">
+          <a
+            class="extension-update-download"
+            href="downloads/Noble-Staff-Helper-Extension-v2.7.2.zip"
+            download="Noble-Staff-Helper-Extension-v2.7.2.zip"
+          >
+            Download update
+          </a>
+          <a class="extension-update-details" href="#extension" data-view-link="extension">View extension</a>
+          <button id="dismissExtensionUpdate" type="button" aria-label="Dismiss extension update">&times;</button>
+        </div>
+      </section>
+
       <header class="topbar">
         <div>
           <p class="topbar-label">Current workspace</p>

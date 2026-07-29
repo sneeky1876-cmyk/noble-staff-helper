@@ -363,6 +363,161 @@ svg {
   padding: 0 clamp(24px, 4vw, 70px) 80px;
 }
 
+.extension-update-notice {
+  position: relative;
+  display: grid;
+  width: min(100%, 1480px);
+  min-height: 62px;
+  grid-template-columns: auto minmax(180px, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  margin: 12px auto 0;
+  padding: 10px 11px 10px 13px;
+  overflow: hidden;
+  border: 1px solid var(--gold-line);
+  border-radius: 14px;
+  background:
+    linear-gradient(100deg, rgba(244, 189, 70, 0.13), rgba(16, 20, 28, 0.94) 42%),
+    var(--surface);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+  animation: extension-update-in 420ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+
+.extension-update-notice::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--gold);
+  content: "";
+}
+
+.extension-update-notice[hidden] {
+  display: none;
+}
+
+.extension-update-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 11px;
+}
+
+.extension-update-identity img {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.extension-update-identity > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.extension-update-identity small {
+  color: var(--muted);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.extension-update-identity small b {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px 5px;
+  border-radius: 99px;
+  background: var(--gold);
+  color: #11141b;
+  font-size: 0.5rem;
+  letter-spacing: 0.06em;
+}
+
+.extension-update-identity strong {
+  overflow: hidden;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.extension-update-notice > p {
+  margin: 0;
+  color: var(--muted-bright);
+  font-size: 0.7rem;
+}
+
+.extension-update-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.extension-update-actions a,
+.extension-update-actions button {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 160ms ease;
+}
+
+.extension-update-download {
+  padding: 0 13px;
+  background: var(--gold);
+  color: #11141b;
+}
+
+.extension-update-download:hover {
+  background: #ffd77b;
+  transform: translateY(-1px);
+}
+
+.extension-update-details {
+  padding: 0 11px;
+  border: 1px solid var(--line-strong);
+  color: var(--muted-bright);
+}
+
+.extension-update-details:hover {
+  border-color: var(--gold-line);
+  color: var(--text);
+}
+
+.extension-update-actions button {
+  width: 38px;
+  flex: 0 0 38px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.extension-update-actions button:hover {
+  border-color: var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+}
+
+@keyframes extension-update-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .topbar {
   display: flex;
   min-height: 86px;
@@ -370,6 +525,39 @@ svg {
   justify-content: space-between;
   gap: 24px;
   border-bottom: 1px solid var(--line);
+}
+
+@media (max-width: 760px) {
+  .extension-update-notice {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 12px;
+    padding: 10px;
+  }
+
+  .extension-update-notice > p {
+    grid-column: 1 / -1;
+    padding: 0 2px 2px 49px;
+  }
+}
+
+@media (max-width: 520px) {
+  .extension-update-notice {
+    grid-template-columns: 1fr;
+    margin-top: 8px;
+  }
+
+  .extension-update-notice > p {
+    display: none;
+  }
+
+  .extension-update-actions {
+    width: 100%;
+  }
+
+  .extension-update-download,
+  .extension-update-details {
+    flex: 1;
+  }
 }
 
 .topbar-label {
