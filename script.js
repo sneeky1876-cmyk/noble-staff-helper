@@ -887,7 +887,7 @@ const STORAGE = {
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
   lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
-  extensionUpdateDismissed: "nobleExtensionUpdateDismissedV272",
+  extensionUpdateDismissed: "nobleExtensionUpdateDismissedV2166",
   solosPresetCorrection: "nobleSolosPresetV2",
 };
 
