@@ -18,7 +18,7 @@
   />
   <link rel="stylesheet" href="styles.css?v=20260730-2" />
   <link rel="icon" type="image/png" href="img/noble-helper-logo.png" />
-  <script src="script.js?v=20260730-3" defer></script>
+  <script src="script.js?v=20260827-1" defer></script>
 </head>
 
 <body>
@@ -204,8 +204,8 @@
               <p class="session-reorder-note">Hold a server, then drag it to change the order. Your first server becomes the default after reload.</p>
               <label class="session-number-card" id="sessionNumberCard" for="sessionNumberInput" hidden>
                 <span>
-                  <span class="field-label">24/7 session number</span>
-                  <small>Added to the announcement title. Defaults to Session 1.</small>
+                  <span class="field-label">Pro Scrims session number</span>
+                  <small>Added to the Pro Scrims title. Defaults to Session 1.</small>
                 </span>
                 <input
                   id="sessionNumberInput"
@@ -216,7 +216,7 @@
                   max="9999"
                   value="1"
                   placeholder="1"
-                  aria-label="24/7 session number"
+                  aria-label="Pro Scrims session number"
                 />
               </label>
             </section>
@@ -338,10 +338,10 @@
                 <h3 id="announceSessionTitle">Noble Solos</h3>
               </div>
               <div class="output-head-actions">
-                <div class="solos-game-count" id="solosGameCountControl" aria-label="Number of games" hidden>
+                <div class="solos-game-count" id="sessionGameCountControl" aria-label="Number of games" hidden>
                   <small>Games</small>
-                  <button type="button" data-solos-game-count="3" aria-pressed="true">3</button>
-                  <button type="button" data-solos-game-count="2" aria-pressed="false">2</button>
+                  <button type="button" data-game-count="3" aria-pressed="true">3</button>
+                  <button type="button" data-game-count="2" aria-pressed="false">2</button>
                 </div>
                 <span class="ready-badge"><span></span> Ready</span>
               </div>

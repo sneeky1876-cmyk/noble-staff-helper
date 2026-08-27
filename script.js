@@ -385,7 +385,7 @@ const DIV0_LATE_NIGHT_TEMPLATE = [
   "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
 ].join("\n");
 
-const SOLOS_PRIMARY_TEMPLATE = [
+const LEGACY_SOLOS_PRIMARY_TEMPLATE_V2 = [
   "@everyone",
   "",
   "**Noble Solos Practice Session ({{game_count}} Games)**",
@@ -403,7 +403,7 @@ const SOLOS_PRIMARY_TEMPLATE = [
   "Required at least **{{first_reacts}}+ Reacts** and **{{second_reacts}}+** for a 2nd lobby",
 ].join("\n");
 
-const SOLOS_SECOND_TEMPLATE = [
+const LEGACY_SOLOS_SECOND_TEMPLATE_V2 = [
   "@everyone",
   "",
   "**Noble Solos Practice Session ({{game_count}} Games)**",
@@ -423,7 +423,7 @@ const SOLOS_SECOND_TEMPLATE = [
   "Required at least **{{second_reacts}}+ Reacts**",
 ].join("\n");
 
-const SOLOS_CLOSED_TEMPLATE = [
+const LEGACY_SOLOS_CLOSED_TEMPLATE_V2 = [
   "@everyone",
   "",
   "**Noble Solos Closed Practice Session** (3 Games)",
@@ -439,6 +439,205 @@ const SOLOS_CLOSED_TEMPLATE = [
   "",
   "**Required:** {{first_reacts}}+ Reacts",
 ].join("\n");
+
+const SOLOS_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Solos Practice Session ({{game_count}} Games)**",
+  "",
+  "{{emoji}} Registration: {{registration}}",
+  "",
+  "{{emoji}} First Game: {{first_game}}",
+  "",
+  "This is the Host: {{host}} (DM them if you need help)",
+  "",
+  "\u2022 **Read** <#1098721307643875390>, <#1124136360522027179>, <#1098721307643875391> & <#1219723735570055300> **before playing!**",
+  "\u2022 Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534> (Top 30 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "",
+  "Required: **{{first_reacts}}+ Reacts** & **{{second_reacts}}+** for a 2nd lobby",
+].join("\n");
+
+const SOLOS_SECOND_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Solos Practice Session ({{game_count}} Games)**",
+  "",
+  "**Second Lobby**",
+  "",
+  "{{emoji}} Registration: {{registration}}",
+  "",
+  "{{emoji}} First Game: {{first_game}}",
+  "",
+  "This is the Host: {{host}} (DM them if you need help)",
+  "",
+  "\u2022 **Read** <#1098721307643875390>, <#1124136360522027179>, <#1098721307643875391> & <#1219723735570055300> **before playing!**",
+  "\u2022 Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534> (Top 30 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "",
+  "Required: **{{first_reacts}}+ Reacts** & **{{second_reacts}}+** for a 3rd lobby",
+].join("\n");
+
+const SOLOS_LADDER_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "\uD83D\uDC51**Noble Solos Ladder (4 Games)**\uD83D\uDC51",
+  "",
+  "{{emoji}} Registration: {{registration}}",
+  "",
+  "{{emoji}} First Game: {{first_game}}",
+  "",
+  "This is the Host: {{host}} (DM them if you need help)",
+  "",
+  "\u2022 **Read** <#1098721307643875390>, <#1124136360522027179>, <#1098721307643875391> & <#1219723735570055300> **before playing!**",
+  "\u2022 **Each game winner** earns a **Division 3 Invite** <:Division3:1283025349688692951>.",
+  "\u2022 **Top 25** earn an invite to **Noble Solos Closed** <:solos_closed:1403796828239040534> (Top 40 for [Whop Supporters](https://whop.com/nobleprac/)).",
+  "",
+  "Required: **{{first_reacts}}+ Reacts** & **{{second_reacts}}+** for a 2nd lobby",
+].join("\n");
+
+const SOLOS_LADDER_SECOND_TEMPLATE = SOLOS_LADDER_PRIMARY_TEMPLATE.replace(
+  "\uD83D\uDC51**Noble Solos Ladder (4 Games)**\uD83D\uDC51",
+  "\uD83D\uDC51**Noble Solos Ladder (4 Games)**\uD83D\uDC51\n\n**Second Lobby**"
+);
+
+const SOLOS_CLOSED_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Solos Closed Practice Session** ({{game_count}} Games)",
+  "Solo FNCS: <t:1790614800:R>",
+  "",
+  "\u2192 Registration: {{registration}}",
+  "\u2192 First Game: {{first_game}}",
+  "\u2192 Host(s): {{host}} (DM if you need help.)",
+  "",
+  "\u2022 Read <#1403403385146704044>, <#1403403385146704045> & <#1403403385146704043> before playing.",
+  "\u2022 Top 1 = Division 2 Access <:noble_division2_icon:1403477617696575618> (Top 5 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "\u2022 Top 5 = Division 3 Invite <:noble_division3_icon:1403477545348759645> (Top 20 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "",
+  "**Required:** {{first_reacts}}+ Reacts",
+].join("\n");
+
+const SOLOS_CLOSED_SECOND_TEMPLATE = SOLOS_CLOSED_TEMPLATE.replace(
+  "**Noble Solos Closed Practice Session** ({{game_count}} Games)",
+  "**Noble Solos Closed Practice Session** ({{game_count}} Games)\n\n**Second Lobby**"
+);
+
+const SOLOS_CLOSED_LADDER_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "\uD83D\uDC51 **Noble Solos Closed Ladder (4 Games)** \uD83D\uDC51",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host(s) for this session are: {{host}} Direct Message them for help.",
+  "",
+  "\u2022 Make sure to read https://discord.com/channels/1403403384115040368/1403403385146704044 https://discord.com/channels/1403403384115040368/1403403385146704043 & https://discord.com/channels/1403403384115040368/1403403385146704045 before the games.",
+  "\u2022 **Top 5** (instead of top 1) = Division 2 access <:Noble_Zero_Build:1089594330236330056> (Top 7 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "\u2022 **Top 10** (instead of top 5) = Division 3 Invite <:noble_division3_icon:1403477545348759645> (Top 25 for [Whop Supporters](https://whop.com/nobleprac/))",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts**",
+].join("\n");
+
+const SOLOS_CLOSED_LADDER_SECOND_TEMPLATE = SOLOS_CLOSED_LADDER_PRIMARY_TEMPLATE.replace(
+  "\uD83D\uDC51 **Noble Solos Closed Ladder (4 Games)** \uD83D\uDC51",
+  "\uD83D\uDC51 **Noble Solos Closed Ladder (4 Games)** \uD83D\uDC51\n\n**Second Lobby**"
+);
+
+const PRO_SCRIMS_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Pro Scrims Session {{session_number}}** ({{game_count}} Games)",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game commences @ {{first_game}}",
+  "",
+  "The host for this session is {{host}}. DM them if you need any help.",
+  "",
+  "At least {{first_reacts}} reacts required (1 per Team).",
+].join("\n");
+
+const PRO_SCRIMS_SECOND_TEMPLATE = PRO_SCRIMS_PRIMARY_TEMPLATE.replace(
+  "**Noble Pro Scrims Session {{session_number}}** ({{game_count}} Games)",
+  "**Noble Pro Scrims Session {{session_number}}** ({{game_count}} Games)\n\n**Second Lobby**"
+);
+
+const DIV1_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 1 Practice Session**",
+  "",
+  ":arrow: Registration opens @ {{registration}}",
+  "",
+  ":arrow: First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 Session lasts {{game_count}} Games. **Miss a single game and you will be banned.**",
+  "\u2022 Make sure to read <#757574098359550082>, <#860622870563520513> & <#912669854543269888> before the games.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
+].join("\n");
+
+const DIV1_SECOND_TEMPLATE = DIV1_PRIMARY_TEMPLATE.replace(
+  "**Noble Division 1 Practice Session**",
+  "**Noble Division 1 Practice Session**\n\n**Second Lobby**"
+);
+
+const DIV2_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 2 Practice Session ({{game_count}} games)**",
+  "",
+  "{{emoji}} Registration opens {{registration}}",
+  "",
+  "{{emoji}} First Game Commences {{first_game}}",
+  "",
+  "The host for this session is: {{host}} Direct Message them for help.",
+  "",
+  "\u2022 Make sure to read <#1539238648799830108>, <#1540412486749130884> & <#1539238649080713247> before the games.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
+].join("\n");
+
+const DIV2_SECOND_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 2 Practice Session ({{game_count}} games)**",
+  "",
+  "**Second Lobby**",
+  "",
+  "{{emoji}} Registration opens {{registration}}",
+  "",
+  "{{emoji}} First Game Commences {{first_game}}",
+  "",
+  "\u2022 The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** (1 per duo).",
+].join("\n");
+
+const DIV3_TWO_GAME_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**Noble Division 3 Practice Session ({{game_count}} GAME SESSION)**",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 Session lasts {{game_count}} Games. **Miss a single game and you will be banned.**",
+  "\u2022 Make sure to read <#902656971801493545>, <#902656971801493547> & <#1383042801754968135> before the games.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per duo).",
+].join("\n");
+
+const DIV3_TWO_GAME_SECOND_TEMPLATE = DIV3_TWO_GAME_PRIMARY_TEMPLATE.replace(
+  "**Noble Division 3 Practice Session ({{game_count}} GAME SESSION)**",
+  "**Noble Division 3 Practice Session ({{game_count}} GAME SESSION)**\n\n**Second Lobby**"
+);
 
 const SOLOS_CLOSED_LEGACY_TEMPLATE = [
   "@everyone",
@@ -480,6 +679,39 @@ const SOLOS_LEGACY_SECOND_TEMPLATE = [
   "Required at least **{{second_reacts}}+ Reacts** (1 per {{unit}}).",
 ].join("\n");
 
+const LEGACY_STANDARD_PRIMARY_TEMPLATE = [
+  "@everyone",
+  "",
+  "**{{session_title}}{{mode_suffix}}**",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "\u2022 Session lasts 3 Games. **Miss a single game and you will be banned.**",
+  "\u2022 Make sure to read {{channels}} before the games.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per {{unit}}).",
+].join("\n");
+
+const LEGACY_STANDARD_SECOND_TEMPLATE = [
+  "@everyone",
+  "",
+  "**{{session_title}}{{mode_suffix}}**",
+  "",
+  "**Second Lobby**",
+  "",
+  "{{emoji}} Registration opens @ {{registration}}",
+  "",
+  "{{emoji}} First Game Commences @ {{first_game}}",
+  "",
+  "The host for this session is: {{host}}, Direct Message them for help.",
+  "",
+  "Required at least **{{first_reacts}}+ Reacts** (1 per {{unit}}).",
+].join("\n");
+
 const DIV3_LADDER_PRIMARY_TEMPLATE = [
   "@everyone",
   "",
@@ -492,7 +724,7 @@ const DIV3_LADDER_PRIMARY_TEMPLATE = [
   "The host for this session is: {{host}}, Direct Message them for help.",
   "",
   "\u2022 **Session lasts 5 Games. -> Miss a single game and you will be banned.**",
-  "\u2022 **Top 2 will get access to Division 2 <:div2:1022985780383195157>.** (Only the registered players)",
+  "\u2022 **Top 2 will get access to Division 1 <:div2:1022985780383195157>.** (Only the registered players)",
   "\u2022 Make sure to read <#902656971801493545>, <#902656971801493547> & <#1383042801754968135> before the games.",
   "",
   "Required at least {{first_reacts}}+ Reacts (1 per duo)",
@@ -513,7 +745,7 @@ const DIV3_LADDER_SECOND_TEMPLATE = [
   "The host for this session is: {{host}}, Direct Message them for help.",
   "",
   "\u2022 **Session lasts 5 Games. -> Miss a single game and you will be banned.**",
-  "\u2022 **Top 2 will get access to Division 2 <:div2:1022985780383195157>.** (Only the registered players)",
+  "\u2022 **Top 2 will get access to Division 1 <:div2:1022985780383195157>.** (Only the registered players)",
   "\u2022 Make sure to read <#902656971801493545>, <#902656971801493547> & <#1383042801754968135> before the games.",
   "",
   "Required at least **{{first_reacts}}+ Reacts** (1 per duo)",
@@ -529,7 +761,9 @@ const SESSION_KINDS = [
     emoji: "<:ArrowRight:1398336238448152717>",
     channels: "<#1098721307643875390>, <#1124136360522027179> & <#1098721307643875391>",
     extra: "\u2022 Top 20 = Noble Solos Closed <:solos_closed:1403796828239040534>",
-    modes: ["solos"],
+    modes: ["solos", "ladder"],
+    gameCounts: [3, 2],
+    defaultGameCount: 3,
   },
   {
     value: "solos_closed",
@@ -540,7 +774,9 @@ const SESSION_KINDS = [
     emoji: "<:ArrowRight:1403465070234701854>",
     channels: "<#1403403385146704044>, <#1403403385146704045> & <#1403403385146704043>",
     extra: "\u2022 Top 3 = Division 3 Invite <:noble_division3_icon:1403477545348759645>",
-    modes: ["solos"],
+    modes: ["solos", "ladder"],
+    gameCounts: [3, 2],
+    defaultGameCount: 3,
   },
   {
     value: "div0",
@@ -553,14 +789,28 @@ const SESSION_KINDS = [
     modes: ["duos", "squads", "late_night"],
   },
   {
+    value: "div1",
+    label: "Noble Division 1",
+    short: "Div 1",
+    icon: "img/noble-div1.png",
+    title: "Noble Division 1 Practice Session",
+    emoji: ":arrow:",
+    channels: "<#757574098359550082>, <#860622870563520513> & <#912669854543269888>",
+    modes: ["duos", "squads"],
+    gameCounts: [3, 2],
+    defaultGameCount: 3,
+  },
+  {
     value: "div2",
     label: "Noble Division 2",
     short: "Div 2",
-    icon: "img/noble-div2.png",
+    icon: "img/noble-div2-2026.png",
     title: "Noble Division 2 Practice Session",
-    emoji: "<:arrow:1398419775574511766>",
-    channels: "<#757574098359550082>, <#860622870563520513> & <#912669854543269888>",
+    emoji: "<:Arrow:1540758164797005876>",
+    channels: "<#1539238648799830108>, <#1540412486749130884> & <#1539238649080713247>",
     modes: ["duos", "squads"],
+    gameCounts: [3, 2],
+    defaultGameCount: 3,
   },
   {
     value: "div3",
@@ -571,16 +821,20 @@ const SESSION_KINDS = [
     emoji: "<:ArrowRight:1398315425913372872>",
     channels: "<#902656971801493545>, <#902656971801493547> & <#1383042801754968135>",
     modes: ["duos", "squads", "ladder"],
+    gameCounts: [2, 3],
+    defaultGameCount: 2,
   },
   {
     value: "247",
-    label: "Noble 24/7",
-    short: "24/7",
+    label: "Noble Pro Scrims",
+    short: "Pro",
     icon: "img/noble-247.png",
-    title: "Noble 24/7 Practice Session",
-    emoji: "<:ArrowRight:1398422494817419385>",
+    title: "Noble Pro Scrims Session",
+    emoji: "<:arrow:1398419080704299110>",
     channels: "<#1282840995846950962>, <#1282841044521717761> & <#1282841572336996372>",
     modes: ["duos", "squads"],
+    gameCounts: [3, 2],
+    defaultGameCount: 3,
   },
 ];
 
@@ -599,7 +853,7 @@ const SCHEDULE_TEMPLATE = [
 ].join("\n");
 
 const SCHEDULE_FOOTER = "-# Please note that session times may shift depending on how earlier sessions progress.";
-const SCHEDULE_SERVER_ORDER = ["div0", "div3", "div2", "solos", "solos_closed", "247"];
+const SCHEDULE_SERVER_ORDER = ["div0", "div3", "div1", "solos", "solos_closed", "247"];
 
 const DEFAULT_STAFF_LINKS = [
   {
@@ -659,10 +913,10 @@ const SCHEDULE_DEFAULTS = {
       { time: "00:45", note: "" },
     ],
   },
-  div2: {
-    label: "Division 2",
-    icon: "img/noble-div2.png",
-    title: "Noble Division 2",
+  div1: {
+    label: "Division 1",
+    icon: "img/noble-div1.png",
+    title: "Noble Division 1",
     headerEmoji: "<:div2:1022985780383195157>",
     arrowEmoji: "<:arrow:1398419775574511766>",
     details: "<#757574098984501259>",
@@ -706,9 +960,9 @@ const SCHEDULE_DEFAULTS = {
     ],
   },
   "247": {
-    label: "Noble 24/7",
+    label: "Noble Pro Scrims",
     icon: "img/noble-247.png",
-    title: "Noble 24/7",
+    title: "Noble Pro Scrims",
     headerEmoji: "<:247:1061772154225573959>",
     arrowEmoji: "<:arrow:1398419080704299110>",
     details: "<#797443678447599646>",
@@ -761,11 +1015,13 @@ const DEFAULT_SETTINGS = {
     solos: {
       modes: {
         solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
+        ladder: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
       },
     },
     solos_closed: {
       modes: {
         solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
+        ladder: { delayMinutes: 20, firstReacts: 110, secondReacts: 110 },
       },
     },
     div0: {
@@ -773,6 +1029,12 @@ const DEFAULT_SETTINGS = {
         duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
         squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
         late_night: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
+      },
+    },
+    div1: {
+      modes: {
+        duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
+        squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
       },
     },
     div2: {
@@ -805,15 +1067,35 @@ function createDefaultTemplate(session, mode, lobby = "primary") {
   }
 
   if (session.value === "solos") {
+    if (mode === "ladder") return additionalLobby ? SOLOS_LADDER_SECOND_TEMPLATE : SOLOS_LADDER_PRIMARY_TEMPLATE;
     return additionalLobby ? SOLOS_SECOND_TEMPLATE : SOLOS_PRIMARY_TEMPLATE;
   }
 
-  if (session.value === "solos_closed" && !additionalLobby) {
-    return SOLOS_CLOSED_TEMPLATE;
+  if (session.value === "solos_closed") {
+    if (mode === "ladder") {
+      return additionalLobby ? SOLOS_CLOSED_LADDER_SECOND_TEMPLATE : SOLOS_CLOSED_LADDER_PRIMARY_TEMPLATE;
+    }
+    return additionalLobby ? SOLOS_CLOSED_SECOND_TEMPLATE : SOLOS_CLOSED_TEMPLATE;
+  }
+
+  if (session.value === "div1") {
+    return additionalLobby ? DIV1_SECOND_TEMPLATE : DIV1_PRIMARY_TEMPLATE;
+  }
+
+  if (session.value === "div2") {
+    return additionalLobby ? DIV2_SECOND_TEMPLATE : DIV2_PRIMARY_TEMPLATE;
   }
 
   if (session.value === "div3" && mode === "ladder") {
     return additionalLobby ? DIV3_LADDER_SECOND_TEMPLATE : DIV3_LADDER_PRIMARY_TEMPLATE;
+  }
+
+  if (session.value === "div3") {
+    return additionalLobby ? DIV3_TWO_GAME_SECOND_TEMPLATE : DIV3_TWO_GAME_PRIMARY_TEMPLATE;
+  }
+
+  if (session.value === "247") {
+    return additionalLobby ? PRO_SCRIMS_SECOND_TEMPLATE : PRO_SCRIMS_PRIMARY_TEMPLATE;
   }
 
   const lines = [
@@ -889,6 +1171,8 @@ const STORAGE = {
   lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
   extensionUpdateDismissed: "nobleExtensionUpdateDismissedV2166",
   solosPresetCorrection: "nobleSolosPresetV2",
+  serverStructureMigration: "nobleServerStructure20260827V1",
+  officialPresetPackMigration: "nobleOfficialPresetPack20260827V1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -905,7 +1189,7 @@ const state = {
   announceMode: true,
   includeSecondLobby: false,
   includeThirdLobby: false,
-  solosGameCount: 3,
+  gameCount: 3,
   sessionNumber: "1",
   settings: cloneDefaults(),
   settingsDirty: false,
@@ -1264,6 +1548,23 @@ function getSessionSettings(sessionKind = state.sessionKind, mode = getMode(sess
 
 function getTwentyFourSevenSessionNumber() {
   return clampInteger(state.sessionNumber, 1, 1, 9999);
+}
+
+function getAvailableGameCounts(session = getSession(), mode = getMode(session.value)) {
+  if (mode === "ladder" || mode === "late_night") return [];
+  return Array.isArray(session.gameCounts) ? session.gameCounts : [];
+}
+
+function getDefaultGameCount(session = getSession(), mode = getMode(session.value)) {
+  if (mode === "late_night") return 2;
+  if (mode === "ladder") return session.value === "div3" ? 5 : 4;
+  return session.defaultGameCount || session.gameCounts?.[0] || 3;
+}
+
+function normalizeGameCount(value, session = getSession(), mode = getMode(session.value)) {
+  const available = getAvailableGameCounts(session, mode);
+  const number = Number(value);
+  return available.includes(number) ? number : getDefaultGameCount(session, mode);
 }
 
 function mergeSavedSettings(saved) {
@@ -2277,6 +2578,8 @@ function renderSessionCards() {
         byId("additionalHostId").value = "";
       }
       state.sessionKind = session.value;
+      state.queueType = session.modes[0];
+      state.gameCount = getDefaultGameCount(session, session.modes[0]);
       renderBuilder();
     });
 
@@ -2384,18 +2687,22 @@ function renderQueueButtons() {
     if (selectedMode === mode.value) button.classList.add("is-selected");
     button.addEventListener("click", () => {
       state.queueType = mode.value;
+      state.gameCount = getDefaultGameCount(session, mode.value);
       renderBuilder();
     });
     container.appendChild(button);
   });
 }
 
-function renderSolosGameCountControl() {
-  const control = byId("solosGameCountControl");
+function renderGameCountControl() {
+  const control = byId("sessionGameCountControl");
   if (!control) return;
-  control.hidden = state.sessionKind !== "solos";
-  control.querySelectorAll("[data-solos-game-count]").forEach((button) => {
-    const selected = Number(button.dataset.solosGameCount) === state.solosGameCount;
+  const available = getAvailableGameCounts();
+  control.hidden = available.length < 2;
+  control.querySelectorAll("[data-game-count]").forEach((button) => {
+    const value = Number(button.dataset.gameCount);
+    button.hidden = !available.includes(value);
+    const selected = value === state.gameCount;
     button.setAttribute("aria-pressed", String(selected));
   });
 }
@@ -2540,7 +2847,13 @@ function buildAnnouncementText() {
   const queueSuffix = mode === "squads" ? " (Squads)" : "";
   const hostIds = [...new Set([state.discordId.trim(), ...state.additionalHostIds].filter(Boolean))];
   const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
-  const unit = mode === "squads" ? "squad" : mode === "duos" || mode === "late_night" || mode === "ladder" ? "duo" : "player";
+  const unit = session.value.startsWith("solos")
+    ? "player"
+    : mode === "squads"
+    ? "squad"
+    : mode === "duos" || mode === "late_night" || mode === "ladder"
+    ? "duo"
+    : "player";
   const templateSource = templateKey === "third" ? "second" : templateKey;
   let template = config.templates?.[templateSource] || createDefaultTemplate(session, mode, templateSource);
   if (templateKey === "third") {
@@ -2550,7 +2863,7 @@ function buildAnnouncementText() {
     session_title: isLateNightMode()
       ? "Noble Division 0 Practice Late Night Session ( 2 GAMES )"
       : session.value === "247"
-      ? `Noble 24/7 Session ${getTwentyFourSevenSessionNumber()}`
+      ? `Noble Pro Scrims Session ${getTwentyFourSevenSessionNumber()}`
       : session.title,
     mode: getModeLabel(mode),
     mode_suffix: queueSuffix,
@@ -2562,7 +2875,8 @@ function buildAnnouncementText() {
     extra: session.extra || "",
     first_reacts: String(config.firstReacts),
     second_reacts: String(config.secondReacts),
-    game_count: String(state.solosGameCount),
+    game_count: String(getAvailableGameCounts().length ? state.gameCount : getDefaultGameCount()),
+    session_number: String(getTwentyFourSevenSessionNumber()),
     unit,
   };
 
@@ -2591,7 +2905,7 @@ function sanitizeAnnouncementHistory(value) {
       lobby,
       unix,
       sessionNumber: String(item?.sessionNumber || "1").replace(/\D/g, "").slice(0, 4) || "1",
-      solosGameCount: Number(item?.solosGameCount) === 2 ? 2 : 3,
+      gameCount: normalizeGameCount(item?.gameCount ?? item?.solosGameCount, session, queueType),
       discordId: isDiscordUserId(item?.discordId) ? String(item.discordId) : "",
       additionalHostIds: [...new Set((Array.isArray(item?.additionalHostIds) ? item.additionalHostIds : []).filter(isDiscordUserId))].slice(0, 5),
       text: String(item?.text || "").slice(0, 20000),
@@ -2621,7 +2935,7 @@ function rememberCurrentAnnouncement() {
     lobby: getLobbyVariant(),
     unix: state.unix,
     sessionNumber: String(getTwentyFourSevenSessionNumber()),
-    solosGameCount: state.solosGameCount,
+    gameCount: state.gameCount,
     discordId: state.discordId,
     additionalHostIds: [...state.additionalHostIds],
     text,
@@ -2702,7 +3016,7 @@ function restoreAnnouncementHistoryEntry(entry) {
   state.includeSecondLobby = entry.lobby === "second";
   state.includeThirdLobby = entry.lobby === "third";
   state.sessionNumber = entry.sessionNumber;
-  state.solosGameCount = entry.solosGameCount;
+  state.gameCount = normalizeGameCount(entry.gameCount, session, state.queueType);
   state.discordId = entry.discordId;
   state.additionalHostIds = [...entry.additionalHostIds];
   state.additionalHostComposerOpen = false;
@@ -2727,7 +3041,11 @@ function restoreAnnouncementHistoryEntry(entry) {
 function renderAnnouncement() {
   const session = getSession();
   const lobby = getLobbyVariant();
-  const baseLabel = isLateNightMode() ? `${session.label} \u00b7 Late Night` : session.label;
+  const baseLabel = isLateNightMode()
+    ? `${session.label} \u00b7 Late Night`
+    : getMode() === "ladder"
+    ? `${session.label} \u00b7 Ladder`
+    : session.label;
   const outputLabel = lobby === "primary"
     ? baseLabel
     : `${baseLabel} \u00b7 ${lobby === "third" ? "Third" : "Second"} Lobby`;
@@ -2761,7 +3079,7 @@ function renderBuilder() {
   renderSessionNumberField();
   renderAdditionalHosts();
   renderQueueButtons();
-  renderSolosGameCountControl();
+  renderGameCountControl();
   renderLobbyControls();
   renderTimeline();
   renderAnnouncement();
@@ -3119,7 +3437,8 @@ function renderTemplateEditor() {
     ["{{first_game}}", "First game time"],
     ["{{first_reacts}}", "One-lobby react goal"],
     ["{{second_reacts}}", "Two-lobby react goal"],
-    ["{{game_count}}", "Selected Solos game count"],
+    ["{{game_count}}", "Selected game count"],
+    ["{{session_number}}", "Pro Scrims session number"],
     ["{{session_title}}", "Session title"],
     ["{{mode}}", "Game mode"],
     ["{{mode_suffix}}", "Optional squads title suffix"],
@@ -3316,11 +3635,26 @@ function sanitizeConfigurationBackup(payload) {
   }
 
   const preferences = payload.preferences && typeof payload.preferences === "object" ? payload.preferences : {};
+  const settingsPayload = JSON.parse(JSON.stringify(payload.configuration.settings));
+  const schedulePayload = JSON.parse(JSON.stringify(payload.configuration.scheduleSettings));
+  const legacyBackup = settingsPayload?.sessions?.div2 && !settingsPayload.sessions.div1;
+  if (legacyBackup) {
+    settingsPayload.sessions.div1 = settingsPayload.sessions.div2;
+    delete settingsPayload.sessions.div2;
+    if (schedulePayload?.div2 && !schedulePayload.div1) {
+      schedulePayload.div1 = schedulePayload.div2;
+      delete schedulePayload.div2;
+    }
+  }
   return {
-    settings: mergeSavedSettings(payload.configuration.settings),
-    scheduleSettings: mergeScheduleSettings(payload.configuration.scheduleSettings),
+    settings: mergeSavedSettings(settingsPayload),
+    scheduleSettings: mergeScheduleSettings(schedulePayload),
     staffLinks: sanitizeStaffLinks(payload.configuration.staffLinks),
-    sessionOrder: sanitizeSessionOrder(payload.configuration.sessionOrder),
+    sessionOrder: sanitizeSessionOrder(
+      legacyBackup && Array.isArray(payload.configuration.sessionOrder)
+        ? payload.configuration.sessionOrder.map((sessionId) => (sessionId === "div2" ? "div1" : sessionId))
+        : payload.configuration.sessionOrder
+    ),
     language: Object.prototype.hasOwnProperty.call(UI_LOCALES, preferences.language) ? preferences.language : "en",
     timeFormat: preferences.timeFormat === "12h" || preferences.timeFormat === "24h"
       ? preferences.timeFormat
@@ -3362,6 +3696,7 @@ function applyImportedConfiguration(configuration) {
   state.announceMode = configuration.announceMode;
   state.sessionKind = state.sessionOrder[0];
   state.queueType = getSession().modes[0];
+  state.gameCount = getDefaultGameCount();
   state.templateSessionKind = state.sessionKind;
   state.templateMode = getMode();
   state.settingsScrimCategoryId = state.settings.scrimCategories[0].id;
@@ -3449,11 +3784,122 @@ function resetSettings() {
   state.staffLinks = cloneStaffLinks();
   state.sessionOrder = [...DEFAULT_SESSION_ORDER];
   state.sessionKind = state.sessionOrder[0];
+  state.queueType = getSession().modes[0];
+  state.gameCount = getDefaultGameCount();
   state.settingsScrimCategoryId = state.settings.scrimCategories[0].id;
   state.scrimQueueType = state.settings.scrimCategories[0].id;
   state.settingsDirty = true;
   saveSettings();
   showToast("Default settings restored");
+}
+
+function migrateServerStructure() {
+  if (localStorage.getItem(STORAGE.serverStructureMigration) === "1") return;
+
+  const savedSettings = localStorage.getItem(STORAGE.settings);
+  if (savedSettings) {
+    const parsed = JSON.parse(savedSettings);
+    if (parsed?.sessions?.div2 && !parsed.sessions.div1) {
+      parsed.sessions.div1 = parsed.sessions.div2;
+      delete parsed.sessions.div2;
+      localStorage.setItem(STORAGE.settings, JSON.stringify(parsed));
+    }
+  }
+
+  const savedOrder = localStorage.getItem(STORAGE.sessionOrder);
+  if (savedOrder) {
+    const parsed = JSON.parse(savedOrder);
+    if (Array.isArray(parsed)) {
+      localStorage.setItem(
+        STORAGE.sessionOrder,
+        JSON.stringify(parsed.map((sessionId) => (sessionId === "div2" ? "div1" : sessionId)))
+      );
+    }
+  }
+
+  const savedHistory = localStorage.getItem(STORAGE.announcementHistory);
+  if (savedHistory) {
+    const parsed = JSON.parse(savedHistory);
+    if (Array.isArray(parsed)) {
+      parsed.forEach((entry) => {
+        if (entry?.sessionKind === "div2") entry.sessionKind = "div1";
+      });
+      localStorage.setItem(STORAGE.announcementHistory, JSON.stringify(parsed));
+    }
+  }
+
+  const savedSchedules = localStorage.getItem(STORAGE.scheduleSettings);
+  if (savedSchedules) {
+    const parsed = JSON.parse(savedSchedules);
+    if (parsed?.div2 && !parsed.div1) {
+      parsed.div1 = parsed.div2;
+      delete parsed.div2;
+      localStorage.setItem(STORAGE.scheduleSettings, JSON.stringify(parsed));
+    }
+  }
+
+  localStorage.setItem(STORAGE.serverStructureMigration, "1");
+}
+
+function replaceOfficialTemplates(config, previousPrimary, previousSecond, nextPrimary, nextSecond) {
+  if (!config?.templates) return false;
+  let changed = false;
+  if (previousPrimary.includes(config.templates.primary)) {
+    config.templates.primary = nextPrimary;
+    changed = true;
+  }
+  if (previousSecond.includes(config.templates.second)) {
+    config.templates.second = nextSecond;
+    changed = true;
+  }
+  return changed;
+}
+
+function applyOfficialPresetPackMigration() {
+  if (localStorage.getItem(STORAGE.officialPresetPackMigration) === "1") return;
+
+  let changed = false;
+  changed = replaceOfficialTemplates(
+    state.settings.sessions?.solos?.modes?.solos,
+    [LEGACY_SOLOS_PRIMARY_TEMPLATE_V2, SOLOS_LEGACY_PRIMARY_TEMPLATE],
+    [LEGACY_SOLOS_SECOND_TEMPLATE_V2, SOLOS_LEGACY_SECOND_TEMPLATE],
+    SOLOS_PRIMARY_TEMPLATE,
+    SOLOS_SECOND_TEMPLATE
+  ) || changed;
+  changed = replaceOfficialTemplates(
+    state.settings.sessions?.solos_closed?.modes?.solos,
+    [LEGACY_SOLOS_CLOSED_TEMPLATE_V2, SOLOS_CLOSED_LEGACY_TEMPLATE],
+    [SOLOS_LEGACY_SECOND_TEMPLATE],
+    SOLOS_CLOSED_TEMPLATE,
+    SOLOS_CLOSED_SECOND_TEMPLATE
+  ) || changed;
+
+  ["duos", "squads"].forEach((mode) => {
+    changed = replaceOfficialTemplates(
+      state.settings.sessions?.div1?.modes?.[mode],
+      [LEGACY_STANDARD_PRIMARY_TEMPLATE],
+      [LEGACY_STANDARD_SECOND_TEMPLATE],
+      DIV1_PRIMARY_TEMPLATE,
+      DIV1_SECOND_TEMPLATE
+    ) || changed;
+    changed = replaceOfficialTemplates(
+      state.settings.sessions?.div3?.modes?.[mode],
+      [LEGACY_STANDARD_PRIMARY_TEMPLATE],
+      [LEGACY_STANDARD_SECOND_TEMPLATE],
+      DIV3_TWO_GAME_PRIMARY_TEMPLATE,
+      DIV3_TWO_GAME_SECOND_TEMPLATE
+    ) || changed;
+    changed = replaceOfficialTemplates(
+      state.settings.sessions?.["247"]?.modes?.[mode],
+      [LEGACY_STANDARD_PRIMARY_TEMPLATE],
+      [LEGACY_STANDARD_SECOND_TEMPLATE],
+      PRO_SCRIMS_PRIMARY_TEMPLATE,
+      PRO_SCRIMS_SECOND_TEMPLATE
+    ) || changed;
+  });
+
+  if (changed) localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.officialPresetPackMigration, "1");
 }
 
 function applySolosSecondLobbyCorrection() {
@@ -3570,6 +4016,7 @@ function applyZnturoStaffLinkCorrection() {
 
 function loadPreferences() {
   try {
+    migrateServerStructure();
     const savedLanguage = localStorage.getItem(STORAGE.language);
     if (savedLanguage && Object.prototype.hasOwnProperty.call(UI_LOCALES, savedLanguage)) {
       state.language = savedLanguage;
@@ -3612,6 +4059,7 @@ function loadPreferences() {
     applyDiv0DelayCorrection();
     applyTwentyFourSevenDelayCorrection();
     applyLobbyOffsetCorrection();
+    applyOfficialPresetPackMigration();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
@@ -3701,10 +4149,10 @@ function bindEvents() {
   document.querySelectorAll("[data-language]").forEach((button) => {
     button.addEventListener("click", () => setInterfaceLanguage(button.dataset.language));
   });
-  document.querySelectorAll("[data-solos-game-count]").forEach((button) => {
+  document.querySelectorAll("[data-game-count]").forEach((button) => {
     button.addEventListener("click", () => {
-      state.solosGameCount = Number(button.dataset.solosGameCount) === 2 ? 2 : 3;
-      renderSolosGameCountControl();
+      state.gameCount = normalizeGameCount(button.dataset.gameCount);
+      renderGameCountControl();
       renderAnnouncement();
     });
   });
@@ -3990,6 +4438,8 @@ function bindEvents() {
 
 function initialize() {
   loadPreferences();
+  state.queueType = getSession().modes[0];
+  state.gameCount = getDefaultGameCount();
   applyWorkspaceTheme(state.theme, false);
   if (!state.settings.scrimCategories.some((category) => category.id === state.scrimQueueType)) {
     state.scrimQueueType = state.settings.scrimCategories[0].id;
