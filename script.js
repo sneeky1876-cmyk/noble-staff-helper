@@ -853,7 +853,25 @@ const SCHEDULE_TEMPLATE = [
 ].join("\n");
 
 const SCHEDULE_FOOTER = "-# Please note that session times may shift depending on how earlier sessions progress.";
-const SCHEDULE_SERVER_ORDER = ["div0", "div3", "div1", "solos", "solos_closed", "247"];
+const SCHEDULE_TEMPLATE_COLON_DETAILS = SCHEDULE_TEMPLATE.replace(
+  "More details are available in {{details}}",
+  "More details are available in: {{details}}"
+);
+const DIV0_SCHEDULE_FOOTER = [
+  "-# Ladders are hosted each Wednesday and Saturday at 19:30, where the top 10 receive a Division 3 Invite <:Division3:1283025349688692951>. Please note that session times may shift depending on how earlier sessions progress.",
+  "-# Exemption from Activity Checks and Bottom Placements for [Diamond+](https://discord.com/channels/1275856938940502047/1283138210784084089)+.",
+  "-# One Top 5 to Advance to Division 3 instead of Two Top 5's [Diamond+](https://discord.com/channels/1275856938940502047/1283138210784084089)+.",
+].join("\n");
+const DIV3_SCHEDULE_FOOTER = [
+  "-# Ladders are hosted each Thursday and Sunday at <t:1785087000:t>, where top 2 get access to Noble Division 2.",
+  "-# Please note that session times may shift depending on how sessions progress.",
+].join("\n");
+const SOLOS_SCHEDULE_FOOTER = "-# Ladders run every Thursday and Sunday at <t:1787853600:t>, with each game winner earning Division 3 <:div3:1125751945563492452> and the top 25 earning Noble Solos Closed <:solos_closed:1403796828239040534> (Top 40 for [Whop subscribers](https://discord.com/channels/1098721307077652630/1403309544905379851) <:whoplogo:1503113799358746776>). Session times may shift depending on how earlier sessions progress.";
+const SOLOS_CLOSED_SCHEDULE_FOOTER = [
+  SCHEDULE_FOOTER,
+  "-# Ladders run every Thursday and Sunday at <t:1786899600:t>, with the top 3 earning Division 2 <:div2:1043105299281743982> (Top 7 for [Whop subscribers](https://discord.com/channels/1403403384115040368/1403403385146704048) <:whoplogo:1503113799358746776>) and the top 10 earning Division 3 <:div3:1537809225562980422> (Top 25 with Whop). Session times may shift depending on how earlier sessions progress.",
+].join("\n");
+const SCHEDULE_SERVER_ORDER = ["div0", "div1", "div2", "div3", "solos", "solos_closed", "247"];
 
 const DEFAULT_STAFF_LINKS = [
   {
@@ -886,7 +904,7 @@ const SCHEDULE_DEFAULTS = {
     headerEmoji: "<:div0:1283115473822683218>",
     arrowEmoji: "<:ArrowRight:1398422494817419385>",
     details: "<#1282842243157196840>",
-    footer: SCHEDULE_FOOTER,
+    footer: DIV0_SCHEDULE_FOOTER,
     template: SCHEDULE_TEMPLATE,
     sessions: [
       { time: "15:00", note: "" },
@@ -894,6 +912,7 @@ const SCHEDULE_DEFAULTS = {
       { time: "19:00", note: "" },
       { time: "21:00", note: "" },
       { time: "23:00", note: "2 games" },
+      { time: "00:20", note: "2 games" },
     ],
   },
   div3: {
@@ -902,15 +921,18 @@ const SCHEDULE_DEFAULTS = {
     title: "Noble Division 3",
     headerEmoji: "<:div3:936738590753456199>",
     arrowEmoji: "<:ArrowRight:1398315425913372872>",
-    details: "https://discord.com/channels/902656971113644132/902683351691968513",
-    footer: SCHEDULE_FOOTER,
+    details: "[https://discord.com/channels/902656971113644132/902683351691968513](https://discord.com/channels/902656971113644132/902683351691968513)",
+    footer: DIV3_SCHEDULE_FOOTER,
     template: SCHEDULE_TEMPLATE,
     sessions: [
-      { time: "13:30", note: "" },
       { time: "15:30", note: "" },
-      { time: "17:00", note: "" },
-      { time: "22:45", note: "" },
-      { time: "00:45", note: "" },
+      { time: "17:30", note: "" },
+      {
+        time: "19:30",
+        note: "",
+        label: "Third Session is a **5 game LADDER session**: **(Top 3 get Div 2)**",
+      },
+      { time: "23:00", note: "" },
     ],
   },
   div1: {
@@ -928,7 +950,25 @@ const SCHEDULE_DEFAULTS = {
       { time: "19:00", note: "" },
       { time: "21:00", note: "" },
       { time: "23:00", note: "2 games" },
-      { time: "00:30", note: "2 games" },
+      { time: "00:20", note: "2 games" },
+    ],
+  },
+  div2: {
+    label: "Division 2",
+    icon: "img/noble-div2-2026.png",
+    title: "Noble Division 2",
+    headerEmoji: "<:Div2:1540429559076225094>",
+    arrowEmoji: "<:Arrow:1540758164797005876>",
+    details: "<#1541099252149657772>",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+    sessions: [
+      { time: "15:00", note: "" },
+      { time: "17:00", note: "" },
+      { time: "19:00", note: "" },
+      { time: "21:00", note: "" },
+      { time: "23:00", note: "2 games" },
+      { time: "00:30", note: "2 games", dayOffset: 1 },
     ],
   },
   solos: {
@@ -938,25 +978,28 @@ const SCHEDULE_DEFAULTS = {
     headerEmoji: "<:noble_solos:1219996373773062155>",
     arrowEmoji: "<:ArrowRight:1398336238448152717>",
     details: "<#1098919249055072327>.",
-    footer: SCHEDULE_FOOTER,
-    template: SCHEDULE_TEMPLATE,
+    footer: SOLOS_SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE_COLON_DETAILS,
     sessions: [
       { time: "16:30", note: "" },
-      { time: "22:40", note: "2 Games" },
+      { time: "19:30", note: "4 Games Ladder" },
+      { time: "22:30", note: "2 Games" },
+      { time: "00:00", note: "2 Games", dayOffset: 1 },
     ],
   },
   solos_closed: {
     label: "Noble Solos Closed",
     icon: "img/noble-closedsolos.png",
     title: "Noble Solos Closed",
-    headerEmoji: ":Solos_Closed:",
-    arrowEmoji: ":ArrowRight:",
-    details: "#announcements .",
-    footer: SCHEDULE_FOOTER,
+    headerEmoji: "<:Solos_Closed:1403494075516321802>",
+    arrowEmoji: "<:ArrowRight:1403465070234701854>",
+    details: "<#1403403385146704052> .",
+    footer: SOLOS_CLOSED_SCHEDULE_FOOTER,
     template: SCHEDULE_TEMPLATE,
     sessions: [
-      { time: "15:00", note: "" },
-      { time: "19:30", note: "" },
+      { time: "16:00", note: "" },
+      { time: "19:00", note: "4 Game Ladder" },
+      { time: "22:00", note: "2 Games" },
     ],
   },
   "247": {
@@ -969,12 +1012,63 @@ const SCHEDULE_DEFAULTS = {
     footer: SCHEDULE_FOOTER,
     template: SCHEDULE_TEMPLATE,
     sessions: [
-      { time: "15:00", note: "" },
-      { time: "17:00", note: "" },
-      { time: "19:00", note: "" },
-      { time: "21:00", note: "" },
-      { time: "23:00", note: "2 games" },
+      { time: "15:00", note: "Globals Priority", noteStyle: "plain" },
+      { time: "17:00", note: "Globals Priority", noteStyle: "plain" },
+      { time: "19:00", note: "Globals Priority", noteStyle: "plain" },
+      { time: "21:00", note: "Globals Priority", noteStyle: "plain" },
+      { time: "23:00", note: "Globals Priority (2 games)", noteStyle: "plain" },
     ],
+  },
+};
+
+const LEGACY_SCHEDULE_PRESET_FIELDS = {
+  div0: {
+    title: "Noble Division 0",
+    headerEmoji: "<:div0:1283115473822683218>",
+    arrowEmoji: "<:ArrowRight:1398422494817419385>",
+    details: "<#1282842243157196840>",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+  },
+  div3: {
+    title: "Noble Division 3",
+    headerEmoji: "<:div3:936738590753456199>",
+    arrowEmoji: "<:ArrowRight:1398315425913372872>",
+    details: "https://discord.com/channels/902656971113644132/902683351691968513",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+  },
+  div1: {
+    title: "Noble Division 1",
+    headerEmoji: "<:div2:1022985780383195157>",
+    arrowEmoji: "<:arrow:1398419775574511766>",
+    details: "<#757574098984501259>",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+  },
+  solos: {
+    title: "Noble Solos",
+    headerEmoji: "<:noble_solos:1219996373773062155>",
+    arrowEmoji: "<:ArrowRight:1398336238448152717>",
+    details: "<#1098919249055072327>.",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+  },
+  solos_closed: {
+    title: "Noble Solos Closed",
+    headerEmoji: ":Solos_Closed:",
+    arrowEmoji: ":ArrowRight:",
+    details: "#announcements .",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
+  },
+  "247": {
+    title: "Noble Pro Scrims",
+    headerEmoji: "<:247:1061772154225573959>",
+    arrowEmoji: "<:arrow:1398419080704299110>",
+    details: "<#797443678447599646>",
+    footer: SCHEDULE_FOOTER,
+    template: SCHEDULE_TEMPLATE,
   },
 };
 
@@ -1173,6 +1267,7 @@ const STORAGE = {
   solosPresetCorrection: "nobleSolosPresetV2",
   serverStructureMigration: "nobleServerStructure20260827V1",
   officialPresetPackMigration: "nobleOfficialPresetPack20260827V1",
+  schedulePresetPackMigration: "nobleSchedulePresetPack20260827V1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -1420,6 +1515,15 @@ function mergeScheduleSettings(saved) {
         const limit = field === "template" ? 20000 : field === "footer" ? 2000 : 500;
         clean[key][field] = candidate[field].slice(0, limit);
       }
+    });
+  });
+
+  Object.entries(LEGACY_SCHEDULE_PRESET_FIELDS).forEach(([key, legacy]) => {
+    const current = clean[key];
+    const defaults = SCHEDULE_DEFAULTS[key];
+    if (!current || !defaults) return;
+    ["title", "headerEmoji", "arrowEmoji", "details", "footer", "template"].forEach((field) => {
+      if (current[field] === legacy[field]) current[field] = defaults[field];
     });
   });
   return clean;
@@ -2004,7 +2108,7 @@ function scheduleDateLabel(value) {
   return match ? `${match[3]}-${match[2]}-${match[1]}` : "-- -- ----";
 }
 
-function scheduleUnix(dateValue, timeValue) {
+function scheduleUnix(dateValue, timeValue, dayOffset = 0) {
   const dateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue || "");
   const timeMatch = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(timeValue || "");
   if (!dateMatch || !timeMatch) return null;
@@ -2017,6 +2121,7 @@ function scheduleUnix(dateValue, timeValue) {
     0,
     0
   );
+  date.setDate(date.getDate() + clampInteger(dayOffset, 0, 0, 7));
   return Number.isNaN(date.getTime()) ? null : Math.floor(date.getTime() / 1000);
 }
 
@@ -2036,10 +2141,14 @@ function buildScheduleAnnouncement() {
   const preset = getSchedulePreset();
   const rows = state.scheduleRowsByServer[state.scheduleServer] || [];
   const sessions = rows.map((row, index) => {
-    const unix = scheduleUnix(state.scheduleDate, row.time);
-    const note = row.note.trim() ? ` (${row.note.trim()})` : "";
+    const unix = scheduleUnix(state.scheduleDate, row.time, row.dayOffset);
+    const rawNote = row.note.trim();
+    const note = rawNote ? (row.noteStyle === "plain" ? ` ${rawNote}` : ` (${rawNote})`) : "";
+    const label = typeof row.label === "string" && row.label.trim()
+      ? row.label.trim()
+      : `${scheduleSessionLabel(index)} Session:`;
     const timestamp = unix ? `<t:${unix}:t>` : "<set a time>";
-    return `${scheduleSessionLabel(index)} Session:${note}\n${preset.arrowEmoji} ${timestamp}`;
+    return `${label}${note}\n${preset.arrowEmoji} ${timestamp}`;
   }).join("\n\n");
 
   return replaceScheduleTokens(preset.template || SCHEDULE_TEMPLATE, {
@@ -2115,7 +2224,7 @@ function renderScheduleSessionRows() {
     const text = document.createElement("div");
     text.className = "schedule-session-name";
     const strong = document.createElement("strong");
-    strong.textContent = `${scheduleSessionLabel(index)} session`;
+    strong.textContent = row.label || `${scheduleSessionLabel(index)} session`;
     const small = document.createElement("small");
     small.textContent = "Individual start time";
     text.append(strong, small);
@@ -3902,6 +4011,12 @@ function applyOfficialPresetPackMigration() {
   localStorage.setItem(STORAGE.officialPresetPackMigration, "1");
 }
 
+function applySchedulePresetPackMigration() {
+  if (localStorage.getItem(STORAGE.schedulePresetPackMigration) === "1") return;
+  localStorage.setItem(STORAGE.scheduleSettings, JSON.stringify(state.scheduleSettings));
+  localStorage.setItem(STORAGE.schedulePresetPackMigration, "1");
+}
+
 function applySolosSecondLobbyCorrection() {
   if (localStorage.getItem(STORAGE.solosSecondLobbyCorrection) === "1") return;
 
@@ -4065,6 +4180,7 @@ function loadPreferences() {
     if (savedScheduleSettings) {
       state.scheduleSettings = mergeScheduleSettings(JSON.parse(savedScheduleSettings));
     }
+    applySchedulePresetPackMigration();
 
     const savedStaffLinks = localStorage.getItem(STORAGE.staffLinks);
     if (savedStaffLinks) state.staffLinks = sanitizeStaffLinks(JSON.parse(savedStaffLinks));
