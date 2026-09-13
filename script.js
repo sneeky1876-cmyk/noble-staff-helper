@@ -1263,7 +1263,7 @@ const STORAGE = {
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
   lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
-  extensionUpdateDismissed: "nobleExtensionUpdateDismissedV2166",
+  extensionUpdateDismissed: "nobleExtensionUpdateDismissedV21612",
   solosPresetCorrection: "nobleSolosPresetV2",
   serverStructureMigration: "nobleServerStructure20260827V1",
   officialPresetPackMigration: "nobleOfficialPresetPack20260827V1",
