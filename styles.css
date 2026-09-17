@@ -1604,6 +1604,16 @@ svg {
   background: rgba(0, 0, 0, 0.18);
 }
 
+#queueButtons {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#queueButtons .segment-button {
+  flex: 1 1 100px;
+  padding: 8px 12px;
+}
+
 .segment-button {
   min-height: 35px;
   padding: 0 14px;

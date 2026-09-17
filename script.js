@@ -1156,6 +1156,30 @@ const DEFAULT_SETTINGS = {
 function createDefaultTemplate(session, mode, lobby = "primary") {
   const additionalLobby = lobby === "second" || lobby === "third";
 
+  if (mode === "trios" || mode === "late_night_trios") {
+    const gameLabel = mode === "late_night_trios" ? "2 games, no bottom kick" : "3 games";
+    return [
+      "@everyone",
+      "",
+      `**{{session_title}}** **TRIOS** (${gameLabel})`,
+      "",
+      ...(additionalLobby ? [`**${lobby === "third" ? "Third" : "Second"} Lobby**`, ""] : []),
+      "{{emoji}} Registration opens {{registration}}",
+      "",
+      "{{emoji}} First Game Commences {{first_game}}",
+      "",
+      "The host for this session is: {{host}}, Direct Message them for help.",
+      "",
+      "• Session lasts {{game_count}} Games. **Miss a single game and you will be banned.**",
+      session.value === "247"
+        ? "• Make sure to read #custom-rules, #ban-offences & #how-to-play before the games."
+        : "• Make sure to read {{channels}} before the games.",
+      "",
+      "Required at least **{{first_reacts}}+ Reacts** (1 per trio)",
+      "**{{second_reacts}}+ Reacts** for a second lobby",
+    ].join("\n");
+  }
+
   if (session.value === "div0" && mode === "late_night" && !additionalLobby) {
     return DIV0_LATE_NIGHT_TEMPLATE;
   }
@@ -1234,6 +1258,18 @@ function createDefaultTemplate(session, mode, lobby = "primary") {
 }
 
 SESSION_KINDS.forEach((session) => {
+  if (!session.value.startsWith("solos")) {
+    session.modes.splice(1, 0, "trios");
+    session.modes.push("late_night_trios");
+    const delayMinutes = DEFAULT_SETTINGS.sessions[session.value].modes.duos.delayMinutes;
+    for (const mode of ["trios", "late_night_trios"]) {
+      DEFAULT_SETTINGS.sessions[session.value].modes[mode] = {
+        delayMinutes,
+        firstReacts: 40,
+        secondReacts: 80,
+      };
+    }
+  }
   session.modes.forEach((mode) => {
     DEFAULT_SETTINGS.sessions[session.value].modes[mode].templates = {
       primary: createDefaultTemplate(session, mode, "primary"),
@@ -1623,6 +1659,8 @@ function getMode(sessionKind = state.sessionKind) {
 
 function getModeLabel(mode) {
   if (mode === "solos") return "Solos";
+  if (mode === "trios") return "Trios";
+  if (mode === "late_night_trios") return "Late Night Trios";
   if (mode === "squads") return "Squads";
   if (mode === "late_night") return "Late Night";
   if (mode === "ladder") return "Ladder";
@@ -1655,11 +1693,14 @@ function getTwentyFourSevenSessionNumber() {
 }
 
 function getAvailableGameCounts(session = getSession(), mode = getMode(session.value)) {
+  if (mode === "trios" || mode === "late_night_trios") return [];
   if (mode === "ladder" || mode === "late_night") return [];
   return Array.isArray(session.gameCounts) ? session.gameCounts : [];
 }
 
 function getDefaultGameCount(session = getSession(), mode = getMode(session.value)) {
+  if (mode === "trios") return 3;
+  if (mode === "late_night_trios") return 2;
   if (mode === "late_night") return 2;
   if (mode === "ladder") return session.value === "div3" ? 5 : 4;
   return session.defaultGameCount || session.gameCounts?.[0] || 3;
@@ -2790,7 +2831,7 @@ function renderQueueButtons() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "segment-button";
-    if (mode.value === "late_night") button.classList.add("is-late-night");
+    if (mode.value === "late_night" || mode.value === "late_night_trios") button.classList.add("is-late-night");
     button.textContent = mode.label;
     button.setAttribute("aria-pressed", String(selectedMode === mode.value));
     if (selectedMode === mode.value) button.classList.add("is-selected");
@@ -2958,6 +2999,8 @@ function buildAnnouncementText() {
   const host = hostIds.length ? hostIds.map((id) => `<@${id}>`).join(" & ") : "<@USER>";
   const unit = session.value.startsWith("solos")
     ? "player"
+    : mode === "trios" || mode === "late_night_trios"
+    ? "trio"
     : mode === "squads"
     ? "squad"
     : mode === "duos" || mode === "late_night" || mode === "ladder"
