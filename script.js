@@ -1161,7 +1161,9 @@ function createDefaultTemplate(session, mode, lobby = "primary") {
     return [
       "@everyone",
       "",
-      `**{{session_title}}** **TRIOS** (${gameLabel})`,
+      session.value === "div0" && mode === "late_night_trios"
+        ? "**Noble Division 0 Practice Late Night Session (Trios)**"
+        : `**{{session_title}}** **TRIOS** (${gameLabel})`,
       "",
       ...(additionalLobby ? [`**${lobby === "third" ? "Third" : "Second"} Lobby**`, ""] : []),
       "{{emoji}} Registration opens {{registration}}",
@@ -1755,6 +1757,16 @@ function mergeSavedSettings(saved) {
       }
       if (typeof incoming.templates?.second === "string") {
         target.templates.second = incoming.templates.second.slice(0, 20000);
+      }
+      if (session.value === "div0" && mode === "late_night_trios") {
+        for (const lobby of ["primary", "second"]) {
+          const updated = createDefaultTemplate(session, mode, lobby);
+          const previous = updated.replace(
+            "**Noble Division 0 Practice Late Night Session (Trios)**",
+            "**{{session_title}}** **TRIOS** (2 games, no bottom kick)"
+          );
+          if (target.templates[lobby] === previous) target.templates[lobby] = updated;
+        }
       }
     });
   });
