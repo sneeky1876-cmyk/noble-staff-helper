@@ -617,6 +617,32 @@ const DIV2_SECOND_TEMPLATE = [
   "Required at least **{{first_reacts}}+ Reacts** (1 per duo).",
 ].join("\n");
 
+function createDiv2Template(mode, additionalLobby) {
+  const reload = mode === "reload";
+  const trios = mode === "trios";
+  return [
+    "@everyone",
+    "",
+    `**Noble Division 2 Practice Session (${reload ? "Reload" : "{{game_count}} games"})**`,
+    "",
+    ...(trios ? [additionalLobby ? "**Trios Second Lobby**" : "**Trios**", ""]
+      : additionalLobby ? ["**Second Lobby**", ""] : []),
+    "{{emoji}}   Registration opens @ {{registration}}",
+    "",
+    "{{emoji}}   First Game Commences @ {{first_game}}",
+    "",
+    `${additionalLobby && !trios ? "• " : ""}The host for this session is: {{host}}, Direct Message them for help.`,
+    "",
+    ...(!additionalLobby || trios ? [
+      `• Make sure to read <#1539238648799830108>${reload ? " ," : ","} <#1540412486749130884> & <#1539238649080713247> before the games.`,
+      "",
+    ] : []),
+    additionalLobby && !trios
+      ? "Required at least **{{first_reacts}}+ Reacts** (1 per duo)."
+      : `Required at least **{{first_reacts}}+ Reacts** for 1 lobby and **{{second_reacts}}+ Reacts** for a 2nd lobby (1 per ${trios ? "trio" : "duo"}).`,
+  ].join("\n");
+}
+
 const DIV3_TWO_GAME_PRIMARY_TEMPLATE = [
   "@everyone",
   "",
@@ -808,7 +834,7 @@ const SESSION_KINDS = [
     title: "Noble Division 2 Practice Session",
     emoji: "<:Arrow:1540758164797005876>",
     channels: "<#1539238648799830108>, <#1540412486749130884> & <#1539238649080713247>",
-    modes: ["duos", "squads"],
+    modes: ["duos", "reload", "squads"],
     gameCounts: [3, 2],
     defaultGameCount: 3,
   },
@@ -1134,6 +1160,7 @@ const DEFAULT_SETTINGS = {
     div2: {
       modes: {
         duos: { delayMinutes: 15, firstReacts: 55, secondReacts: 110 },
+        reload: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
         squads: { delayMinutes: 15, firstReacts: 25, secondReacts: 50 },
       },
     },
@@ -1153,8 +1180,12 @@ const DEFAULT_SETTINGS = {
   },
 };
 
-function createDefaultTemplate(session, mode, lobby = "primary") {
+function createDefaultTemplate(session, mode, lobby = "primary", useLegacyDiv2 = false) {
   const additionalLobby = lobby === "second" || lobby === "third";
+
+  if (session.value === "div2" && ["duos", "reload", "trios"].includes(mode) && !useLegacyDiv2) {
+    return createDiv2Template(mode, additionalLobby);
+  }
 
   if (mode === "trios" || mode === "late_night_trios") {
     const gameLabel = mode === "late_night_trios" ? "2 games, no bottom kick" : "3 games";
@@ -1306,6 +1337,7 @@ const STORAGE = {
   serverStructureMigration: "nobleServerStructure20260827V1",
   officialPresetPackMigration: "nobleOfficialPresetPack20260827V1",
   schedulePresetPackMigration: "nobleSchedulePresetPack20260827V1",
+  div2PresetMigration: "nobleDiv2Presets20260922V1",
 };
 
 const CREATOR_DISCORD_USER_ID = "831136990102945833";
@@ -1660,6 +1692,7 @@ function getMode(sessionKind = state.sessionKind) {
 }
 
 function getModeLabel(mode) {
+  if (mode === "reload") return "Reload";
   if (mode === "solos") return "Solos";
   if (mode === "trios") return "Trios";
   if (mode === "late_night_trios") return "Late Night Trios";
@@ -1695,6 +1728,7 @@ function getTwentyFourSevenSessionNumber() {
 }
 
 function getAvailableGameCounts(session = getSession(), mode = getMode(session.value)) {
+  if (mode === "reload") return [];
   if (mode === "trios" || mode === "late_night_trios") return [];
   if (mode === "ladder" || mode === "late_night") return [];
   return Array.isArray(session.gameCounts) ? session.gameCounts : [];
@@ -3015,13 +3049,13 @@ function buildAnnouncementText() {
     ? "trio"
     : mode === "squads"
     ? "squad"
-    : mode === "duos" || mode === "late_night" || mode === "ladder"
+    : mode === "duos" || mode === "reload" || mode === "late_night" || mode === "ladder"
     ? "duo"
     : "player";
   const templateSource = templateKey === "third" ? "second" : templateKey;
   let template = config.templates?.[templateSource] || createDefaultTemplate(session, mode, templateSource);
   if (templateKey === "third") {
-    template = template.replace(/\*\*Second Lobby\*\*/gi, "**Third Lobby**");
+    template = template.replace(/\*\*(Trios )?Second Lobby\*\*/gi, (_, prefix) => `**${prefix || ""}Third Lobby**`);
   }
   const values = {
     session_title: isLateNightMode()
@@ -4019,6 +4053,22 @@ function replaceOfficialTemplates(config, previousPrimary, previousSecond, nextP
   return changed;
 }
 
+function applyDiv2PresetMigration() {
+  if (localStorage.getItem(STORAGE.div2PresetMigration) === "1") return;
+  const session = SESSION_KINDS.find((item) => item.value === "div2");
+  for (const mode of ["duos", "trios"]) {
+    replaceOfficialTemplates(
+      state.settings.sessions.div2.modes[mode],
+      [createDefaultTemplate(session, mode, "primary", true)],
+      [createDefaultTemplate(session, mode, "second", true)],
+      createDefaultTemplate(session, mode, "primary"),
+      createDefaultTemplate(session, mode, "second")
+    );
+  }
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.div2PresetMigration, "1");
+}
+
 function applyOfficialPresetPackMigration() {
   if (localStorage.getItem(STORAGE.officialPresetPackMigration) === "1") return;
 
@@ -4230,6 +4280,7 @@ function loadPreferences() {
     applyTwentyFourSevenDelayCorrection();
     applyLobbyOffsetCorrection();
     applyOfficialPresetPackMigration();
+    applyDiv2PresetMigration();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
