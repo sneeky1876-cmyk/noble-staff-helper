@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Privacy policy for the Noble Toolkit browser extension by Sneeky.">
+  <title>Noble Toolkit — Privacy Policy</title>
+  <style>
+    :root{color-scheme:dark;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#edf3f7;background:#0c1720;line-height:1.65}
+    *{box-sizing:border-box}body{margin:0}main{max-width:880px;margin:40px auto;padding:32px;border:1px solid #ffffff20;border-radius:16px;background:#142631}
+    .eyebrow{color:#ffce55;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700}h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.2;margin:8px 0 16px}h2{font-size:1.2rem;margin-top:32px;color:#fff}p,li{color:#cfdae2}a{color:#ffda78;overflow-wrap:anywhere}a:hover{color:#fff}a:focus-visible{outline:2px solid #ffda78;outline-offset:4px}.meta{color:#9eb1bf;font-size:.9rem}.summary{border-left:3px solid #ffce55;padding:12px 18px;background:#ffffff05;border-radius:0 8px 8px 0}ul{padding-left:23px}li+li{margin-top:8px}footer{border-top:1px solid #ffffff20;margin-top:32px;padding-top:20px;font-size:.9rem}code{font-size:.9em;overflow-wrap:anywhere}@media(max-width:600px){main{margin:12px;padding:22px 18px;border-radius:12px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="eyebrow">Noble Toolkit · by Sneeky</div>
+  <h1>Privacy Policy</h1>
+  <p class="meta">Effective date and last updated: November 1, 2026</p>
+  <div class="summary"><strong>In short:</strong> Noble Toolkit adds staff tools to Noble Practice and links related leaderboards. Settings and ticket presets are saved locally. When you manually start a host check, relevant player names and available Epic account IDs are sent to our Cloudflare-hosted lookup service, which queries Epic Games. We do not sell this data or use it for advertising.</div>
+
+  <h2>1. Scope and contact</h2>
+  <p>This policy covers the Noble Toolkit browser extension and its creator-code lookup service, maintained by Sneeky (GitHub: <a href="https://github.com/sneeky1876-cmyk">sneeky1876-cmyk</a>). It does not replace the privacy policies of Noble Practice, Epic Games, Yunite, Tracker Network, or other websites you visit.</p>
+  <p>For privacy questions or data-related requests, contact <a href="mailto:sneeky1876@gmail.com">sneeky1876@gmail.com</a>.</p>
+
+  <h2>2. Information the extension handles</h2>
+  <ul>
+    <li><strong>Player identifiers and public profile data:</strong> displayed Fortnite names, Discord user IDs, available Epic account IDs, profile-image URLs, creator-code information, and host-check results.</li>
+    <li><strong>Supported website content:</strong> session names and identifiers, relevant session and leaderboard URLs, map markers and drops, roster information, leaderboard statistics, and match attendance. Map images and player labels are processed to produce screenshots when you use Copy Map.</li>
+    <li><strong>Ticket presets and form content:</strong> custom preset labels, ticket-response text, ticket categories, accept/deny preset groups, and your preferred order. Saving a preset can use text already entered in a ticket reason field. The extension also reads relevant ticket labels and supplied player/session links to provide its tools; it does not archive ticket-chat conversations.</li>
+    <li><strong>Local preferences and caches:</strong> enabled features, map-filter selections, Bottom Kick rules, name-to-ID mappings, session-map link mappings, and cached lookup results.</li>
+  </ul>
+  <p>The extension does not read the clipboard. Copy buttons write selected text or a map image to it only when requested. Preset exports are files downloaded to your device; imported files are read locally.</p>
+
+  <h2>3. How information is used</h2>
+  <p>Information is used to provide the extension's visible staff features: player cards and ID copying, manually requested creator-code checks, map filtering and screenshots, links between related leaderboards, match-attendance indicators, leaderboard copy selections, and reusable ticket-response presets. Local caching reduces repeated requests.</p>
+  <p>Noble Toolkit does not include advertising or user-behavior analytics. It does not build a general browsing-history profile, record keystroke or mouse-movement logs, request precise device location, or collect your passwords, payment details, or health information. It does not automatically claim, accept, deny, or send messages on tickets. Website ticket actions remain under your control.</p>
+
+  <h2>4. Network requests and service providers</h2>
+  <ul>
+    <li><strong>Noble Practice:</strong> the extension reads supported Noble pages and uses <code>map.nobleprac.com</code> and <code>tournament.nobleprac.com</code> for relevant session and leaderboard data. These requests may occur automatically to display the tools and resolve matching links.</li>
+    <li><strong>Host lookup service:</strong> clicking Check hosts, Check again, or another explicit host-check action sends a batch containing player display names, available Epic account IDs, and matching request identifiers to <code>noble-toolkit-hosts.noble-toolkit-sneeky.workers.dev</code>, hosted by Cloudflare. The service sends the necessary names or account IDs to Epic Games to resolve accounts and retrieve creator-page information. Starting a lookup may process all players included in that scan, including results reused from the local cache. Merely opening a session does not start a new player host scan.</li>
+    <li><strong>Service readiness:</strong> opening the popup or using its service-check control may contact the host service to check availability. This is separate from a player lookup. The backend also refreshes its dedicated Epic service-account authentication periodically; it does not need your personal Epic login.</li>
+    <li><strong>Linked websites and images:</strong> Yunite and Tracker links navigate to their respective sites. Displaying map or avatar images may request files from the image hosts used by the original page, including Discord's CDN. Those sites and hosts receive the network requests needed to provide their content.</li>
+  </ul>
+  <p>Network requests necessarily expose an IP address and technical request metadata to receiving servers and hosting providers. Cloudflare may process operational, diagnostic, or security logs under its platform settings and <a href="https://www.cloudflare.com/privacypolicy/">privacy policy</a>. This is not a precise-location feature. The application's lookup code does not intentionally store a server-side database of submitted player batches or ticket presets; its persistent authentication cache is for the dedicated service account. Provider-managed logs are separate from that cache.</p>
+  <p>This privacy page is hosted on GitHub Pages. GitHub may process technical visitor information as described in its <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">privacy statement</a>. This page itself contains no analytics scripts, external fonts, forms, or tracking cookies.</p>
+
+  <h2>5. Storage, retention, and deletion</h2>
+  <p>Preferences, presets, and extension caches are stored in your browser's local extension storage, not in a preset-sync account. Presets and preferences remain until you edit or remove them, clear the extension's storage, or uninstall the extension. Exported backups remain wherever you save them and must be deleted separately.</p>
+  <p>Positive host-check results are eligible for reuse for up to 90 days; negative results for up to 12 hours. These are cache-validity periods, not guaranteed physical deletion deadlines: expired records may remain locally until replaced, pruned, cleared, or removed with the extension. Other local ID and session-link caches may persist until cleared or pruned. A short-lived server-context cache is kept in the extension service worker's memory for approximately one minute. Provider logs are subject to the hosting provider's applicable settings and retention practices.</p>
+  <p>Use <strong>Service &amp; storage → Local cache → Clear</strong> in the popup to clear supported lookup/ID caches. This does not delete your custom ticket presets. Delete presets individually in the Custom reasons manager, or uninstall the extension to remove its local extension storage. Clearing local data does not erase the clipboard, downloaded exports, underlying Noble/Epic records, or independent provider logs.</p>
+
+  <h2>6. Sharing, security, and your choices</h2>
+  <p>Data is not sold, rented, shared with advertising brokers, used for targeted advertising, or used to determine creditworthiness. Transmission is limited to providing the features above and operating their hosting infrastructure, except where disclosure is required by applicable law. Data handled by the extension is used only for its stated staff-tool purpose. Requests to the lookup service use HTTPS.</p>
+  <p>You can disable individual features or pause the toolkit with the popup's master switch. Pausing refreshes supported pages to remove injected tools. You can use the extension without running host checks. Do not place passwords or other secrets in custom ticket presets, and share exported files only with people you intend to receive their contents.</p>
+  <p>The extension does not copy your personal Epic login, passwords, or authentication cookies into its host-check requests. Your original websites may still require their normal sign-in process. Use of those sites is governed by their own policies.</p>
+  <p>Service providers may process information outside your country. Depending on applicable law, you may have rights to access, correct, delete, restrict, or object to processing, or to complain to a relevant supervisory authority. Contact the maintainer above about data handled by this extension; requests concerning underlying game, Discord, Noble, or leaderboard records may also need to be directed to their operators.</p>
+
+  <h2>7. Changes</h2>
+  <p>This policy will be updated if the extension's data practices change. The date above identifies the current revision. Material changes will be disclosed as required by the applicable store policies and law.</p>
+  <footer><a href="./#extension">Back to Noble Staff Helper</a> · Noble Toolkit is an independent staff utility, not an Epic Games, Google, Discord, or Tracker Network product.</footer>
+</main>
+</body>
+</html>
+
