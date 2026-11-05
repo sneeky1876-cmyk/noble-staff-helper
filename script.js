@@ -1134,8 +1134,8 @@ const DEFAULT_SETTINGS = {
   sessions: {
     solos: {
       modes: {
-        solos: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
-        ladder: { delayMinutes: 20, firstReacts: 110, secondReacts: 200 },
+        solos: { delayMinutes: 15, firstReacts: 110, secondReacts: 200 },
+        ladder: { delayMinutes: 15, firstReacts: 110, secondReacts: 200 },
       },
     },
     solos_closed: {
@@ -1329,6 +1329,7 @@ const STORAGE = {
   solosSecondLobbyCorrection: "nobleSolosSecondLobby200V1",
   solosClosedPresetCorrection: "nobleSolosClosedPresetV2",
   div0DelayCorrection: "nobleDiv0Delay15V1",
+  solosDelayCorrection: "nobleSolosDelay15V1",
   twentyFourSevenDelayCorrection: "noble247Delay20V1",
   znturoStaffLinkCorrection: "nobleZnturoStaffLinkV1",
   lobbyOffsetCorrection: "nobleLobbyOffsetsZeroV2",
@@ -4053,6 +4054,15 @@ function replaceOfficialTemplates(config, previousPrimary, previousSecond, nextP
   return changed;
 }
 
+function applySolosDelayCorrection() {
+  if (localStorage.getItem(STORAGE.solosDelayCorrection) === "1") return;
+  for (const config of Object.values(state.settings.sessions.solos.modes)) {
+    if (config.delayMinutes === 20) config.delayMinutes = 15;
+  }
+  localStorage.setItem(STORAGE.settings, JSON.stringify(state.settings));
+  localStorage.setItem(STORAGE.solosDelayCorrection, "1");
+}
+
 function applyDiv2PresetMigration() {
   if (localStorage.getItem(STORAGE.div2PresetMigration) === "1") return;
   const session = SESSION_KINDS.find((item) => item.value === "div2");
@@ -4281,6 +4291,7 @@ function loadPreferences() {
     applyLobbyOffsetCorrection();
     applyOfficialPresetPackMigration();
     applyDiv2PresetMigration();
+    applySolosDelayCorrection();
 
     const savedScheduleSettings = localStorage.getItem(STORAGE.scheduleSettings);
     if (savedScheduleSettings) {
